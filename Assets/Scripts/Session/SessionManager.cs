@@ -22,13 +22,13 @@ namespace HKR
         public static UnityAction OnJoinedToSessionLobbyEvent;
         public static UnityAction OnJoinToSessionLobbyFailedEvent;
 
-        public const int MaxPlayers = 4;
+        public const int MaxPlayers = 2;
 
 
         NetworkSceneManagerDefault sceneManager;
         bool loading = false;
         bool shutdown = false;
-        //bool started = false;
+        bool privateSession = false;
 
         NetworkRunner networkRunner;
         public NetworkRunner NetworkRunner
@@ -42,11 +42,30 @@ namespace HKR
             sceneManager = GetComponent<NetworkSceneManagerDefault>();
         }
 
-        //void Start()
-        //{
-        //    started = true;
-        //}
+        void Update()
+        {
+            if (NetworkRunner == null || !NetworkRunner.IsSceneAuthority || NetworkRunner.SessionInfo == null || !PlayerManager.Instance.LocalPlayer) return;
 
+            if (SceneManager.GetActiveScene().buildIndex == Constants.GameSceneIndex)
+                return;
+
+            if (!loading) // Game not started yet
+            {
+                foreach (var player in PlayerManager.Instance.Players)
+                {
+                    if (!player.Ready)
+                        return;
+                }
+
+                // Start game
+                NetworkRunner.SessionInfo.IsOpen = false;
+                loading = true;
+                Debug.Log("Loading game scene");
+                NetworkRunner.LoadScene(SceneRef.FromIndex(Constants.GameSceneIndex), LoadSceneMode.Single).AddOnCompleted((op) => { loading = false; });
+                
+            }
+        }
+     
         async void StartSession(StartGameArgs args)
         {
             //if (!started) return;
@@ -72,6 +91,8 @@ namespace HKR
 
         public void CreateOnlineSession(bool isPrivate)
         {
+            privateSession = isPrivate;
+
             //if (!started) return;
             StartGameArgs args = new StartGameArgs()
             {
@@ -84,7 +105,7 @@ namespace HKR
                 SceneManager = sceneManager,
                 DisableNATPunchthrough = true,
                 IsVisible = !isPrivate
-
+                
             };
 
             StartSession(args);
@@ -206,12 +227,20 @@ namespace HKR
             if (player == runner.LocalPlayer && runner.IsSharedModeMasterClient)
                 NetworkRunner.LoadScene(SceneRef.FromIndex(Constants.LobbySceneIndex), LoadSceneMode.Single);
 
+            // If the local player is the master client and the session is full then set invisible
+            if(runner.IsSharedModeMasterClient && runner.SessionInfo.PlayerCount == MaxPlayers && !privateSession)
+                runner.SessionInfo.IsVisible = false;
+
             OnPlayerJoinedEvent?.Invoke(runner, player);
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
             Debug.Log($"Player {player.PlayerId} left the session {runner.SessionInfo.Name}");
+
+            // If the local player is the master client and you are in lobby the set the session as visible
+            if (runner.IsSharedModeMasterClient && SceneManager.GetActiveScene().buildIndex == Constants.LobbySceneIndex && !privateSession)
+                runner.SessionInfo.IsVisible = true;
 
             OnPlayerLeftEvent?.Invoke(runner, player);
         }
@@ -228,15 +257,17 @@ namespace HKR
 
         public void OnSceneLoadDone(NetworkRunner runner)
         {
-
-
-
-
+            //switch (SceneManager.GetActiveScene().buildIndex)
+            //{
+            //    case Constants.GameSceneIndex:
+            //        loading = false;
+            //        break;
+            //}
         }
 
         public void OnSceneLoadStart(NetworkRunner runner)
         {
-
+            //Debug.Log($"SceneLoadStart:{}")
         }
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)

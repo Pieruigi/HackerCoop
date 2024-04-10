@@ -1,7 +1,9 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Fusion.NetworkBehaviour;
 
 namespace HKR
@@ -66,8 +68,28 @@ namespace HKR
             PlayerManager.Instance.RemovePlayer(this);
         }
 
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += HandleOnSceneLoaded;
+        }
 
-       
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= HandleOnSceneLoaded;
+        }
+
+        private void HandleOnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            switch (scene.buildIndex)
+            {
+                case Constants.LobbySceneIndex:
+                    if(PlayerManager.Instance.LocalPlayer == this)
+                    {
+                        Ready = false;
+                    }
+                    break;
+            }
+        }
     }
 
 }
