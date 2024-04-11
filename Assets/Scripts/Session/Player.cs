@@ -11,6 +11,8 @@ namespace HKR
     public class Player : NetworkBehaviour
     {
 
+        public static Player Local { get; private set; }
+
         [UnitySerializeField]
         [Networked]
         public NetworkString<_16> Name { get; set; }
@@ -24,6 +26,11 @@ namespace HKR
         [Networked]
         public NetworkBool InGame { get; set; }
 
+        //[UnitySerializeField]
+        //public NetworkBool LevelReady { get; set; } = false; // True when the level has been built
+
+        public int CharacterId { get; private set; } = 0;
+        
 
         ChangeDetector changeDetector;
 
@@ -55,7 +62,8 @@ namespace HKR
         public override void Spawned()
         {
             base.Spawned();
-
+            if (HasStateAuthority)
+                Local = this;
             changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
             PlayerManager.Instance.AddPlayer(this);
         }
@@ -64,6 +72,9 @@ namespace HKR
         {
 
             base.Despawned(runner, hasState);
+
+            if (HasStateAuthority)
+                Local = null;
 
             PlayerManager.Instance.RemovePlayer(this);
         }
@@ -83,7 +94,7 @@ namespace HKR
             switch (scene.buildIndex)
             {
                 case Constants.LobbySceneIndex:
-                    if(PlayerManager.Instance.LocalPlayer == this)
+                    if(Local == this)
                     {
                         Ready = false;
                     }

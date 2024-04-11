@@ -16,7 +16,8 @@ namespace HKR
         [SerializeField]
         GameObject playerPrefab;
 
-        public Player LocalPlayer { get; private set; }
+        //public Player LocalPlayer { get; private set; }
+
 
         List<Player> players = new List<Player>();
         public ICollection<Player> Players
@@ -49,13 +50,12 @@ namespace HKR
                     ClearAll();
                     break;
                 case Constants.GameSceneIndex:
-                    LocalPlayer.InGame = true;
+                    Player.Local.InGame = true;
                     break;
                 case Constants.LobbySceneIndex:
-                    if(LocalPlayer)
-                        LocalPlayer.InGame = false;
-                    //else
-                    //    SpawnLocalPlayer();
+                    if(Player.Local)
+                        Player.Local.InGame = false;
+                    
                     break;
 
             }
@@ -102,8 +102,8 @@ namespace HKR
         public void AddPlayer(Player player)
         {
             players.Add(player);
-            if (player.HasStateAuthority)
-                LocalPlayer = player;
+            //if (player.HasStateAuthority)
+            //    LocalPlayer = player;
 
             OnPlayerAdded?.Invoke(player);
         }
@@ -113,7 +113,7 @@ namespace HKR
             if (player.HasStateAuthority)
             {
                 players.Clear();
-                LocalPlayer = null;
+                //LocalPlayer = null;
             }
             else
             {

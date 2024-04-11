@@ -44,7 +44,7 @@ namespace HKR
 
         void Update()
         {
-            if (NetworkRunner == null || !NetworkRunner.IsSceneAuthority || NetworkRunner.SessionInfo == null || !PlayerManager.Instance.LocalPlayer) return;
+            if (NetworkRunner == null || !NetworkRunner.IsSceneAuthority || NetworkRunner.SessionInfo == null || !Player.Local) return;
 
             if (SceneManager.GetActiveScene().buildIndex == Constants.GameSceneIndex)
                 return;

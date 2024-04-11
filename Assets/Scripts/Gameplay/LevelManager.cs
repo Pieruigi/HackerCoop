@@ -16,6 +16,7 @@ namespace HKR
 
         ChangeDetector changeDetector;
 
+
         private void Awake()
         {
             if (!Instance)
@@ -70,7 +71,7 @@ namespace HKR
             SceneManager.sceneLoaded -= HandleOnSceneLoaded;
         }
 
-        public static void TryDespawnCurrentInstance()
+        public static void DespawnCurrentInstance()
         {
             if (!Instance)
                 return;
@@ -85,6 +86,9 @@ namespace HKR
                 case Constants.MainSceneIndex:
                     // Destroy object
                     Destroy(gameObject);
+                    break;
+                case Constants.GameSceneIndex:
+                    LevelBuilder.Instance.Build(Seed);
                     break;
             }
         }
