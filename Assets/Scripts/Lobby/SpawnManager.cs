@@ -20,6 +20,8 @@ namespace HKR
         [SerializeField]
         List<PlayerController> playerControllerPrefabs;
 
+        //[SerializeField]
+        //GameObject _nestedTest;
 
 
         private void Awake()
@@ -68,7 +70,8 @@ namespace HKR
                     
                     // PlayerController
                     SpawnLocalPlayerController();
-                    
+
+                    //SessionManager.Instance.NetworkRunner.Spawn(_nestedTest);
                     break;
 
                 case Constants.GameSceneIndex:
@@ -101,6 +104,7 @@ namespace HKR
         /// </summary>
         void SpawnLevelManager()
         {
+            
             if (!SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
                 return;
             LevelManager.DespawnCurrentInstance();

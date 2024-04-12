@@ -509,6 +509,7 @@ MonoBehaviour:
   levelManagerPrefab: {fileID: 4325422500516889360, guid: c3ca58f7ab41d194c870ea93def29224, type: 3}
   playerControllerPrefabs:
   - {fileID: 7072185596140766902, guid: a2b18d6432ce1174a96745057157c365, type: 3}
+  _nestedTest: {fileID: 246452508683974843, guid: de134b548842b334db1d363dfee65d22, type: 3}
 --- !u!4 &790967578
 Transform:
   m_ObjectHideFlags: 0
