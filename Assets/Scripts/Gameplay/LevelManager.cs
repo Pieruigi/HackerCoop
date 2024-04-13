@@ -45,6 +45,7 @@ namespace HKR
                         var reader = GetPropertyReader<int>(propertyName);
                         var (prev, curr) = reader.Read(previousBuffer, currentBuffer);
                         Debug.Log($"Player - Ready changed from {prev} to {curr}");
+                        Random.InitState(Seed);
                         break;
                 }
             }
@@ -88,7 +89,7 @@ namespace HKR
                     Destroy(gameObject);
                     break;
                 case Constants.GameSceneIndex:
-                    LevelBuilder.Instance.Build(Seed);
+                    Building.LevelBuilder.Instance.Build();
                     break;
             }
         }
@@ -99,7 +100,8 @@ namespace HKR
                 return;
 
             int seed = (int)System.DateTime.Now.Ticks;
-            Random.InitState(seed);
+            Debug.Log($"Random seed:{seed}");
+            //Random.InitState(seed);
             Seed = seed;
         
         }
@@ -108,7 +110,7 @@ namespace HKR
         {
             if (!Runner.IsSharedModeMasterClient)
                 return;
-            Random.InitState(seed);
+            //Random.InitState(seed);
             Seed = seed;
         }
 
