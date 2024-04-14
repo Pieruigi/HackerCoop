@@ -128,18 +128,18 @@ namespace HKR.Building
             // Twist the main shape
             //
             bool symmetrical = Random.Range(0, 2) == 0;
-            symmetrical = false;
+            //symmetrical = true;
             TwistShape(symmetrical, width, length);
 
             // Set border flags
             ComputeBorders();
 
             
-            //// Create some holes in the section shape
-            //CreateHoles(symmetrical, width, length);
+            // Create some holes in the section shape
+            CreateHoles(symmetrical, width, length);
 
-            //// Compute borders again to account for the new blocks
-            //ComputeBorders();
+            // Compute borders again to account for the new blocks
+            ComputeBorders();
 
             //
             // Add remaining blocks
@@ -204,10 +204,32 @@ namespace HKR.Building
 
         void CreateHoles(bool symmetrical, int width, int length)
         {
-            List<BuildingBlock> candidates = shapeBlocks.Where(b=>!b.IsBorder && (!symmetrical || (width % 2 == 0 && b.Coordinates.x < width/2) || (width % 2 == 1 && b.Coordinates.x <= width / 2))).ToList();
+            List<BuildingBlock> candidates = shapeBlocks.Where(b=>!b.IsBorder && 
+                                                              (!symmetrical || (width % 2 == 0 && b.Coordinates.x < width/2) || (width % 2 == 1 && b.Coordinates.x <= width / 2)) &&
+                                                              (shapeBlocks.Exists(c=>c.Coordinates.x == b.Coordinates.x - 1 && c.Coordinates.y == b.Coordinates.y +1)) && 
+                                                              (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x && c.Coordinates.y == b.Coordinates.y + 1)) &&
+                                                              (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x + 1 && c.Coordinates.y == b.Coordinates.y + 1)) &&
+                                                              (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x - 1 && c.Coordinates.y == b.Coordinates.y)) &&
+                                                              (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x + 1 && c.Coordinates.y == b.Coordinates.y)) &&
+                                                              (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x - 1 && c.Coordinates.y == b.Coordinates.y - 1)) &&
+                                                              (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x && c.Coordinates.y == b.Coordinates.y - 1)) &&
+                                                              (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x + 1 && c.Coordinates.y == b.Coordinates.y - 1))
+                                                              ).ToList();
+            // Blocks to be removed must be surrounded in all the directions
+            
+
             Debug.Log($"CreateHoles() - Candidates.Count:{candidates.Count}");
-            int minHoleCount = 0;
-            int maxHoleCount =  candidates.Count / (symmetrical ? 10 : 5);
+            int maxHoleCount =  candidates.Count;
+            if (symmetrical)
+            {
+                int middleCount = 0;
+                if (width % 2 == 1)
+                    middleCount = candidates.Count(b => b.Coordinates.x == width / 2);
+                
+                maxHoleCount -= middleCount;
+                maxHoleCount /= 2;
+                maxHoleCount += middleCount;
+            }
 
             int holeCount = Random.Range(0, maxHoleCount+1);
             Debug.Log($"CreateHoles() - Holes.Count:{holeCount}");

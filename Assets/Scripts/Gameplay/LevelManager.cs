@@ -89,7 +89,8 @@ namespace HKR
                     Destroy(gameObject);
                     break;
                 case Constants.GameSceneIndex:
-                    Building.LevelBuilder.Instance.Build();
+                    if(Runner.IsSharedModeMasterClient)
+                        Building.LevelBuilder.Instance.Build();
                     break;
             }
         }
