@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Callbacks;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace HKR.Building
 {
@@ -109,86 +111,68 @@ namespace HKR.Building
             // Create the root
             GameObject root = new GameObject("Shape");
             root.transform.parent = transform;
-            bool symmetric = Random.Range(0,2) == 0;
+            
 
             for(int i=0; i<blockCount-left; i++)
             {
                 GameObject block = CreateShapeBlock();
                 BuildingBlock bb = block.GetComponent<BuildingBlock>();
                 block.transform.parent = root.transform;
-                Vector2 coords = Vector2.zero;
-                if(i==0)
-                {
-                    // The first block is the left bottom border at (0,0)
-                    coords = Vector3.zero;
-                    //bb.IsWestBorder = true;
-                    //bb.IsSouthBorder = true;
-                }
-                else
-                {
-
-                    if(symmetric && ((width % 2 == 0 && i%width >= width / 2) || (width % 2 == 1 && i%width > width/2)))
-                    {
-                        // We set the coordinates of the symmetric block
-                        int symIndex = 0;
-                        int offset = i % width;
-                        int back = 2 * (offset - (width / 2)) + (width%2 == 0 ? 1 : 0) ;
-                        symIndex = i - back;
-                        //if (width%2 == 0)
-                        //{
-                        //    int offset = i % width;
-                        //    int back = 2 * ( offset - (width / 2) )+ 1;
-                        //    symIndex = i - back;
-                        //}
-                        //else
-                        //{
-                        //    int offset = i % width;
-                        //    int back = 2 * (offset - (width / 2));
-                        //    symIndex = i - back;
-                        //}
-                        BuildingBlock symBlock = shapeBlocks[symIndex];
-                        coords = new Vector2(i%width, symBlock.Coordinates.y);
-                        //bb.IsNorthBorder = symBlock.IsNorthBorder;
-                        //bb.IsSouthBorder = symBlock.IsSouthBorder;
-                        //bb.IsEastBorder = symBlock.IsWestBorder;
-                        
-                    }
-                    else
-                    {
-                        coords = new Vector2(i%width, 0);
-                        if (i / width > 0)
-                        {
-                            coords.y = shapeBlocks[i-width].Coordinates.y+1;
-                        }
-                        else
-                        {
-                            coords.y = 0;
-                        }
-                        
-                    }
-                }
-
+                Vector2 coords = new Vector2(i%width, i/width);
                 bb.Init(null, coords);
                 bb.name = $"S_{bb.Coordinates}";
 
             }
 
+            //
+            // Twist the main shape
+            //
+            bool symmetrical = Random.Range(0, 2) == 0;
+            symmetrical = false;
+            TwistShape(symmetrical, width, length);
+
             // Set border flags
             ComputeBorders();
 
-            // Add the remaining blocks
-            for(int i=0; i<left; i++)
+            
+            //// Create some holes in the section shape
+            //CreateHoles(symmetrical, width, length);
+
+            //// Compute borders again to account for the new blocks
+            //ComputeBorders();
+
+            //
+            // Add remaining blocks
+            //
+            AddRemainingBlocks(left, root);
+
+            // Set border flags
+            ComputeBorders();
+
+            foreach (var b in shapeBlocks)
             {
+#if BUILDING_TEST
+                b.Spawn();
+#endif
+            }
+
+        }
+
+        void AddRemainingBlocks(int left, GameObject root)
+        {
+            for (int i = 0; i < left; i++)
+            {
+
                 GameObject block = CreateShapeBlock();
                 block.transform.parent = root.transform;
                 BuildingBlock leftBlock = block.GetComponent<BuildingBlock>();
                 // Get all border blocks
-                List<BuildingBlock> blocks = shapeBlocks.Where(b=>b.IsBorder).ToList();
+                List<BuildingBlock> blocks = shapeBlocks.Where(b => b.IsBorder).ToList();
                 // Get a random block
                 var b = blocks[Random.Range(0, blocks.Count)];
                 // Choose a random one if many
                 List<int> sides = new List<int>();
-                if(b.IsNorthBorder)
+                if (b.IsNorthBorder)
                     sides.Add(0);
                 if (b.IsEastBorder)
                     sides.Add(1);
@@ -198,7 +182,7 @@ namespace HKR.Building
                     sides.Add(3);
                 int side = sides[Random.Range(0, sides.Count)];
                 Vector2 coords = b.Coordinates;
-                switch(side)
+                switch (side)
                 {
                     case 0: // North
                         coords.y++;
@@ -216,17 +200,161 @@ namespace HKR.Building
                 leftBlock.Init(null, coords);
                 leftBlock.name = $"S_{leftBlock.Coordinates}";
             }
+        }
 
-            // Compute borders again to account for the new blocks
-            ComputeBorders();
+        void CreateHoles(bool symmetrical, int width, int length)
+        {
+            List<BuildingBlock> candidates = shapeBlocks.Where(b=>!b.IsBorder && (!symmetrical || (width % 2 == 0 && b.Coordinates.x < width/2) || (width % 2 == 1 && b.Coordinates.x <= width / 2))).ToList();
+            Debug.Log($"CreateHoles() - Candidates.Count:{candidates.Count}");
+            int minHoleCount = 0;
+            int maxHoleCount =  candidates.Count / (symmetrical ? 10 : 5);
 
-            foreach(var b in shapeBlocks)
+            int holeCount = Random.Range(0, maxHoleCount+1);
+            Debug.Log($"CreateHoles() - Holes.Count:{holeCount}");
+
+            for (int i = 0; i < holeCount; i++)
             {
-#if BUILDING_TEST
-                b.Spawn();
-#endif
+                var block = candidates[Random.Range(0, candidates.Count)];
+                // Remove the block
+                candidates.Remove(block);
+                int dir = -1;
+                bool doSymBlock = false;
+                if(!symmetrical)
+                {
+                    dir = Random.Range(0, 4);
+                }
+                else
+                {
+                    if(block.Coordinates.x == width / 2) 
+                    {
+                        // Is the block in the middle
+                        dir = Random.Range(0, 2);
+                        if (dir == 1)
+                            dir = 2; // South
+                    }
+                    else
+                    {
+                        doSymBlock = true;
+                        dir = Random.Range(0,3);
+                        if(dir == 1)
+                            dir = 3; // West
+                    }
+                }
+                Debug.Log($"CreateHoles() - block:{block.gameObject.name}");
+                Debug.Log($"CreateHoles() - dir:{dir}");
+
+                switch (dir)
+                {
+                    case 0: // North
+                        List<BuildingBlock> col = shapeBlocks.Where(b=>b.Coordinates.x == block.Coordinates.x).ToList();
+                        float max = col.Max(b=>b.Coordinates.y);
+                        Debug.Log($"CreateHoles() - North, max:{max}");
+                        block.Init(block.Floor, new Vector2(block.Coordinates.x, max + 1));
+                        break;
+                    case 2: // South
+                        col = shapeBlocks.Where(b => b.Coordinates.x == block.Coordinates.x).ToList();
+                        float min = col.Min(b => b.Coordinates.y);
+                        Debug.Log($"CreateHoles() - South, min:{min}");
+                        block.Init(block.Floor, new Vector2(block.Coordinates.x, min - 1));
+                        break;
+                    case 1: // East
+                        List<BuildingBlock> row = shapeBlocks.Where(b => b.Coordinates.y == block.Coordinates.y).ToList();
+                        max = row.Max(b => b.Coordinates.x);
+                        Debug.Log($"CreateHoles() - East, max:{max}");
+                        block.Init(block.Floor, new Vector2(max + 1, block.Coordinates.y));
+                        break;
+                    case 3: // West
+                        row = shapeBlocks.Where(b => b.Coordinates.y == block.Coordinates.y).ToList();
+                        min = row.Min(b => b.Coordinates.x);
+                        Debug.Log($"CreateHoles() - West, min:{min}");
+                        block.Init(block.Floor, new Vector2(min - 1, block.Coordinates.y));
+                        break;
+
+                }
             }
 
+        }
+
+        void TwistShape(bool symmetrical, int width, int length)
+        {
+            // Twist values
+            List<int> moves = new List<int>();
+            for (int k = 0; k < 7; k++)
+                moves.Add(0);
+
+            for (int j = 1; j < length; j++)
+            {
+                moves.Add(j);
+                moves.Add(-j);
+            }
+            List<BuildingBlock> firstRow = shapeBlocks.Where(b => b.Coordinates.y == 0).ToList();
+            Debug.Log($"FirstRow.Count:{firstRow.Count}");
+            int count = symmetrical ? firstRow.Count / 2 : firstRow.Count;
+            for (int i = 0; i < count; i++)
+            {
+                BuildingBlock current = firstRow[i];
+                // Allign the current block with the previous one if any
+                float diff = 0;
+                if (i > 0)
+                    diff = firstRow[i - 1].Coordinates.y - current.Coordinates.y;
+
+                int r = moves[Random.Range(0, moves.Count)];
+                if (r != 0 || diff != 0)
+                {
+                    // Move the current block
+                    current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
+                    // Move all blocks in the same column of the current one
+                    List<BuildingBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
+                    foreach (var b in col)
+                    {
+                        if (b != current)
+                            b.Init(b.Floor, b.Coordinates + new Vector2(0, r + diff));
+
+                    }
+                }
+
+                // Move the symmetrical column ?
+                if (symmetrical)
+                {
+                    int symId = firstRow.Count - 1 - i;
+
+
+                    current = firstRow[symId];
+                    current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
+                    // Move all blocks in the same column of the current one
+                    List<BuildingBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
+                    foreach (var b in col)
+                    {
+                        if (b != current)
+                            b.Init(b.Floor, b.Coordinates + new Vector2(0, r + diff));
+
+                    }
+                }
+
+            }
+            if (symmetrical && width % 2 == 1)
+            {
+                // Move the block in the middle
+                BuildingBlock current = firstRow[count];
+                // Allign the current block with the previous one
+                float diff = 0;
+                diff = firstRow[count - 1].Coordinates.y - current.Coordinates.y;
+
+                int r = moves[Random.Range(0, moves.Count)];
+                if (r != 0 || diff != 0)
+                {
+                    // Move the current block
+                    current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
+                    // Move all blocks in the same column of the current one
+                    List<BuildingBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
+                    foreach (var b in col)
+                    {
+                        if (b != current)
+                            b.Init(b.Floor, b.Coordinates + new Vector2(0, r + diff));
+
+                    }
+                }
+            }
         }
 
         void ComputeBorders()
