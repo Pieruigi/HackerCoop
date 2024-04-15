@@ -35,7 +35,7 @@ namespace HKR.Building
         List<Floor> floors = new List<Floor>();
         List<FloorConnector> connectors = new List<FloorConnector>();
 
-        List<BuildingBlock> shapeBlocks = new List<BuildingBlock>();
+        List<ShapeBlock> shapeBlocks = new List<ShapeBlock>();
 
 
         private void Awake()
@@ -116,7 +116,7 @@ namespace HKR.Building
             for(int i=0; i<blockCount-left; i++)
             {
                 GameObject block = CreateShapeBlock();
-                BuildingBlock bb = block.GetComponent<BuildingBlock>();
+                ShapeBlock bb = block.GetComponent<ShapeBlock>();
                 block.transform.parent = root.transform;
                 Vector2 coords = new Vector2(i%width, i/width);
                 bb.Init(null, coords);
@@ -149,13 +149,57 @@ namespace HKR.Building
             // Set border flags
             ComputeBorders();
 
+            // Choose entering 
+            ChooseEnteringBlock();
+
+            // Choose connectors
+            ChooseConnectorBlocks();
+
             foreach (var b in shapeBlocks)
             {
+
+                b.Move();
 #if BUILDING_TEST
-                b.Spawn();
+                b.Colorize();
 #endif
             }
 
+        }
+
+        void ChooseConnectorBlocks()
+        {
+            // Choose configuration 
+            // 3 elevators, 3 stairscases, 1 elevator and 2 staircases, 2 elevators and 1 staircase
+            int conf = Random.Range(0, 4);
+            int elevatorCount = 0;
+            int staircaseCount = 0;
+            switch(conf)
+            {
+                case 0:
+                    elevatorCount = 3;
+                    break;
+                case 1:
+                    staircaseCount = 3;
+                    break;
+                case 2:
+                    elevatorCount = 2;
+                    staircaseCount = 1;
+                    break;
+                case 3:
+                    elevatorCount = 1;
+                    staircaseCount = 2;
+                    break;
+            }
+
+        }
+
+        void ChooseEnteringBlock()
+        {
+            // Get all the blocks that are south borders
+            List<ShapeBlock> blocks = shapeBlocks.Where(b => b.IsSouthBorder).ToList();
+            // Choose a random block
+            ShapeBlock block = blocks[Random.Range(0, blocks.Count)];
+            block.IsEnteringBlock = true;
         }
 
         void AddRemainingBlocks(int left, GameObject root)
@@ -165,9 +209,9 @@ namespace HKR.Building
 
                 GameObject block = CreateShapeBlock();
                 block.transform.parent = root.transform;
-                BuildingBlock leftBlock = block.GetComponent<BuildingBlock>();
+                ShapeBlock leftBlock = block.GetComponent<ShapeBlock>();
                 // Get all border blocks
-                List<BuildingBlock> blocks = shapeBlocks.Where(b => b.IsBorder).ToList();
+                List<ShapeBlock> blocks = shapeBlocks.Where(b => b.IsBorder).ToList();
                 // Get a random block
                 var b = blocks[Random.Range(0, blocks.Count)];
                 // Choose a random one if many
@@ -204,7 +248,7 @@ namespace HKR.Building
 
         void CreateHoles(bool symmetrical, int width, int length)
         {
-            List<BuildingBlock> candidates = shapeBlocks.Where(b=>!b.IsBorder && 
+            List<ShapeBlock> candidates = shapeBlocks.Where(b=>!b.IsBorder && 
                                                               (!symmetrical || (width % 2 == 0 && b.Coordinates.x < width/2) || (width % 2 == 1 && b.Coordinates.x <= width / 2)) &&
                                                               (shapeBlocks.Exists(c=>c.Coordinates.x == b.Coordinates.x - 1 && c.Coordinates.y == b.Coordinates.y +1)) && 
                                                               (shapeBlocks.Exists(c => c.Coordinates.x == b.Coordinates.x && c.Coordinates.y == b.Coordinates.y + 1)) &&
@@ -268,7 +312,7 @@ namespace HKR.Building
                 switch (dir)
                 {
                     case 0: // North
-                        List<BuildingBlock> col = shapeBlocks.Where(b=>b.Coordinates.x == block.Coordinates.x).ToList();
+                        List<ShapeBlock> col = shapeBlocks.Where(b=>b.Coordinates.x == block.Coordinates.x).ToList();
                         float max = col.Max(b=>b.Coordinates.y);
                         Debug.Log($"CreateHoles() - North, max:{max}");
                         block.Init(block.Floor, new Vector2(block.Coordinates.x, max + 1));
@@ -280,7 +324,7 @@ namespace HKR.Building
                         block.Init(block.Floor, new Vector2(block.Coordinates.x, min - 1));
                         break;
                     case 1: // East
-                        List<BuildingBlock> row = shapeBlocks.Where(b => b.Coordinates.y == block.Coordinates.y).ToList();
+                        List<ShapeBlock> row = shapeBlocks.Where(b => b.Coordinates.y == block.Coordinates.y).ToList();
                         max = row.Max(b => b.Coordinates.x);
                         Debug.Log($"CreateHoles() - East, max:{max}");
                         block.Init(block.Floor, new Vector2(max + 1, block.Coordinates.y));
@@ -309,12 +353,12 @@ namespace HKR.Building
                 moves.Add(j);
                 moves.Add(-j);
             }
-            List<BuildingBlock> firstRow = shapeBlocks.Where(b => b.Coordinates.y == 0).ToList();
+            List<ShapeBlock> firstRow = shapeBlocks.Where(b => b.Coordinates.y == 0).ToList();
             Debug.Log($"FirstRow.Count:{firstRow.Count}");
             int count = symmetrical ? firstRow.Count / 2 : firstRow.Count;
             for (int i = 0; i < count; i++)
             {
-                BuildingBlock current = firstRow[i];
+                ShapeBlock current = firstRow[i];
                 // Allign the current block with the previous one if any
                 float diff = 0;
                 if (i > 0)
@@ -326,7 +370,7 @@ namespace HKR.Building
                     // Move the current block
                     current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
                     // Move all blocks in the same column of the current one
-                    List<BuildingBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
+                    List<ShapeBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
                     foreach (var b in col)
                     {
                         if (b != current)
@@ -344,7 +388,7 @@ namespace HKR.Building
                     current = firstRow[symId];
                     current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
                     // Move all blocks in the same column of the current one
-                    List<BuildingBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
+                    List<ShapeBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
                     foreach (var b in col)
                     {
                         if (b != current)
@@ -357,7 +401,7 @@ namespace HKR.Building
             if (symmetrical && width % 2 == 1)
             {
                 // Move the block in the middle
-                BuildingBlock current = firstRow[count];
+                ShapeBlock current = firstRow[count];
                 // Allign the current block with the previous one
                 float diff = 0;
                 diff = firstRow[count - 1].Coordinates.y - current.Coordinates.y;
@@ -368,7 +412,7 @@ namespace HKR.Building
                     // Move the current block
                     current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
                     // Move all blocks in the same column of the current one
-                    List<BuildingBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
+                    List<ShapeBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
                     foreach (var b in col)
                     {
                         if (b != current)
@@ -407,7 +451,7 @@ namespace HKR.Building
                 GameObject block = new GameObject();
 #endif
 
-            BuildingBlock bb = block.AddComponent<BuildingBlock>();
+            ShapeBlock bb = block.GetComponent<ShapeBlock>();
             shapeBlocks.Add(bb);
             return block;
         }

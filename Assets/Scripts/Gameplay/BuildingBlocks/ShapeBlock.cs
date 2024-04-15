@@ -1,11 +1,15 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace HKR.Building
 {
-    public class BuildingBlock : MonoBehaviour
+    public class ShapeBlock : MonoBehaviour
     {
+        [SerializeField]
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+
         int type;
         public Vector2 Coordinates { get; private set; }
         public Floor Floor { get; private set; }
@@ -20,6 +24,10 @@ namespace HKR.Building
         public bool IsWestBorder { get; set; } = false;
 
         Vector3 position = Vector3.zero;
+
+        public bool IsEnteringBlock { get; set; } = false;
+        public bool IsConnectorBlock { get; set; } = false;
+        public FloorConnectorType ConnectorType { get; set; } 
 
         public bool IsBorder
         {
@@ -38,6 +46,15 @@ namespace HKR.Building
 
         }
 
+        void SetColor(Color color)
+        {
+            foreach (var renderer in renderers)
+            {
+                renderer.material = new Material(renderer.material);
+                renderer.material.color = color;
+            }
+        }
+
         public void Init(Floor floor, Vector2 coordinates)
         {
             Floor = floor;
@@ -51,13 +68,18 @@ namespace HKR.Building
             
         }
 
-        public void Spawn()
+        public void Colorize()
         {
-#if BUILDING_TEST
+            if (IsEnteringBlock)
+                SetColor(Color.blue);
+            else if (IsConnectorBlock)
+                SetColor(Color.green);
+        }
+
+        public void Move()
+        {
             transform.position = position;
             
-#else
-#endif
         }
     }
 

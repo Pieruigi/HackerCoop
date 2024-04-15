@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace HKR.Building
 {
+    public enum FloorConnectorType { Stairs, Elevator }
+
     public class FloorConnector : MonoBehaviour
     {
         List<Floor> floors = new List<Floor>();
