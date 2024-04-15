@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static Fusion.Sockets.NetBitBuffer;
 
 namespace HKR.Building
 {
@@ -150,10 +152,10 @@ namespace HKR.Building
             ComputeBorders();
 
             // Choose entering 
-            ChooseEnteringBlock();
+            ChooseEnteringBlock(root);
 
             // Choose connectors
-            ChooseConnectorBlocks();
+            ChooseConnectorBlocks(root);
 
             foreach (var b in shapeBlocks)
             {
@@ -166,40 +168,139 @@ namespace HKR.Building
 
         }
 
-        void ChooseConnectorBlocks()
+        void ChooseConnectorBlocks(GameObject root)
         {
-            // Choose configuration 
-            // 3 elevators, 3 stairscases, 1 elevator and 2 staircases, 2 elevators and 1 staircase
-            int conf = Random.Range(0, 4);
-            int elevatorCount = 0;
-            int staircaseCount = 0;
-            switch(conf)
-            {
-                case 0:
-                    elevatorCount = 3;
-                    break;
-                case 1:
-                    staircaseCount = 3;
-                    break;
-                case 2:
-                    elevatorCount = 2;
-                    staircaseCount = 1;
-                    break;
-                case 3:
-                    elevatorCount = 1;
-                    staircaseCount = 2;
-                    break;
-            }
+            // Get the minimum and maximum X coordinates
+            float xMin = shapeBlocks.Min(b => b.Coordinates.x);
+            float xMax = shapeBlocks.Max(b => b.Coordinates.x);
 
+            //
+            // Choose connectors
+            //
+
+            float min = xMin;
+            float max = xMax;
+            float middle = (xMax + xMin) / 2;
+            //float offset = (xMax - xMin) / connectorCount;
+            for (int i=0; i<connectorCount; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        min = xMin;
+                        max = min + 2;
+                        break;
+                    case 1:
+                        min = middle - 1;
+                        max = middle + 1;
+                        break;
+                    case 2:
+                        min = xMax - 2;
+                        max = xMax;
+                        break;
+                }
+               
+                Debug.Log($"ChooseConnectorBlocks() - X coordinates, min:{min}, max:{max}");
+
+                // Get candidates
+                List<ShapeBlock> blocks = shapeBlocks.Where(b => b.Coordinates.x >= min && b.Coordinates.x <= max && !b.IsEnteringBlock).ToList();
+                ShapeBlock chosen = blocks[Random.Range(0, blocks.Count)];
+                
+                if (!chosen.IsBorder || Random.Range(0,2) == 0)
+                {
+                    // We set the block itself as connector
+                    chosen.IsConnectorBlock = true;
+//#if BUILDING_TEST
+//                    chosen.Colorize();
+//#endif
+                }
+                else
+                {
+                    // We create a new block as connector
+                    GameObject con = Instantiate(helperBlockPrefab, root.transform);
+                    ShapeBlock conBlock = con.GetComponent<ShapeBlock>();
+                    conBlock.IsConnectorBlock = true;
+                    shapeBlocks.Add(conBlock);
+                    // Get all the block borders
+                    List<int> dirs = new List<int>();
+                    if(chosen.IsNorthBorder)
+                        dirs.Add(0);
+                    if (chosen.IsEastBorder)
+                        dirs.Add(1);
+                    if (chosen.IsSouthBorder)
+                        dirs.Add(2);
+                    if (chosen.IsWestBorder)
+                        dirs.Add(3);
+                    // Choose the direction we want to apply the connector to
+                    int dir = dirs[Random.Range(0, dirs.Count)];
+                    switch(dir)
+                    {
+                        case 0: // North
+                            conBlock.IsNorthBorder = conBlock.IsEastBorder = conBlock.IsWestBorder = true;
+                            conBlock.IsSouthBorder = false;
+                            conBlock.Init(null, chosen.Coordinates + new Vector2(0, 1));
+                            chosen.IsNorthBorder = false;
+                            break;
+                        case 1: // East
+                            conBlock.IsNorthBorder = conBlock.IsEastBorder = conBlock.IsSouthBorder = true;
+                            conBlock.IsWestBorder = false;
+                            conBlock.Init(null, chosen.Coordinates + new Vector2(1, 0));
+                            chosen.IsEastBorder = false;
+                            break;
+                        case 2: // South
+                            conBlock.IsSouthBorder = conBlock.IsEastBorder = conBlock.IsWestBorder = true;
+                            conBlock.IsNorthBorder = false;
+                            conBlock.Init(null, chosen.Coordinates + new Vector2(0, -1));
+                            chosen.IsSouthBorder = false;
+                            break;
+                        case 3: // West
+                            conBlock.IsNorthBorder = conBlock.IsWestBorder = conBlock.IsSouthBorder = true;
+                            conBlock.IsEastBorder = false;
+                            conBlock.Init(null, chosen.Coordinates + new Vector2(-1, 0));
+                            chosen.IsWestBorder = false;
+                            break;
+                    }
+//                    conBlock.Move();
+//#if BUILDING_TEST
+//                    conBlock.Colorize();
+//#endif
+
+
+                }
+
+
+                
+
+            }
+            
+            
         }
 
-        void ChooseEnteringBlock()
+        void ChooseEnteringBlock(GameObject root)
         {
             // Get all the blocks that are south borders
-            List<ShapeBlock> blocks = shapeBlocks.Where(b => b.IsSouthBorder).ToList();
+            List<ShapeBlock> blocks = shapeBlocks.Where(b => b.IsSouthBorder && !shapeBlocks.Exists(b2=>b2.Coordinates.x == b.Coordinates.x && b2.Coordinates.y < b.Coordinates.y)).ToList();
             // Choose a random block
             ShapeBlock block = blocks[Random.Range(0, blocks.Count)];
-            block.IsEnteringBlock = true;
+            block.IsSouthBorder = false;
+            // Create a new block for the entering
+            GameObject newBlock = CreateShapeBlock();
+            newBlock.transform.parent = root.transform;
+            ShapeBlock enterBlock = newBlock.GetComponent<ShapeBlock>();
+            shapeBlocks.Add(enterBlock);
+            // The entering block is oriented towards north ever
+            enterBlock.IsSouthBorder = false;
+            enterBlock.IsNorthBorder = enterBlock.IsWestBorder = enterBlock.IsEastBorder = true;
+            enterBlock.IsEnteringBlock = true;
+            enterBlock.Init(null, block.Coordinates + new Vector2(0, -1));
+            // Check if there is any block attached to the entering block to the east or the west
+            // East
+            ShapeBlock other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(1,0));
+            if(other)
+                other.IsWestBorder=false;
+            other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(-1, 0));
+            if (other)
+                other.IsEastBorder = false;
         }
 
         void AddRemainingBlocks(int left, GameObject root)

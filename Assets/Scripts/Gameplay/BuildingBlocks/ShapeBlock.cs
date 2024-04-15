@@ -27,8 +27,7 @@ namespace HKR.Building
 
         public bool IsEnteringBlock { get; set; } = false;
         public bool IsConnectorBlock { get; set; } = false;
-        public FloorConnectorType ConnectorType { get; set; } 
-
+        
         public bool IsBorder
         {
             get { return IsNorthBorder || IsSouthBorder || IsEastBorder || IsWestBorder; }
