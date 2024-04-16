@@ -5,28 +5,19 @@ using UnityEngine;
 
 namespace HKR.Scriptables
 {
-    
+    public enum BorderConfiguration { Free, North, NorthSouth, NorthEast, NorthEastSouth }
 
     public class BuildingBlockAsset : ScriptableObject
     {
         public const string ResourceFolder = "BuildingBlocks";
 
-        [SerializeField]
-        BuildingBlockType type;
-        public BuildingBlockType Type { get { return type; } }
+        //[SerializeField]
+        //BuildingBlockType type;
+        //public BuildingBlockType Type { get { return type; } }
 
-        [SerializeField]
-        bool isNorthBorder, isEastBorder, isSouthBorder, isWestBorder;
-        public bool IsNorthBorder { get {  return isNorthBorder; } }
-        public bool IsEastBorder { get { return isEastBorder; } }
-        public bool IsSouthBorder { get { return isSouthBorder; } } 
-        public bool IsWestBorder { get { return isWestBorder; } }
 
         //[SerializeField]
-        //bool isEntrance;
-
-        //[SerializeField]
-        //bool isConnector;
+        //BorderConfiguration borderConfiguration;
 
         [SerializeField]
         [Range(Constants.RarityMinLevel, Constants.RarityMaxLevel)]

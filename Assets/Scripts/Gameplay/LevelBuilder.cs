@@ -1,7 +1,9 @@
 
+using Fusion;
 using HKR.Scriptables;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor.Callbacks;
@@ -77,6 +79,12 @@ namespace HKR.Building
                 Destroy(transform.GetChild(i).gameObject);
             }
             shapeBlocks.Clear();
+
+            foreach(var b in buildingBlocks)
+                Destroy(b.gameObject);
+
+            buildingBlocks.Clear();
+
         }
 #endif
 
@@ -102,13 +110,11 @@ namespace HKR.Building
 
         void BuildGeometry()
         {
-            GameObject root = new GameObject("Geometry");
-
             // Create floors
-            CreateFloors(root.transform);
+            CreateFloors();
         }
 
-        void CreateFloors(Transform root)
+        void CreateFloors()
         {
             // Load resources
 #if BUILDING_TEST
@@ -124,31 +130,161 @@ namespace HKR.Building
                 if (i > 0)
                     return;
 
-                GameObject fRoot = new GameObject($"Floor_{i}");
-                fRoot.transform.parent = root;
-
                 foreach(var b in shapeBlocks)
                 {
-                    if(!b.IsEnteringBlock && !b.IsConnectorBlock)
+                    //if(!b.IsEnteringBlock && !b.IsConnectorBlock)
                     {
-                        // Get a common block to spawn
-                        List<BuildingBlockAsset> candidates = blockAssets.Where(bb=>bb.Type == BuildingBlockType.Common && bb.IsNorthBorder == b.IsNorthBorder &&
-                                                                                bb.IsEastBorder == b.IsEastBorder && bb.IsSouthBorder == b.IsSouthBorder &&
-                                                                                bb.IsWestBorder == b.IsWestBorder).ToList();
+                        // Get the asset name prefix
+                        string namePrefix = GetBlockNamePrefix(b);
+                        Debug.Log($"Prefix:{namePrefix}");
+
+                        List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
                         BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
 
-                        SpawnBuildingBlock(chosenAsset, fRoot.transform);
+                        Vector3 position = GetBuildingBlockPosition(floors[i], b.Coordinates);
+                        float geometryAngle = GetGeometryRootAngle(b);
+                        SpawnBuildingBlock(floors[i], chosenAsset.Prefab, position, geometryAngle);
                     }
                 }
             }
         }
 
-        void SpawnBuildingBlock(BuildingBlockAsset asset, Transform root)
+        string GetBlockNamePrefix(ShapeBlock block)
+        {
+            string namePrefix = "";
+            if (!block.IsEnteringBlock && !block.IsConnectorBlock)
+            {
+                namePrefix = "0_";
+            }
+            else
+            {
+                if (block.IsEnteringBlock)
+                {
+                    namePrefix = "1_";
+                }
+                else
+                {
+                    namePrefix = "2_";
+                }
+            }
+
+            // Is a common or a connector block
+            if (!block.IsEnteringBlock)
+            {
+                int wallCount = 0;
+                if(block.IsNorthBorder)
+                    wallCount++;
+                if (block.IsSouthBorder)   
+                    wallCount++;
+                if (block.IsWestBorder)
+                    wallCount++;
+                if (block.IsEastBorder)
+                    wallCount++;
+
+                switch(wallCount)
+                {
+                    case 0:
+                        namePrefix += "F_";
+                        break;
+                    case 1:
+                        namePrefix += "N_";
+                        break;
+                    case 2:
+                        if((block.IsNorthBorder && block.IsSouthBorder) || (block.IsWestBorder && block.IsEastBorder))
+                            namePrefix += "NS_";
+                        else
+                            namePrefix += "NE_";
+                        break;
+                    case 3:
+                        namePrefix += "NES_";
+                        break;
+                }
+            }
+
+            return namePrefix;
+        }
+
+        float GetGeometryRootAngle(ShapeBlock block)
+        {
+            
+            if(block.IsEnteringBlock)
+                return 0;
+
+            int wallCount = 0;
+            if(block.IsNorthBorder)
+                wallCount++;
+            if (block.IsSouthBorder)
+                wallCount++;
+            if (block.IsWestBorder)
+                wallCount++;
+            if (block.IsEastBorder)
+                wallCount++;
+
+            if(wallCount == 0)
+                return 0;
+            if(wallCount == 1)
+            {
+                if (block.IsNorthBorder)
+                    return 0;
+                if (block.IsEastBorder)
+                    return 90;
+                if (block.IsSouthBorder)
+                    return 180;
+                if (block.IsWestBorder)
+                    return 270;
+            }
+            if(wallCount == 2)
+            {
+                if((block.IsNorthBorder && block.IsSouthBorder) || (block.IsNorthBorder && block.IsEastBorder))
+                    return 0;
+                if ((block.IsEastBorder && block.IsWestBorder) || (block.IsEastBorder && block.IsSouthBorder))
+                    return 90;
+                if (block.IsSouthBorder && block.IsWestBorder)
+                    return 180;
+                if (block.IsWestBorder && block.IsNorthBorder)
+                    return 270;
+            }
+
+            if(wallCount == 3)
+            {
+                if (block.IsNorthBorder && block.IsEastBorder && block.IsSouthBorder)
+                    return 0;
+                if (block.IsEastBorder && block.IsSouthBorder && block.IsWestBorder)
+                    return 90;
+                if (block.IsSouthBorder && block.IsWestBorder && block.IsNorthBorder)
+                    return 180;
+                if (block.IsWestBorder && block.IsNorthBorder && block.IsEastBorder)
+                    return 270;
+            }
+            
+            return 0;
+        }
+
+        Vector3 GetBuildingBlockPosition(Floor floor, Vector2 coordinates)
+        {
+            Vector3 pos = Vector3.zero;
+            pos.y = floor.Level * BuildingBlock.Height;
+            pos.x = coordinates.x * BuildingBlock.Size;
+            pos.z = coordinates.y * BuildingBlock.Size;
+            return pos;
+        }
+
+        void SpawnBuildingBlock(Floor floor, GameObject blockPrefab, Vector3 position, float geometryAngle)
         {
 #if BUILDING_TEST
-            GameObject block = Instantiate(asset.Prefab, root);
+            GameObject block = Instantiate(blockPrefab);
+            BuildingBlock buildingBlock= block.GetComponent<BuildingBlock>();
+            buildingBlock.GeometryRootAngle = geometryAngle;
+            buildingBlocks.Add(buildingBlock);
+            block.transform.position = position;
+            buildingBlock.Spawned();
 #else
 #endif
+
+            SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.identity, null, (r, o) =>
+            {
+                o.GetComponent<BuildingBlock>().GeometryRootAngle = geometryAngle;
+            });
         }
 
         void CreateShape()
@@ -349,17 +485,26 @@ namespace HKR.Building
             shapeBlocks.Add(enterBlock);
             // The entering block is oriented towards north ever
             enterBlock.IsSouthBorder = false;
-            enterBlock.IsNorthBorder = enterBlock.IsWestBorder = enterBlock.IsEastBorder = true;
+            enterBlock.IsNorthBorder = false;
+            enterBlock.IsWestBorder = enterBlock.IsEastBorder = true;
             enterBlock.IsEnteringBlock = true;
             enterBlock.SetCoordinates(block.Coordinates + new Vector2(0, -1));
-            // Check if there is any block attached to the entering block to the east or the west
-            // East
-            ShapeBlock other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(1,0));
-            if(other)
-                other.IsWestBorder=false;
-            other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(-1, 0));
-            if (other)
-                other.IsEastBorder = false;
+            //// Check if there is any block attached to the entering block to the east or the west
+            //// East
+            //ShapeBlock other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(1,0));
+            //if (other)
+            //{
+            //    other.IsWestBorder = false;
+            //    enterBlock.IsEastBorder= false;
+            //}
+                
+            //other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(-1, 0));
+            //if (other)
+            //{
+            //    other.IsEastBorder = false;
+            //    enterBlock.IsWestBorder= false;
+            //}
+                
         }
 
         void AddRemainingBlocks(int left, GameObject root)

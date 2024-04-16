@@ -105,7 +105,7 @@ namespace HKR
         void SpawnLevelManager()
         {
             
-            if (!SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
+            if (!SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient && !SessionManager.Instance.NetworkRunner.IsSinglePlayer)
                 return;
             LevelManager.DespawnCurrentInstance();
             SessionManager.Instance.NetworkRunner.Spawn(levelManagerPrefab);

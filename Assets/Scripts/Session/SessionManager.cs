@@ -111,6 +111,25 @@ namespace HKR
             StartSession(args);
         }
 
+        public void CreateOfflineSession()
+        {
+            StartGameArgs args = new StartGameArgs()
+            {
+
+                GameMode = GameMode.Single,
+                SessionName = $"{AccountManager.Instance.UserName}_{System.Guid.NewGuid()}",
+                //MatchmakingMode = Fusion.Photon.Realtime.MatchmakingMode.,
+
+                PlayerCount = 1,
+                SceneManager = sceneManager,
+                //DisableNATPunchthrough = true,
+                //IsVisible = !isPrivate
+
+            };
+
+            StartSession(args);
+        }
+
         public async void JoinSessionLobby()
         {
             //if (!started) return;
@@ -224,7 +243,7 @@ namespace HKR
             Debug.Log($"Player {player.PlayerId} joined the session {runner.SessionInfo.Name}");
 
             // If is the local player then enter the lobby scene
-            if (player == runner.LocalPlayer && runner.IsSharedModeMasterClient)
+            if (player == runner.LocalPlayer && ( runner.IsSharedModeMasterClient || runner.IsSinglePlayer))
                 NetworkRunner.LoadScene(SceneRef.FromIndex(Constants.LobbySceneIndex), LoadSceneMode.Single);
 
             // If the local player is the master client and the session is full then set invisible

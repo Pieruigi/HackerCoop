@@ -83,7 +83,7 @@ namespace HKR.UI
             sessionList.SetInteractable(value);
         }
 
-        public void CreateGameSession()
+        public void CreateOnlineSession()
         {
             SetInteractableAll(false);
             SessionManager.Instance.CreateOnlineSession(false);
