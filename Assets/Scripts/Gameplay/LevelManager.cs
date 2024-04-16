@@ -14,6 +14,9 @@ namespace HKR
         [Networked]
         public int Seed { get; set; }
 
+        string theme = "HighTech";
+        public string Theme { get { return theme; } }
+
         ChangeDetector changeDetector;
 
 

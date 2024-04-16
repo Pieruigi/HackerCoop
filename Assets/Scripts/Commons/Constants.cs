@@ -10,6 +10,8 @@ namespace HKR
         public const int LobbySceneIndex = 1;
         public const int GameSceneIndex = 2;
 
+        public const int RarityMinLevel = 0;
+        public const int RarityMaxLevel = 9;
     }
 
 }

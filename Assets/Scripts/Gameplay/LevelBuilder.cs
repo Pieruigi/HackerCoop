@@ -1,4 +1,5 @@
 
+using HKR.Scriptables;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace HKR.Building
         FloorSize floorSize = FloorSize.Small;
         int connectorCount = 3;
         int startingFloor = 0;
-        int blockSize = 9;
+        
         //List<Vector2> blocksPerSize = new List<Vector2>(new Vector2[] { new Vector2(10, 12), new Vector2(14, 16), new Vector2(18, 20) });
         List<int> minBlocksPerSize = new List<int>(new int[] { 20, 28, 36 });
         List<int> maxBlocksPerSize = new List<int>(new int[] { 24, 32, 40 });
@@ -38,7 +39,9 @@ namespace HKR.Building
         List<FloorConnector> connectors = new List<FloorConnector>();
 
         List<ShapeBlock> shapeBlocks = new List<ShapeBlock>();
+        List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
 
+        
 
         private void Awake()
         {
@@ -90,6 +93,62 @@ namespace HKR.Building
             // Create shape
             CreateShape();
 
+            // Build geometry
+            BuildGeometry();
+
+            
+
+        }
+
+        void BuildGeometry()
+        {
+            GameObject root = new GameObject("Geometry");
+
+            // Create floors
+            CreateFloors(root.transform);
+        }
+
+        void CreateFloors(Transform root)
+        {
+            // Load resources
+#if BUILDING_TEST
+            string themeFolder = "HighTech";
+#else
+            string themeFolder = LevelManager.Instance.Theme;
+#endif
+            List<BuildingBlockAsset> blockAssets = new List<BuildingBlockAsset>( Resources.LoadAll<BuildingBlockAsset>(System.IO.Path.Combine(BuildingBlockAsset.ResourceFolder, themeFolder)));
+
+            Debug.Log($"Found {blockAssets.Count} blocks in resources");
+            for(int i=0; i<floors.Count; i++)
+            {
+                if (i > 0)
+                    return;
+
+                GameObject fRoot = new GameObject($"Floor_{i}");
+                fRoot.transform.parent = root;
+
+                foreach(var b in shapeBlocks)
+                {
+                    if(!b.IsEnteringBlock && !b.IsConnectorBlock)
+                    {
+                        // Get a common block to spawn
+                        List<BuildingBlockAsset> candidates = blockAssets.Where(bb=>bb.Type == BuildingBlockType.Common && bb.IsNorthBorder == b.IsNorthBorder &&
+                                                                                bb.IsEastBorder == b.IsEastBorder && bb.IsSouthBorder == b.IsSouthBorder &&
+                                                                                bb.IsWestBorder == b.IsWestBorder).ToList();
+                        BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
+
+                        SpawnBuildingBlock(chosenAsset, fRoot.transform);
+                    }
+                }
+            }
+        }
+
+        void SpawnBuildingBlock(BuildingBlockAsset asset, Transform root)
+        {
+#if BUILDING_TEST
+            GameObject block = Instantiate(asset.Prefab, root);
+#else
+#endif
         }
 
         void CreateShape()
@@ -121,7 +180,7 @@ namespace HKR.Building
                 ShapeBlock bb = block.GetComponent<ShapeBlock>();
                 block.transform.parent = root.transform;
                 Vector2 coords = new Vector2(i%width, i/width);
-                bb.Init(null, coords);
+                bb.SetCoordinates(coords);
                 bb.name = $"S_{bb.Coordinates}";
 
             }
@@ -208,7 +267,7 @@ namespace HKR.Building
                 
                 if (!chosen.IsBorder || Random.Range(0,2) == 0)
                 {
-                    // We set the block itself as connector
+                    // We set the old block itself as connector
                     chosen.IsConnectorBlock = true;
 //#if BUILDING_TEST
 //                    chosen.Colorize();
@@ -238,25 +297,25 @@ namespace HKR.Building
                         case 0: // North
                             conBlock.IsNorthBorder = conBlock.IsEastBorder = conBlock.IsWestBorder = true;
                             conBlock.IsSouthBorder = false;
-                            conBlock.Init(null, chosen.Coordinates + new Vector2(0, 1));
+                            conBlock.SetCoordinates(chosen.Coordinates + new Vector2(0, 1));
                             chosen.IsNorthBorder = false;
                             break;
                         case 1: // East
                             conBlock.IsNorthBorder = conBlock.IsEastBorder = conBlock.IsSouthBorder = true;
                             conBlock.IsWestBorder = false;
-                            conBlock.Init(null, chosen.Coordinates + new Vector2(1, 0));
+                            conBlock.SetCoordinates(chosen.Coordinates + new Vector2(1, 0));
                             chosen.IsEastBorder = false;
                             break;
                         case 2: // South
                             conBlock.IsSouthBorder = conBlock.IsEastBorder = conBlock.IsWestBorder = true;
                             conBlock.IsNorthBorder = false;
-                            conBlock.Init(null, chosen.Coordinates + new Vector2(0, -1));
+                            conBlock.SetCoordinates(chosen.Coordinates + new Vector2(0, -1));
                             chosen.IsSouthBorder = false;
                             break;
                         case 3: // West
                             conBlock.IsNorthBorder = conBlock.IsWestBorder = conBlock.IsSouthBorder = true;
                             conBlock.IsEastBorder = false;
-                            conBlock.Init(null, chosen.Coordinates + new Vector2(-1, 0));
+                            conBlock.SetCoordinates(chosen.Coordinates + new Vector2(-1, 0));
                             chosen.IsWestBorder = false;
                             break;
                     }
@@ -292,7 +351,7 @@ namespace HKR.Building
             enterBlock.IsSouthBorder = false;
             enterBlock.IsNorthBorder = enterBlock.IsWestBorder = enterBlock.IsEastBorder = true;
             enterBlock.IsEnteringBlock = true;
-            enterBlock.Init(null, block.Coordinates + new Vector2(0, -1));
+            enterBlock.SetCoordinates(block.Coordinates + new Vector2(0, -1));
             // Check if there is any block attached to the entering block to the east or the west
             // East
             ShapeBlock other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(1,0));
@@ -342,7 +401,7 @@ namespace HKR.Building
                         coords.x--;
                         break;
                 }
-                leftBlock.Init(null, coords);
+                leftBlock.SetCoordinates(coords);
                 leftBlock.name = $"S_{leftBlock.Coordinates}";
             }
         }
@@ -416,25 +475,25 @@ namespace HKR.Building
                         List<ShapeBlock> col = shapeBlocks.Where(b=>b.Coordinates.x == block.Coordinates.x).ToList();
                         float max = col.Max(b=>b.Coordinates.y);
                         Debug.Log($"CreateHoles() - North, max:{max}");
-                        block.Init(block.Floor, new Vector2(block.Coordinates.x, max + 1));
+                        block.SetCoordinates(new Vector2(block.Coordinates.x, max + 1));
                         break;
                     case 2: // South
                         col = shapeBlocks.Where(b => b.Coordinates.x == block.Coordinates.x).ToList();
                         float min = col.Min(b => b.Coordinates.y);
                         Debug.Log($"CreateHoles() - South, min:{min}");
-                        block.Init(block.Floor, new Vector2(block.Coordinates.x, min - 1));
+                        block.SetCoordinates(new Vector2(block.Coordinates.x, min - 1));
                         break;
                     case 1: // East
                         List<ShapeBlock> row = shapeBlocks.Where(b => b.Coordinates.y == block.Coordinates.y).ToList();
                         max = row.Max(b => b.Coordinates.x);
                         Debug.Log($"CreateHoles() - East, max:{max}");
-                        block.Init(block.Floor, new Vector2(max + 1, block.Coordinates.y));
+                        block.SetCoordinates(new Vector2(max + 1, block.Coordinates.y));
                         break;
                     case 3: // West
                         row = shapeBlocks.Where(b => b.Coordinates.y == block.Coordinates.y).ToList();
                         min = row.Min(b => b.Coordinates.x);
                         Debug.Log($"CreateHoles() - West, min:{min}");
-                        block.Init(block.Floor, new Vector2(min - 1, block.Coordinates.y));
+                        block.SetCoordinates(new Vector2(min - 1, block.Coordinates.y));
                         break;
 
                 }
@@ -469,13 +528,13 @@ namespace HKR.Building
                 if (r != 0 || diff != 0)
                 {
                     // Move the current block
-                    current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
+                    current.SetCoordinates(current.Coordinates + new Vector2(0, r + diff));
                     // Move all blocks in the same column of the current one
                     List<ShapeBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
                     foreach (var b in col)
                     {
                         if (b != current)
-                            b.Init(b.Floor, b.Coordinates + new Vector2(0, r + diff));
+                            b.SetCoordinates(b.Coordinates + new Vector2(0, r + diff));
 
                     }
                 }
@@ -487,13 +546,13 @@ namespace HKR.Building
 
 
                     current = firstRow[symId];
-                    current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
+                    current.SetCoordinates(current.Coordinates + new Vector2(0, r + diff));
                     // Move all blocks in the same column of the current one
                     List<ShapeBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
                     foreach (var b in col)
                     {
                         if (b != current)
-                            b.Init(b.Floor, b.Coordinates + new Vector2(0, r + diff));
+                            b.SetCoordinates(b.Coordinates + new Vector2(0, r + diff));
 
                     }
                 }
@@ -511,13 +570,13 @@ namespace HKR.Building
                 if (r != 0 || diff != 0)
                 {
                     // Move the current block
-                    current.Init(current.Floor, current.Coordinates + new Vector2(0, r + diff));
+                    current.SetCoordinates(current.Coordinates + new Vector2(0, r + diff));
                     // Move all blocks in the same column of the current one
                     List<ShapeBlock> col = shapeBlocks.Where(b => b.Coordinates.x == current.Coordinates.x).ToList();
                     foreach (var b in col)
                     {
                         if (b != current)
-                            b.Init(b.Floor, b.Coordinates + new Vector2(0, r + diff));
+                            b.SetCoordinates(b.Coordinates + new Vector2(0, r + diff));
 
                     }
                 }

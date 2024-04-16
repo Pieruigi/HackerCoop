@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace HKR.Building
 {
+    /// <summary>
+    /// This class is only used by the master client to define the shape of the hole building, and it's just a reference to build floors
+    /// </summary>
     public class ShapeBlock : MonoBehaviour
     {
         [SerializeField]
@@ -12,10 +15,10 @@ namespace HKR.Building
 
         int type;
         public Vector2 Coordinates { get; private set; }
-        public Floor Floor { get; private set; }
+        //public Floor Floor { get; private set; }
 
         int height = 3;
-        int size = 3;
+        
 
         public bool IsNorthBorder { get; set; } = false;
 
@@ -54,16 +57,17 @@ namespace HKR.Building
             }
         }
 
-        public void Init(Floor floor, Vector2 coordinates)
+        public void SetCoordinates(Vector2 coordinates)
         {
-            Floor = floor;
+            //Floor = floor;
             Coordinates = coordinates;
-            if (Floor)
-            {
-                position.y = Floor.Level * height;
-            }
-            position.x = size * Coordinates.x;
-            position.z = size * Coordinates.y;
+            //if (Floor)
+            //{
+            //    position.y = Floor.Level * height;
+            //}
+            position.y = 0;
+            position.x = BuildingBlock.Size * Coordinates.x;
+            position.z = BuildingBlock.Size * Coordinates.y;
             
         }
 
