@@ -15,10 +15,10 @@ namespace HKR.Building
     {
         public const float Size = 9;
         public const float Height = 3;
-              
 
-        float angle;
-        public float GeometryRootAngle {  get { return angle; } set {  angle = value; } }
+        [UnitySerializeField]
+        [Networked]
+        public float GeometryRootAngle { get; set; }
 
         [SerializeField]
         GameObject geometryRoot;
@@ -40,15 +40,15 @@ namespace HKR.Building
         public  void Spawned() 
         {
 
-            geometryRoot.transform.rotation = Quaternion.Euler(0, angle, 0);                  
+            geometryRoot.transform.rotation = Quaternion.Euler(0, GeometryRootAngle, 0);                  
 
             
         }
 #else
         public override void Spawned() 
         {
-            if(SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
-                geometryRoot.transform.rotation = Quaternion.Euler(0, angle, 0);                  
+            //if(SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient || SessionManager.Instance.NetworkRunner.IsSinglePlayer)
+            geometryRoot.transform.rotation = Quaternion.Euler(0, GeometryRootAngle, 0);                  
 
 
         }

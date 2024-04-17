@@ -19,10 +19,10 @@ namespace HKR.Building
     {
         public static LevelBuilder Instance {  get; private set; }
 
-#if BUILDING_TEST
+//#if BUILDING_TEST
         [SerializeField]
         GameObject helperBlockPrefab;
-#endif
+//#endif
 
         int minFloorCount = 3;
         int maxFloorCount = 8;
@@ -127,23 +127,32 @@ namespace HKR.Building
             Debug.Log($"Found {blockAssets.Count} blocks in resources");
             for(int i=0; i<floors.Count; i++)
             {
-                if (i > 0)
-                    return;
-
                 foreach(var b in shapeBlocks)
                 {
-                    //if(!b.IsEnteringBlock && !b.IsConnectorBlock)
+                    bool resetEnteringBlock = false;
+                    if (floors[i].Level != 0 && b.IsEnteringBlock)
                     {
-                        // Get the asset name prefix
-                        string namePrefix = GetBlockNamePrefix(b);
-                        Debug.Log($"Prefix:{namePrefix}");
+                        resetEnteringBlock = true;
+                        b.IsEnteringBlock = false;
+                        b.IsSouthBorder = true;
+                    }
+                    
 
-                        List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
-                        BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
+                    // Get the asset name prefix
+                    string namePrefix = GetBlockNamePrefix(b);
+                    Debug.Log($"Prefix:{namePrefix}");
 
-                        Vector3 position = GetBuildingBlockPosition(floors[i], b.Coordinates);
-                        float geometryAngle = GetGeometryRootAngle(b);
-                        SpawnBuildingBlock(floors[i], chosenAsset.Prefab, position, geometryAngle);
+                    List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
+                    BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
+
+                    Vector3 position = GetBuildingBlockPosition(floors[i], b.Coordinates);
+                    float geometryAngle = GetGeometryRootAngle(b);
+                    SpawnBuildingBlock(floors[i], chosenAsset.Prefab, position, geometryAngle);
+
+                    if (resetEnteringBlock)
+                    {
+                        b.IsEnteringBlock = true;
+                        b.IsSouthBorder = false;
                     }
                 }
             }
@@ -164,7 +173,7 @@ namespace HKR.Building
                 }
                 else
                 {
-                    namePrefix = "2_";
+                    namePrefix = $"2_{block.ConnectorType.ToString()}_";
                 }
             }
 
@@ -279,12 +288,14 @@ namespace HKR.Building
             block.transform.position = position;
             buildingBlock.Spawned();
 #else
-#endif
-
-            SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.identity, null, (r, o) =>
+SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.identity, null, (r, o) =>
             {
                 o.GetComponent<BuildingBlock>().GeometryRootAngle = geometryAngle;
+                
             });
+#endif
+
+
         }
 
         void CreateShape()
@@ -401,10 +412,14 @@ namespace HKR.Building
                 List<ShapeBlock> blocks = shapeBlocks.Where(b => b.Coordinates.x >= min && b.Coordinates.x <= max && !b.IsEnteringBlock).ToList();
                 ShapeBlock chosen = blocks[Random.Range(0, blocks.Count)];
                 
+                int connType = Random.Range(0, 2); // 0: staircase, 1:elevator
+                connType = 0; // We will add elavator later
+
                 if (!chosen.IsBorder || Random.Range(0,2) == 0)
                 {
                     // We set the old block itself as connector
                     chosen.IsConnectorBlock = true;
+                    chosen.ConnectorType = connType;
 //#if BUILDING_TEST
 //                    chosen.Colorize();
 //#endif
@@ -415,6 +430,7 @@ namespace HKR.Building
                     GameObject con = Instantiate(helperBlockPrefab, root.transform);
                     ShapeBlock conBlock = con.GetComponent<ShapeBlock>();
                     conBlock.IsConnectorBlock = true;
+                    conBlock.ConnectorType = connType;
                     shapeBlocks.Add(conBlock);
                     // Get all the block borders
                     List<int> dirs = new List<int>();
@@ -750,11 +766,11 @@ namespace HKR.Building
 
         GameObject CreateShapeBlock()
         {
-#if BUILDING_TEST
+//#if BUILDING_TEST
             GameObject block = Instantiate(helperBlockPrefab);
-#else
-                GameObject block = new GameObject();
-#endif
+//#else
+            //GameObject block = new GameObject();
+//#endif
 
             ShapeBlock bb = block.GetComponent<ShapeBlock>();
             shapeBlocks.Add(bb);

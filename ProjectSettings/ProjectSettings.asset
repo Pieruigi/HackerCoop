@@ -640,7 +640,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Standalone: FUSION_WEAVER;FUSION2;BUILDING_TEST
+    Standalone: FUSION_WEAVER;FUSION2;_BUILDING_TEST
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

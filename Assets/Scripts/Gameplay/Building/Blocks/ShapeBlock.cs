@@ -36,6 +36,12 @@ namespace HKR.Building
             get { return IsNorthBorder || IsSouthBorder || IsEastBorder || IsWestBorder; }
         }
 
+        /// <summary>
+        /// 0: staircase
+        /// 1: elevator
+        /// </summary>
+        public int ConnectorType { get; set; } = 0; 
+
         // Start is called before the first frame update
         void Start()
         {
