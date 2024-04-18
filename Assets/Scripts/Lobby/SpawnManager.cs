@@ -1,7 +1,9 @@
 using Fusion;
+using HKR.Building;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -53,11 +55,22 @@ namespace HKR
         private void OnEnable()
         {
             SceneManager.sceneLoaded += HandleOnSceneLoaded;
+            BuildingBlock.OnSpawned += HandleOnBuildingBlockSpawned;
         }
 
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= HandleOnSceneLoaded;
+            BuildingBlock.OnSpawned -= HandleOnBuildingBlockSpawned;
+        }
+
+        private void HandleOnBuildingBlockSpawned(BuildingBlock block)
+        {
+            PlayerControllerSpawnPointGroup spawnGroup = block.GetComponentInChildren<PlayerControllerSpawnPointGroup>();
+            if (spawnGroup)
+            {
+                SpawnLocalPlayerController();
+            }
         }
 
         private void HandleOnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -76,7 +89,7 @@ namespace HKR
 
                 case Constants.GameSceneIndex:
                     // PlayerController
-                    SpawnLocalPlayerController();
+                    //SpawnLocalPlayerController();
                     break;
 
             }
@@ -90,7 +103,7 @@ namespace HKR
             PlayerController.DespawnLocalPlayerController();
             PlayerRef localRef = SessionManager.Instance.NetworkRunner.LocalPlayer;
             Transform spawnPoint = FindObjectOfType<PlayerControllerSpawnPointGroup>().GetPlayerControllerSpawnPoint(localRef);
-           
+            Debug.Log($"SpawnPoint {spawnPoint.gameObject.name}, position:{spawnPoint.position}");
             // We could store the character id in the player prefs
             int characterId = 0;
             if (Player.Local)

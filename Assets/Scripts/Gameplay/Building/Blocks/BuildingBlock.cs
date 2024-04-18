@@ -1,7 +1,9 @@
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace HKR.Building
 {
@@ -13,8 +15,10 @@ namespace HKR.Building
     public class BuildingBlock : NetworkBehaviour
 #endif
     {
-        public const float Size = 9;
-        public const float Height = 3;
+        public static UnityAction<BuildingBlock> OnSpawned;
+
+        public const float Size = 18;
+        public const float Height = 6;
 
         [UnitySerializeField]
         [Networked]
@@ -52,8 +56,10 @@ namespace HKR.Building
         public override void Spawned() 
         {
             //if(SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient || SessionManager.Instance.NetworkRunner.IsSinglePlayer)
-            geometryRoot.transform.rotation = Quaternion.Euler(0, GeometryRootAngle, 0);                  
+            geometryRoot.transform.rotation = Quaternion.Euler(0, GeometryRootAngle, 0);
 
+
+            OnSpawned?.Invoke(this);
 
         }
 #endif

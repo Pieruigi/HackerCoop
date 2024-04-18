@@ -2116,6 +2116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1581674982351533857}
   - component: {fileID: 6899479907613562797}
+  - component: {fileID: -2030340827544840153}
   - component: {fileID: 3866527890702353738}
   - component: {fileID: 8521722394696750026}
   m_Layer: 0
@@ -2157,6 +2158,19 @@ MonoBehaviour:
   _FloorLevel: 0
   geometryRoot: {fileID: 8082975040792217973}
   _ConnectedFloorLevels: 
+--- !u!114 &-2030340827544840153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5803541288568970916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282c9c928c11fee4e8557790191c78d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  door: {fileID: 2363518836419270023}
 --- !u!114 &3866527890702353738
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -42,6 +42,7 @@ namespace HKR.Building
         List<Floor> floors = new List<Floor>();
         List<FloorConnector> connectors = new List<FloorConnector>();
 
+        [SerializeField]
         List<ShapeBlock> shapeBlocks = new List<ShapeBlock>();
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
 
@@ -138,11 +139,11 @@ namespace HKR.Building
                         b.IsEnteringBlock = false;
                         b.IsSouthBorder = true;
                     }
-                    
+
 
                     // Get the asset name prefix
                     string namePrefix = GetBlockNamePrefix(b);
-                    Debug.Log($"Prefix:{namePrefix}");
+                    Debug.Log($"Shape:{b.name}, Prefix:{namePrefix}");
 
                     List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
                     BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
@@ -512,7 +513,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             GameObject newBlock = CreateShapeBlock();
             newBlock.transform.parent = root.transform;
             ShapeBlock enterBlock = newBlock.GetComponent<ShapeBlock>();
-            shapeBlocks.Add(enterBlock);
+            //shapeBlocks.Add(enterBlock);
             // The entering block is oriented towards north ever
             enterBlock.IsSouthBorder = false;
             enterBlock.IsNorthBorder = false;

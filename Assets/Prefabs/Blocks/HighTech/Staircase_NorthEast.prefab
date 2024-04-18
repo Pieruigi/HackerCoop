@@ -2115,7 +2115,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1581674982351533857}
-  - component: {fileID: 3690507700107455375}
+  - component: {fileID: 8195349291167683724}
+  - component: {fileID: 4065674758587759711}
   - component: {fileID: 3866527890702353738}
   - component: {fileID: 8521722394696750026}
   m_Layer: 0
@@ -2141,7 +2142,7 @@ Transform:
   - {fileID: 7669941098052583474}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3690507700107455375
+--- !u!114 &8195349291167683724
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2150,11 +2151,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 5803541288568970916}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68d6a5b931fbc3a40ac8e4fabc32bab1, type: 3}
+  m_Script: {fileID: 11500000, guid: a29d22eed55f2cb4ebeec2970e5b7370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _GeometryRootAngle: 0
+  _FloorLevel: 0
   geometryRoot: {fileID: 8082975040792217973}
+  _ConnectedFloorLevels: 
+--- !u!114 &4065674758587759711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5803541288568970916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282c9c928c11fee4e8557790191c78d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  door: {fileID: 2363518836419270023}
 --- !u!114 &3866527890702353738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2172,7 +2188,7 @@ MonoBehaviour:
   Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 3690507700107455375}
+  - {fileID: 8195349291167683724}
   - {fileID: 8521722394696750026}
 --- !u!114 &8521722394696750026
 MonoBehaviour:
