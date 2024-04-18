@@ -9,7 +9,7 @@ namespace HKR.Building
     public class FloorConnector : MonoBehaviour
     {
         List<Floor> floors = new List<Floor>();
-
+        public IList<Floor> Floors { get { return floors.AsReadOnly(); } }
 
 
         /// <summary>

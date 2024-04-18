@@ -19,13 +19,15 @@ namespace HKR.Building
     {
         public static LevelBuilder Instance {  get; private set; }
 
-//#if BUILDING_TEST
+        public const int MinFloorCount = 3;
+        public const int MaxFloorCount = 8;
+
+        //#if BUILDING_TEST
         [SerializeField]
         GameObject helperBlockPrefab;
 //#endif
 
-        int minFloorCount = 3;
-        int maxFloorCount = 8;
+        
         
         int floorCount;
         FloorSize floorSize = FloorSize.Small;
@@ -147,7 +149,7 @@ namespace HKR.Building
 
                     Vector3 position = GetBuildingBlockPosition(floors[i], b.Coordinates);
                     float geometryAngle = GetGeometryRootAngle(b);
-                    SpawnBuildingBlock(floors[i], chosenAsset.Prefab, position, geometryAngle);
+                    SpawnBuildingBlock(b, floors[i], chosenAsset.Prefab, position, geometryAngle);
 
                     if (resetEnteringBlock)
                     {
@@ -278,7 +280,7 @@ namespace HKR.Building
             return pos;
         }
 
-        void SpawnBuildingBlock(Floor floor, GameObject blockPrefab, Vector3 position, float geometryAngle)
+        void SpawnBuildingBlock(ShapeBlock shapeBlock, Floor floor, GameObject blockPrefab, Vector3 position, float geometryAngle)
         {
 #if BUILDING_TEST
             GameObject block = Instantiate(blockPrefab);
@@ -290,7 +292,17 @@ namespace HKR.Building
 #else
 SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.identity, null, (r, o) =>
             {
-                o.GetComponent<BuildingBlock>().GeometryRootAngle = geometryAngle;
+                BuildingBlock bblock = o.GetComponent<BuildingBlock>(); 
+                bblock.GeometryRootAngle = geometryAngle;
+                bblock.FloorLevel = floor.Level;
+                if(shapeBlock.IsConnectorBlock)
+                {
+                    var connector = connectors[shapeBlock.ConnectorIndex];
+                    foreach(var f in connector.Floors)
+                    {
+                        (bblock as ConnectorBlock).ConnectedFloorLevels.Add(f.Level);
+                    }
+                }
                 
             });
 #endif
@@ -420,6 +432,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                     // We set the old block itself as connector
                     chosen.IsConnectorBlock = true;
                     chosen.ConnectorType = connType;
+                    chosen.ConnectorIndex = i;
 //#if BUILDING_TEST
 //                    chosen.Colorize();
 //#endif
@@ -431,6 +444,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                     ShapeBlock conBlock = con.GetComponent<ShapeBlock>();
                     conBlock.IsConnectorBlock = true;
                     conBlock.ConnectorType = connType;
+                    conBlock.ConnectorIndex = i;
                     shapeBlocks.Add(conBlock);
                     // Get all the block borders
                     List<int> dirs = new List<int>();
@@ -782,13 +796,13 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
         /// </summary>
         void CreateBuildingSchema()
         {
-            floorCount = Random.Range( minFloorCount, maxFloorCount+1 );
+            floorCount = Random.Range( MinFloorCount, MaxFloorCount+1 );
             Debug.Log($"SetBuildingSchema() - FloorCount:{floorCount}");
-            int step  = (maxFloorCount + 1 - minFloorCount) / 3;
+            int step  = (MaxFloorCount + 1 - MinFloorCount) / 3;
             Debug.Log($"SetBuildingSchema() - Step:{step}");
             bool found = false;
             int size = 0;
-            int max = minFloorCount + step;
+            int max = MinFloorCount + step;
             while(!found)
             {
                 if(floorCount < max)

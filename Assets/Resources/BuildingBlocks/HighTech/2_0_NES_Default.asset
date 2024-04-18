@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: 2_0_NES_Default
   m_EditorClassIdentifier: 
   rarity: 0
-  prefab: {fileID: 6956966189760493563, guid: 635b81834c799b042818397066c8ee9a, type: 3}
+  prefab: {fileID: 5803541288568970916, guid: c02d05508d88edf40a4b2e632a463e0f, type: 3}

@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 977e7f34d1f5d104388ea90f3df99561, type: 3}
   m_Name: 2_0_F_Default
   m_EditorClassIdentifier: 
-  type: 2
-  borderConfiguration: 0
   rarity: 0
-  prefab: {fileID: 6956966189760493563, guid: a0aca3e656177e747862c3e0bda56c41, type: 3}
+  prefab: {fileID: 5803541288568970916, guid: 1ad339f69b448254c984dce89d759d5d, type: 3}

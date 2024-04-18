@@ -30,6 +30,8 @@ namespace HKR.Building
 
         public bool IsEnteringBlock { get; set; } = false;
         public bool IsConnectorBlock { get; set; } = false;
+
+        public int ConnectorIndex { get; set; } = -1;
         
         public bool IsBorder
         {

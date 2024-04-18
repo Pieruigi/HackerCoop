@@ -20,6 +20,10 @@ namespace HKR.Building
         [Networked]
         public float GeometryRootAngle { get; set; }
 
+        [UnitySerializeField]
+        [Networked]
+        public int FloorLevel { get; set; }
+
         [SerializeField]
         GameObject geometryRoot;
 
