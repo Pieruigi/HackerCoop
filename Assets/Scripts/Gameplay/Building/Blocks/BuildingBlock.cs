@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 namespace HKR.Building
 {
-    public enum BuildingBlockType { Common, Entrance, Connector }
+    public enum BuildingBlockType { Common, Entrance, Connector, Column }
 
 #if BUILDING_TEST
     public class BuildingBlock : MonoBehaviour
@@ -30,6 +30,7 @@ namespace HKR.Building
 
         [SerializeField]
         GameObject geometryRoot;
+
 
         // Start is called before the first frame update
         void Start()
@@ -57,7 +58,6 @@ namespace HKR.Building
         {
             //if(SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient || SessionManager.Instance.NetworkRunner.IsSinglePlayer)
             geometryRoot.transform.rotation = Quaternion.Euler(0, GeometryRootAngle, 0);
-
 
             OnSpawned?.Invoke(this);
 

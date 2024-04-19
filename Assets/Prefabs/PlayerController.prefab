@@ -222,7 +222,7 @@ MonoBehaviour:
   deceleration: 50
   maxPitch: 70
   minPitch: -80
-  mouseSensitivity: 100
+  mouseSensitivity: 500
   crouchHeight: 1
   cameraRoot: {fileID: 1495272487109752042}
   _State: 0
@@ -241,7 +241,7 @@ MonoBehaviour:
   SyncScale: 0
   SyncParent: 0
   _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 0
+  DisableSharedModeInterpolation: 1
 --- !u!95 &1161211494336538736
 Animator:
   serializedVersion: 5

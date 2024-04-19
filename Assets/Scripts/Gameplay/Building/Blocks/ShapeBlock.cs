@@ -44,6 +44,8 @@ namespace HKR.Building
         /// </summary>
         public int ConnectorType { get; set; } = 0; 
 
+        public bool IsColumnBlock { get; set; } = false;
+
         // Start is called before the first frame update
         void Start()
         {

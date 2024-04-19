@@ -1,4 +1,5 @@
 using Fusion;
+using HKR.Building;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 namespace HKR
 {
+
+
     public class LevelManager : NetworkBehaviour
     {
         public static LevelManager Instance { get; private set; }
@@ -19,6 +22,7 @@ namespace HKR
 
         ChangeDetector changeDetector;
 
+       
 
         private void Awake()
         {
@@ -35,6 +39,7 @@ namespace HKR
 
         private void Update()
         {
+          
             foreach (var propertyName in changeDetector.DetectChanges(this, out var previousBuffer, out var currentBuffer))
             {
                 switch (propertyName)

@@ -508,7 +508,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _GeometryRootAngle: 0
   _FloorLevel: 0
+  _ConfigurationId: 0
   geometryRoot: {fileID: 3663350729988383803}
+  configurations:
+  - {fileID: 3473763882837780336, guid: 885de4211d694f9419dc6fe7a8a11977, type: 3}
 --- !u!114 &-1036902131077777552
 MonoBehaviour:
   m_ObjectHideFlags: 0

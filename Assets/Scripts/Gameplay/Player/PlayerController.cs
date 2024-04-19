@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 
 namespace HKR
 {
-    public enum PlayerState: byte { Alive, Dead }
+    public enum PlayerState: byte { Paused, Alive, Dead }
 
     public class PlayerController : NetworkBehaviour
     {
@@ -139,7 +139,7 @@ namespace HKR
             if (HasStateAuthority)
             {
                 Local = this;
-                State = PlayerState.Alive;
+                //State = PlayerState.Alive;
                 MoveCameraInside();
             }
           
@@ -176,7 +176,7 @@ namespace HKR
         {
             switch (State)
             {
-                case (byte)PlayerState.Alive:
+                case PlayerState.Alive:
                     UpdateNormalState();
                     break;
             }
@@ -187,7 +187,7 @@ namespace HKR
         {
             switch (State)
             {
-                case (byte)PlayerState.Alive:
+                case PlayerState.Alive:
                     LateUpdateNormalState();
                     break;
             }
@@ -197,7 +197,7 @@ namespace HKR
         {
             switch (State)
             {
-                case (byte)PlayerState.Alive:
+                case PlayerState.Alive:
                     FixedUpdateNetworkNormalState();
                     break;
             }
@@ -425,6 +425,11 @@ namespace HKR
 
 
             return runSpeed;
+        }
+
+        public void SetAlive()
+        {
+            State = PlayerState.Alive;
         }
 
         //public void SetNormalState()

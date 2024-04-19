@@ -130,6 +130,8 @@ namespace HKR.Building
             Debug.Log($"Found {blockAssets.Count} blocks in resources");
             for(int i=0; i<floors.Count; i++)
             {
+                
+              
                 foreach(var b in shapeBlocks)
                 {
                     bool resetEnteringBlock = false;
@@ -150,14 +152,19 @@ namespace HKR.Building
 
                     Vector3 position = GetBuildingBlockPosition(floors[i], b.Coordinates);
                     float geometryAngle = GetGeometryRootAngle(b);
-                    SpawnBuildingBlock(b, floors[i], chosenAsset.Prefab, position, geometryAngle);
+                    int configurationId = 0;
+                    SpawnBuildingBlock(b, floors[i], chosenAsset.Prefab, position, geometryAngle, configurationId);
 
                     if (resetEnteringBlock)
                     {
                         b.IsEnteringBlock = true;
                         b.IsSouthBorder = false;
                     }
+
+                
                 }
+
+                
             }
         }
 
@@ -166,7 +173,10 @@ namespace HKR.Building
             string namePrefix = "";
             if (!block.IsEnteringBlock && !block.IsConnectorBlock)
             {
-                namePrefix = "0_";
+                if(block.IsColumnBlock)
+                    namePrefix = "3_";
+                else
+                    namePrefix = "0_";
             }
             else
             {
@@ -281,7 +291,7 @@ namespace HKR.Building
             return pos;
         }
 
-        void SpawnBuildingBlock(ShapeBlock shapeBlock, Floor floor, GameObject blockPrefab, Vector3 position, float geometryAngle)
+        void SpawnBuildingBlock(ShapeBlock shapeBlock, Floor floor, GameObject blockPrefab, Vector3 position, float geometryAngle, int configurationId)
         {
 #if BUILDING_TEST
             GameObject block = Instantiate(blockPrefab);
@@ -376,6 +386,9 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             // Choose connectors
             ChooseConnectorBlocks(root);
 
+            // Choose columns
+            ChooseColumnBlocks(root);
+
             foreach (var b in shapeBlocks)
             {
 
@@ -385,6 +398,24 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 #endif
             }
 
+        }
+
+        void ChooseColumnBlocks(GameObject root)
+        {
+            // Get all blocks except for entering and connector blocks
+            List<ShapeBlock> availables = shapeBlocks.Where(b=>!b.IsEnteringBlock && !b.IsConnectorBlock).ToList();
+            int columnCount = Mathf.RoundToInt(availables.Count * .2f);
+            while(availables.Count > 0 && columnCount > 0)
+            {
+                ShapeBlock chosen = availables[Random.Range(0, availables.Count)];
+                chosen.IsColumnBlock = true;
+                //availables.Remove(chosen);
+                // Remove the current block and also all the blocks that are too close
+                int minDist = 2;
+                availables.RemoveAll(b => Vector2.Distance(chosen.Coordinates, b.Coordinates) < minDist);
+                columnCount--;
+            }
+            
         }
 
         void ChooseConnectorBlocks(GameObject root)
