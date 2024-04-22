@@ -22,6 +22,9 @@ namespace HKR.Building
         public const int MinFloorCount = 3;
         public const int MaxFloorCount = 8;
 
+        public const int MinInfectedCount = 9;
+        public const int MaxInfectedCount = 12;
+
         //#if BUILDING_TEST
         [SerializeField]
         GameObject helperBlockPrefab;
@@ -46,6 +49,7 @@ namespace HKR.Building
         List<ShapeBlock> shapeBlocks = new List<ShapeBlock>();
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
 
+        int infectedBlockCount;
         
 
         private void Awake()
@@ -128,53 +132,39 @@ namespace HKR.Building
             List<BuildingBlockAsset> blockAssets = new List<BuildingBlockAsset>( Resources.LoadAll<BuildingBlockAsset>(System.IO.Path.Combine(BuildingBlockAsset.ResourceFolder, themeFolder)));
 
             Debug.Log($"Found {blockAssets.Count} blocks in resources");
-            for(int i=0; i<floors.Count; i++)
-            {
-                
               
-                foreach(var b in shapeBlocks)
-                {
-                    bool resetEnteringBlock = false;
-                    if (floors[i].Level != 0 && b.IsEnteringBlock)
-                    {
-                        resetEnteringBlock = true;
-                        b.IsEnteringBlock = false;
-                        b.IsSouthBorder = true;
-                    }
+            foreach(var b in shapeBlocks)
+            {
+                  
+                // Get the asset name prefix
+                string namePrefix = GetBlockNamePrefix(b);
+                Debug.Log($"Shape:{b.name}, Prefix:{namePrefix}");
 
+                List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
+                BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
 
-                    // Get the asset name prefix
-                    string namePrefix = GetBlockNamePrefix(b);
-                    Debug.Log($"Shape:{b.name}, Prefix:{namePrefix}");
-
-                    List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
-                    BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
-
-                    Vector3 position = GetBuildingBlockPosition(floors[i], b.Coordinates);
-                    float geometryAngle = GetGeometryRootAngle(b);
-                    int configurationId = 0;
-                    SpawnBuildingBlock(b, floors[i], chosenAsset.Prefab, position, geometryAngle, configurationId);
-
-                    if (resetEnteringBlock)
-                    {
-                        b.IsEnteringBlock = true;
-                        b.IsSouthBorder = false;
-                    }
-
-                
-                }
+                Vector3 position = GetBuildingBlockPosition(b.floor, b.Coordinates);
+                float geometryAngle = GetGeometryRootAngle(b);
+                int configurationId = 0;
+                SpawnBuildingBlock(b, chosenAsset.Prefab, position, geometryAngle, configurationId);
 
                 
             }
+
+                
+          
         }
 
+       
         string GetBlockNamePrefix(ShapeBlock block)
         {
             string namePrefix = "";
             if (!block.IsEnteringBlock && !block.IsConnectorBlock)
             {
-                if(block.IsColumnBlock)
+                if (block.IsColumnBlock)
                     namePrefix = "3_";
+                else if (block.isInfectedBlock)
+                    namePrefix = "4_";
                 else
                     namePrefix = "0_";
             }
@@ -190,55 +180,54 @@ namespace HKR.Building
                 }
             }
 
-            // Is a common or a connector block
-            //if (!block.IsEnteringBlock)
-            {
-                int wallCount = 0;
-                if(block.IsNorthBorder)
-                    wallCount++;
-                if (block.IsSouthBorder)   
-                    wallCount++;
-                if (block.IsWestBorder)
-                    wallCount++;
-                if (block.IsEastBorder)
-                    wallCount++;
+           
+            // Check walls
+            int wallCount = 0;
+            if(block.IsNorthBorder)
+                wallCount++;
+            if (block.IsSouthBorder)   
+                wallCount++;
+            if (block.IsWestBorder)
+                wallCount++;
+            if (block.IsEastBorder)
+                wallCount++;
 
-                switch(wallCount)
-                {
-                    case 0:
-                        namePrefix += "F_";
-                        break;
-                    case 1:
-                        if (!block.IsEnteringBlock)
-                        {
-                            namePrefix += "N_";
-                        }
+            switch(wallCount)
+            {
+                case 0:
+                    namePrefix += "F_";
+                    break;
+                case 1:
+                    if (!block.IsEnteringBlock)
+                    {
+                        namePrefix += "N_";
+                    }
+                    else
+                    {
+                        if (block.IsEastBorder)
+                            namePrefix += "E_";
                         else
-                        {
-                            if (block.IsEastBorder)
-                                namePrefix += "E_";
-                            else
-                                namePrefix += "W_";
-                        }
-                        break;
-                    case 2:
-                        if (!block.IsEnteringBlock)
-                        {
-                            if ((block.IsNorthBorder && block.IsSouthBorder) || (block.IsWestBorder && block.IsEastBorder))
-                                namePrefix += "NS_";
-                            else
-                                namePrefix += "NE_";
-                        }
+                            namePrefix += "W_";
+                    }
+                    break;
+                case 2:
+                    if (!block.IsEnteringBlock)
+                    {
+                        if ((block.IsNorthBorder && block.IsSouthBorder) || (block.IsWestBorder && block.IsEastBorder))
+                            namePrefix += "NS_";
                         else
-                        {
-                            namePrefix += "EW_";
-                        }
-                        break;
-                    case 3:
-                        namePrefix += "NES_";
-                        break;
-                }
+                            namePrefix += "NE_";
+                    }
+                    else
+                    {
+                        namePrefix += "EW_";
+                    }
+                    break;
+                case 3:
+                    namePrefix += "NES_";
+                    break;
             }
+          
             
 
             return namePrefix;
@@ -309,7 +298,7 @@ namespace HKR.Building
             return pos;
         }
 
-        void SpawnBuildingBlock(ShapeBlock shapeBlock, Floor floor, GameObject blockPrefab, Vector3 position, float geometryAngle, int configurationId)
+        void SpawnBuildingBlock(ShapeBlock shapeBlock, GameObject blockPrefab, Vector3 position, float geometryAngle, int configurationId)
         {
 #if BUILDING_TEST
             GameObject block = Instantiate(blockPrefab);
@@ -323,7 +312,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             {
                 BuildingBlock bblock = o.GetComponent<BuildingBlock>(); 
                 bblock.GeometryRootAngle = geometryAngle;
-                bblock.FloorLevel = floor.Level;
+                bblock.FloorLevel = shapeBlock.floor.Level;
                 if(shapeBlock.IsConnectorBlock)
                 {
                     var connector = connectors[shapeBlock.ConnectorIndex];
@@ -407,6 +396,12 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             // Choose columns
             ChooseColumnBlocks(root);
 
+            // Replicate the shape for each floor
+            ShapeRemainingFloors(root);
+
+            // Choose infected nodes
+            ChooseInfectedBlocks();
+
             foreach (var b in shapeBlocks)
             {
 
@@ -414,6 +409,74 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 #if BUILDING_TEST
                 b.Colorize();
 #endif
+            }
+
+            
+        }
+
+        void ChooseInfectedBlocks()
+        {
+            infectedBlockCount = Random.Range(MinInfectedCount, MaxInfectedCount+1);
+            // Arrange infected nodes among floors
+            int[] floorInfections = new int[floors.Count];
+            for(int i=0; i < infectedBlockCount; i++)
+            {
+                int index = Random.Range(0, floors.Count);
+                floorInfections[index]++;
+            }
+            // Create infected nodes in every floor
+            for(int i=0; i<floorInfections.Length; i++)
+            {
+                Debug.Log($"Floor {i} has {floorInfections[i]} infections");
+                List<ShapeBlock> candidates = shapeBlocks.Where(b => b.floor == floors[i] && b.IsCommonBlock()).ToList();
+                for(int j=0; j < floorInfections[i]; j++)
+                {
+                    // Choose a common block to replace with an infected one
+                    var block = candidates[Random.Range(0, candidates.Count)];
+                    // Remove the chosen block
+                    candidates.Remove(block);
+                    // Set the block as infected
+                    block.isInfectedBlock = true;
+                }
+            }
+            
+        }
+
+        void ShapeRemainingFloors(GameObject root)
+        {
+            int count = shapeBlocks.Count;
+            for(int i= 0; i<floors.Count; i++)
+            {
+                
+                for (int j = 0; j < count; j++)
+                {
+                    ShapeBlock s = null;
+                    if (i == 0) 
+                    {
+                        // Get the original shape block
+                        s = shapeBlocks[j];
+                    }
+                    else
+                    {
+                        // Create a new shape block
+                        s = Instantiate(shapeBlocks[j]);
+                        s.transform.parent = root.transform;
+                        shapeBlocks.Add(s);
+                    }
+
+                    s.floor = floors[i];
+                    Debug.Log($"SFloor: {s.floor.name}, level:{s.floor.Level}");
+                    
+                }
+            }
+
+            foreach(var s in shapeBlocks)
+            {
+                if (s.IsEnteringBlock && s.floor.Level != 0)
+                {
+                    s.IsEnteringBlock = false;
+                    s.IsSouthBorder = true;
+                }
             }
 
         }

@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 977e7f34d1f5d104388ea90f3df99561, type: 3}
   m_Name: 0_NES_Default
   m_EditorClassIdentifier: 
-  type: 0
-  borderConfiguration: 4
   rarity: 0
-  prefab: {fileID: 6956966189760493563, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+  prefab: {fileID: 550676039796795886, guid: 6380f14adb84f2346913cf61892dd45a, type: 3}

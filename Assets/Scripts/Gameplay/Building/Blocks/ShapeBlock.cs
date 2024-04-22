@@ -13,25 +13,26 @@ namespace HKR.Building
         [SerializeField]
         List<MeshRenderer> renderers = new List<MeshRenderer>();
 
-        int type;
-        public Vector2 Coordinates { get; private set; }
+        public Floor floor = null;
+
+        public Vector2 Coordinates;
         //public Floor Floor { get; private set; }
 
         int height = 3;
         
 
-        public bool IsNorthBorder { get; set; } = false;
+        public bool IsNorthBorder = false;
 
-        public bool IsSouthBorder { get; set; } = false;
-        public bool IsEastBorder { get; set; } = false;
-        public bool IsWestBorder { get; set; } = false;
+        public bool IsSouthBorder = false;
+        public bool IsEastBorder = false;
+        public bool IsWestBorder = false;
 
-        Vector3 position = Vector3.zero;
+        //public Vector3 _position = Vector3.zero;
 
-        public bool IsEnteringBlock { get; set; } = false;
-        public bool IsConnectorBlock { get; set; } = false;
+        public bool IsEnteringBlock = false;
+        public bool IsConnectorBlock = false;
 
-        public int ConnectorIndex { get; set; } = -1;
+        public int ConnectorIndex = -1;
         
         public bool IsBorder
         {
@@ -42,9 +43,13 @@ namespace HKR.Building
         /// 0: staircase
         /// 1: elevator
         /// </summary>
-        public int ConnectorType { get; set; } = 0; 
+        public int ConnectorType = 0; 
 
-        public bool IsColumnBlock { get; set; } = false;
+        public bool IsColumnBlock = false;
+
+        public bool isInfectedBlock = false;
+
+        
 
         // Start is called before the first frame update
         void Start()
@@ -71,13 +76,6 @@ namespace HKR.Building
         {
             //Floor = floor;
             Coordinates = coordinates;
-            //if (Floor)
-            //{
-            //    position.y = Floor.Level * height;
-            //}
-            position.y = 0;
-            position.x = BuildingBlock.Size * Coordinates.x;
-            position.z = BuildingBlock.Size * Coordinates.y;
             
         }
 
@@ -91,8 +89,17 @@ namespace HKR.Building
 
         public void Move()
         {
+            Vector3 position = Vector3.zero;
+            position.y = floor.Level * height;
+            position.x = BuildingBlock.Size * Coordinates.x;
+            position.z = BuildingBlock.Size * Coordinates.y;
             transform.position = position;
             
+        }
+
+        public bool IsCommonBlock()
+        {
+            return !IsEnteringBlock && !IsConnectorBlock && !IsColumnBlock && !isInfectedBlock;
         }
     }
 

@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 namespace HKR.Building
 {
-    public enum BuildingBlockType { Common, Entrance, Connector, Column }
+    public enum BuildingBlockType { Common, Entrance, Connector, Column, Infected }
 
 #if BUILDING_TEST
     public class BuildingBlock : MonoBehaviour
