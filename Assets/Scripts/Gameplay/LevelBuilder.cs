@@ -191,7 +191,7 @@ namespace HKR.Building
             }
 
             // Is a common or a connector block
-            if (!block.IsEnteringBlock)
+            //if (!block.IsEnteringBlock)
             {
                 int wallCount = 0;
                 if(block.IsNorthBorder)
@@ -209,19 +209,37 @@ namespace HKR.Building
                         namePrefix += "F_";
                         break;
                     case 1:
-                        namePrefix += "N_";
+                        if (!block.IsEnteringBlock)
+                        {
+                            namePrefix += "N_";
+                        }
+                        else
+                        {
+                            if (block.IsEastBorder)
+                                namePrefix += "E_";
+                            else
+                                namePrefix += "W_";
+                        }
                         break;
                     case 2:
-                        if((block.IsNorthBorder && block.IsSouthBorder) || (block.IsWestBorder && block.IsEastBorder))
-                            namePrefix += "NS_";
+                        if (!block.IsEnteringBlock)
+                        {
+                            if ((block.IsNorthBorder && block.IsSouthBorder) || (block.IsWestBorder && block.IsEastBorder))
+                                namePrefix += "NS_";
+                            else
+                                namePrefix += "NE_";
+                        }
                         else
-                            namePrefix += "NE_";
+                        {
+                            namePrefix += "EW_";
+                        }
                         break;
                     case 3:
                         namePrefix += "NES_";
                         break;
                 }
             }
+            
 
             return namePrefix;
         }
@@ -459,12 +477,13 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                 int connType = Random.Range(0, 2); // 0: staircase, 1:elevator
                 connType = 0; // We will add elavator later
 
-                if (!chosen.IsBorder || Random.Range(0,2) == 0)
+                if (!chosen.IsBorder || Random.Range(0,2) == 0 || true )
                 {
                     // We set the old block itself as connector
                     chosen.IsConnectorBlock = true;
                     chosen.ConnectorType = connType;
                     chosen.ConnectorIndex = i;
+
 //#if BUILDING_TEST
 //                    chosen.Colorize();
 //#endif
@@ -551,22 +570,22 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             enterBlock.IsWestBorder = enterBlock.IsEastBorder = true;
             enterBlock.IsEnteringBlock = true;
             enterBlock.SetCoordinates(block.Coordinates + new Vector2(0, -1));
-            //// Check if there is any block attached to the entering block to the east or the west
-            //// East
-            //ShapeBlock other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(1,0));
-            //if (other)
-            //{
-            //    other.IsWestBorder = false;
-            //    enterBlock.IsEastBorder= false;
-            //}
-                
-            //other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(-1, 0));
-            //if (other)
-            //{
-            //    other.IsEastBorder = false;
-            //    enterBlock.IsWestBorder= false;
-            //}
-                
+            // Check if there is any block attached to the entering block to the east or the west
+            // East
+            ShapeBlock other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(1, 0));
+            if (other)
+            {
+                other.IsWestBorder = false;
+                enterBlock.IsEastBorder = false;
+            }
+
+            other = shapeBlocks.Find(b => b.Coordinates == enterBlock.Coordinates + new Vector2(-1, 0));
+            if (other)
+            {
+                other.IsEastBorder = false;
+                enterBlock.IsWestBorder = false;
+            }
+
         }
 
         void AddRemainingBlocks(int left, GameObject root)
