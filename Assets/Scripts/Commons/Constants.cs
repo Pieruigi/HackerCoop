@@ -14,4 +14,14 @@ namespace HKR
         public const int RarityMaxLevel = 9;
     }
 
+    public class Layers
+    {
+        public const string RadarTarget = "RadarTarget";
+    }
+
+    public class Tags
+    {
+        public const string Player = "Player";
+        public const string InfectionNode = "InfectionNode";
+    }
 }

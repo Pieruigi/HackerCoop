@@ -558,7 +558,8 @@ MonoBehaviour:
   SortKey: 3431588514
   ObjectInterest: 1
   Flags: 131073
-  NestedObjects: []
+  NestedObjects:
+  - {fileID: 3484212668403063382}
   NetworkedBehaviours:
   - {fileID: 6346284122594627423}
   - {fileID: -1260824793199755390}
@@ -902,11 +903,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8282531971688679405, guid: a3bca423d65445040b285fc6002f63e4, type: 3}
+      propertyPath: SortKey
+      value: 4026881532
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a3bca423d65445040b285fc6002f63e4, type: 3}
+--- !u!114 &3484212668403063382 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8282531971688679405, guid: a3bca423d65445040b285fc6002f63e4, type: 3}
+  m_PrefabInstance: {fileID: 4803966431043870139}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &3622776707543480630 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8137351677049398413, guid: a3bca423d65445040b285fc6002f63e4, type: 3}

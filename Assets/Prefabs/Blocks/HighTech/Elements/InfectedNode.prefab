@@ -117,6 +117,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8137351677049398413}
+  - component: {fileID: 3394213757462775242}
+  - component: {fileID: 8282531971688679405}
   m_Layer: 0
   m_Name: InfectedNode
   m_TagString: Untagged
@@ -140,6 +142,38 @@ Transform:
   - {fileID: 3842131581048268154}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3394213757462775242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4373693826697112799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9977fc8e276a5a042b57d630c4eb7c69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Infected:
+    _value: 0
+--- !u!114 &8282531971688679405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4373693826697112799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3649363273
+  ObjectInterest: 1
+  Flags: 131073
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 3394213757462775242}
 --- !u!1 &8853454063458505262
 GameObject:
   m_ObjectHideFlags: 0
