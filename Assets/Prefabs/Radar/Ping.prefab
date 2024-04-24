@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5219159581874558332}
   - component: {fileID: 4616143800620392387}
   - component: {fileID: 8476155417730494412}
+  - component: {fileID: -4471983276732188164}
   m_Layer: 5
   m_Name: Ping
   m_TagString: Untagged
@@ -75,3 +76,16 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &-4471983276732188164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4758236316284761037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4156027df9314f344a8d990c6bdf84ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 8476155417730494412}

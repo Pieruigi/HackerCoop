@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,14 +21,9 @@ namespace HKR.UI
         [SerializeField]
         Transform pingContent;
 
-        [SerializeField]
-        float pingFadeInSpeed = .1f;
-
-        [SerializeField]
-        float pingFadeOutSpeed = .5f;
-
         List<GameObject> pingList = new List<GameObject>();
-        
+
+        float radarScreenRadius = 5;
         // Start is called before the first frame update
         void Start()
         {
@@ -43,16 +39,19 @@ namespace HKR.UI
             radarCircle.transform.localScale = new Vector2(radarController.Range, radarController.Range) / radarController.MaxRange;
 
             // Update ping signals 
-            
+            foreach(GameObject go in pingList)
+            {
+
+            }
         }
 
         private void OnEnable()
         {
-            radarController.OnStartScanning -= HandleOnStartScanning;
-            radarController.OnStopScanning -= HandleOnStopScanning;
-            radarController.OnPing -= HandleOnPing;
-            radarController.OnActivate -= HandleOnActivate;
-            radarController.OnDeactivate -= HandleOnDeactivate;
+            radarController.OnStartScanning += HandleOnStartScanning;
+            radarController.OnStopScanning += HandleOnStopScanning;
+            radarController.OnPing += HandleOnPing;
+            radarController.OnActivate += HandleOnActivate;
+            radarController.OnDeactivate += HandleOnDeactivate;
             radarCircle.transform.localScale = Vector2.zero;
         }
 
@@ -68,8 +67,8 @@ namespace HKR.UI
         void Clear()
         {
             radarCircle.transform.localScale = Vector2.zero;
-            foreach (var ping in pingList)
-                Destroy(ping);
+            //foreach (var ping in pingList)
+            //    Destroy(ping);
             pingList.Clear();
         }
 
@@ -93,16 +92,16 @@ namespace HKR.UI
             Vector3 direction = Vector3.ProjectOnPlane(target.transform.position - radarController.transform.position, Vector3.up);
             float distance = direction.magnitude;
             Debug.Log($"Ping:{target.gameObject.name}, distance:{distance}");
-            ping.transform.localPosition = new Vector2(direction.x, direction.z) * distance / radarController.MaxRange;// * pingMaxDistance;
-            
+
+            ping.transform.localPosition = new Vector2(direction.x, direction.z).normalized * distance / radarController.MaxRange * radarScreenRadius;
+            //ping.transform.localPosition = Vector2.one;
+            ping.GetComponent<PingerUI>().SetLifeTime(radarController.MaxRange / radarController.Speed);
         }
 
         private void HandleOnStopScanning()
         {
             Debug.Log("Stop scanning");
             radarCircle.transform.localScale = Vector2.zero;
-            foreach(var ping in pingList)
-                Destroy(ping);
             pingList.Clear();
         }
 

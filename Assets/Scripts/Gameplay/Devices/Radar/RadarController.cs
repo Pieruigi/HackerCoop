@@ -21,6 +21,7 @@ namespace HKR
 
         [SerializeField]
         float speed = 5f;
+        public float Speed { get { return speed; } }
 
         [SerializeField]
         float delay = 1;
@@ -81,7 +82,7 @@ namespace HKR
                 {
                     // Scanning
                     range = Mathf.Min(range + Time.deltaTime * speed, maxRange);
-
+                    Debug.Log($"Range:{range}");
                     Collider[] coll = Physics.OverlapSphere(transform.position, range, mask, QueryTriggerInteraction.Collide);
                     foreach (Collider collider in coll)
                     {
