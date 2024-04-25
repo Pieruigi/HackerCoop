@@ -1,6 +1,8 @@
 using Fusion;
+using HKR.Scriptables;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HKR.Building
@@ -39,6 +41,8 @@ namespace HKR.Building
             get { return IsNorthBorder || IsSouthBorder || IsEastBorder || IsWestBorder; }
         }
 
+        public BuildingBlockAsset blockAsset;
+
         /// <summary>
         /// 0: staircase
         /// 1: elevator
@@ -47,11 +51,11 @@ namespace HKR.Building
 
         public bool IsColumnBlock = false;
 
-        public bool isInfectedBlock = false;
+        //public bool IsInfectedBlock { get { return infectionIndices.Count > 0; } }
+        //public List<int> infectionPoints = new List<int>();
 
-
+        public Vector3 Center { get { return new Vector3(Coordinates.x * BuildingBlock.Size / 2f, floor.Level * height, Coordinates.y * BuildingBlock.Size / 2f); } }
         
-
         // Start is called before the first frame update
         void Start()
         {
@@ -100,8 +104,10 @@ namespace HKR.Building
 
         public bool IsCommonBlock()
         {
-            return !IsEnteringBlock && !IsConnectorBlock && !IsColumnBlock && !isInfectedBlock;
+            return !IsEnteringBlock && !IsConnectorBlock && !IsColumnBlock;
         }
+
+        
     }
 
 }

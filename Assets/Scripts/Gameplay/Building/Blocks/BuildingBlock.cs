@@ -28,8 +28,16 @@ namespace HKR.Building
         [Networked]
         public int FloorLevel { get; set; }
 
+        //[UnitySerializeField]
+        //[Networked]
+        //public List<int> InfectedNodeIds { get; } = default;
+
         [SerializeField]
         GameObject geometryRoot;
+
+
+      
+
 
 
         // Start is called before the first frame update

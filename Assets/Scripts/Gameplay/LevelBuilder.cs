@@ -1,4 +1,6 @@
 
+using DG.Tweening.Plugins.Options;
+using ExitGames.Client.Photon;
 using Fusion;
 using HKR.Scriptables;
 using System.Collections;
@@ -47,6 +49,10 @@ namespace HKR.Building
 
         [SerializeField]
         List<ShapeBlock> shapeBlocks = new List<ShapeBlock>();
+
+        [SerializableType]
+        List<Transform> infectionPoints = new List<Transform>();
+
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
 
         int infectedBlockCount;
@@ -120,6 +126,9 @@ namespace HKR.Building
         {
             // Create floors
             CreateFloors();
+
+            // Choose infected nodes
+            //ChooseInfectedNodes();
         }
 
         void CreateFloors()
@@ -133,18 +142,26 @@ namespace HKR.Building
             List<BuildingBlockAsset> blockAssets = new List<BuildingBlockAsset>( Resources.LoadAll<BuildingBlockAsset>(System.IO.Path.Combine(BuildingBlockAsset.ResourceFolder, themeFolder)));
 
             Debug.Log($"Found {blockAssets.Count} blocks in resources");
-              
-            foreach(var b in shapeBlocks)
+
+            BuildingBlockAsset test = blockAssets[3];
+            
+            List<Transform> tList = test.Prefab.GetComponentsInChildren<Transform>().Where(t=>t.CompareTag(Tags.InfectionNode)).ToList();
+            Debug.Log($"TEST - block asset name:{test.name}, prefab:{test.Prefab}, infectionNodes.Count:{tList.Count}");
+            foreach (Transform t in tList)
+                Debug.Log($"TEST - node:{t.gameObject.name}, localPosition:{t.localPosition}");
+
+            foreach (var b in shapeBlocks)
             {
-                  
+
                 // Get the asset name prefix
-                string namePrefix = GetBlockNamePrefix(b);
-                Debug.Log($"Shape:{b.name}, Prefix:{namePrefix}");
+                //string namePrefix = GetBlockNamePrefix(b);
+                //Debug.Log($"Shape:{b.name}, Prefix:{namePrefix}");
 
-                List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
-                BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
+                //List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
+                //BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
+                BuildingBlockAsset chosenAsset = b.blockAsset;
 
-                Vector3 position = GetBuildingBlockPosition(b.floor, b.Coordinates);
+                 Vector3 position = GetBuildingBlockPosition(b.floor, b.Coordinates);
                 float geometryAngle = GetGeometryRootAngle(b);
                 int configurationId = 0;
                 SpawnBuildingBlock(b, chosenAsset.Prefab, position, geometryAngle, configurationId);
@@ -164,8 +181,6 @@ namespace HKR.Building
             {
                 if (block.IsColumnBlock)
                     namePrefix = "3_";
-                else if (block.isInfectedBlock)
-                    namePrefix = "4_";
                 else
                     namePrefix = "0_";
             }
@@ -400,8 +415,14 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             // Replicate the shape for each floor
             ShapeRemainingFloors(root);
 
+            // Assign an asset to each block
+            AssignAssetToShapeBlocks();
+
+            // Fill shape blocks with spawn points and other elements
+            FillShapeBlocks();
+
             // Choose infected nodes
-            ChooseInfectedBlocks();
+            //ChooseInfectedNodes();
 
             foreach (var b in shapeBlocks)
             {
@@ -415,33 +436,138 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             
         }
 
-        void ChooseInfectedBlocks()
+        void FillShapeBlocks()
         {
-            infectedBlockCount = Random.Range(MinInfectedCount, MaxInfectedCount+1);
+            foreach(var sb in shapeBlocks)
+            {
+                // Get the root object
+                Transform root = sb.transform.GetChild(0);
+                // Adjust the position to be sure
+                //root.position = new Vector3(BuildingBlock.Size / 2f, 0, BuildingBlock.Size / 2f);
+                // Get the asset
+                BuildingBlockAsset asset = sb.blockAsset;
+                // Get infection spawn points from the prefab
+                List<Transform> points = asset.Prefab.GetComponentsInChildren<Transform>().Where(t=>t.CompareTag(Tags.InfectionNode)).ToList();
+                
+                foreach(var p in points)
+                {
+                    // Create a new empty object
+                    GameObject pObj = new GameObject("InfectionPoint");
+                    // Put the empty object inside the root object
+                    pObj.transform.parent = root;
+                    // Adjust position and rotation
+                    pObj.transform.localPosition = p.localPosition;
+                    pObj.transform.localRotation = p.localRotation;
+                }
+
+                // Rotate the root as intended
+                float angle = GetGeometryRootAngle(sb);
+                root.rotation = Quaternion.Euler(0f, angle, 0f);
+
+                
+            }
+        }
+
+        void AssignAssetToShapeBlocks()
+        {
+            // Load assets
+#if BUILDING_TEST
+            string themeFolder = "HighTech";
+#else
+            string themeFolder = LevelManager.Instance.Theme;
+#endif
+            List<BuildingBlockAsset> blockAssets = new List<BuildingBlockAsset>(Resources.LoadAll<BuildingBlockAsset>(System.IO.Path.Combine(BuildingBlockAsset.ResourceFolder, themeFolder)));
+          
+            // Assign to each shape block
+            foreach (var sb in shapeBlocks)
+            {
+                string namePrefix = GetBlockNamePrefix(sb);
+                Debug.Log($"Shape:{sb.name}, Prefix:{namePrefix}");
+
+                List<BuildingBlockAsset> candidates = blockAssets.Where(bb => bb.name.ToLower().StartsWith(namePrefix.ToLower())).ToList();
+                BuildingBlockAsset chosenAsset = candidates[Random.Range(0, candidates.Count)];
+                sb.blockAsset = chosenAsset;
+            }
+        }
+
+        void ChooseInfectedNodes()
+        {
+            infectedBlockCount = Random.Range(MinInfectedCount, MaxInfectedCount + 1);
             // Arrange infected nodes among floors
             int[] floorInfections = new int[floors.Count];
-            for(int i=0; i < infectedBlockCount; i++)
+            for (int i = 0; i < infectedBlockCount; i++)
             {
                 int index = Random.Range(0, floors.Count);
                 floorInfections[index]++;
             }
+
             // Create infected nodes in every floor
-            for(int i=0; i<floorInfections.Length; i++)
+            for (int i = 0; i < floorInfections.Length; i++)
             {
-                Debug.Log($"Floor {i} has {floorInfections[i]} infections");
-                List<ShapeBlock> candidates = shapeBlocks.Where(b => b.floor == floors[i] && b.IsCommonBlock()).ToList();
-                for(int j=0; j < floorInfections[i]; j++)
+                // Get all the available infection spawn points for the current floor
+                List<ShapeBlock> blocks = shapeBlocks.Where(s=>s.floor == floors[i]).ToList();
+                List<Transform> spawnList = new List<Transform>();
+                foreach (var b in blocks)
                 {
-                    // Choose a common block to replace with an infected one
-                    var block = candidates[Random.Range(0, candidates.Count)];
-                    // Remove the chosen block
-                    candidates.Remove(block);
-                    // Set the block as infected
-                    block.isInfectedBlock = true;
+                    BuildingBlockAsset asset = b.blockAsset;
+                    List<Transform> tmp = asset.Prefab.GetComponentsInChildren<Transform>().Where(t => t.CompareTag(Tags.InfectionNode)).ToList();
+                    foreach(Transform t in tmp)
+                    {
+                        GameObject g = new GameObject(b.name);
+                        g.transform.position = b.Center;
+                        GameObject g2 = new GameObject(t.name);
+                        g2.transform.parent = g.transform;
+                        g2.transform.localPosition = t.position;
+                        float angle = GetGeometryRootAngle(b);
+                        g.transform.rotation = Quaternion.Euler(0, angle, 0);
+                        spawnList.Add(g2.transform);
+                    }
+
+                    
                 }
+                    
+
+                for (int j = 0; j < floorInfections[i]; j++)
+                {
+                    Transform point = spawnList[Random.Range(0, spawnList.Count)];
+                    spawnList.Remove(point);
+
+                    // Create 
+
+                    infectionPoints.Add(point);
+                }
+
             }
-            
+
         }
+
+        //void ChooseInfectedBlocks()
+        //{
+        //    infectedBlockCount = Random.Range(MinInfectedCount, MaxInfectedCount+1);
+        //    // Arrange infected nodes among floors
+        //    int[] floorInfections = new int[floors.Count];
+        //    for(int i=0; i < infectedBlockCount; i++)
+        //    {
+        //        int index = Random.Range(0, floors.Count);
+        //        floorInfections[index]++;
+        //    }
+        //    // Create infected nodes in every floor
+        //    for(int i=0; i<floorInfections.Length; i++)
+        //    {
+        //        Debug.Log($"Floor {i} has {floorInfections[i]} infections");
+        //        List<ShapeBlock> candidates = shapeBlocks.Where(b => b.floor == floors[i] && b.IsCommonBlock()).ToList();
+        //        for(int j=0; j < floorInfections[i]; j++)
+        //        {
+        //            // Choose a common block to replace with an infected one
+        //            var block = candidates[Random.Range(0, candidates.Count)];
+        //            // Remove the chosen block
+        //            candidates.Remove(block);
+        //            // Set the block as infected
+        //            block.isInfectedBlock = true;
+        //        }
+        //    }
+
+        //}
 
         void ShapeRemainingFloors(GameObject root)
         {
