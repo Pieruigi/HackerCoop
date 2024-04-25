@@ -10,9 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 977e7f34d1f5d104388ea90f3df99561, type: 3}
-  m_Name: 0_NS_Empty
+  m_Name: 0_F_Default 1
   m_EditorClassIdentifier: 
-  type: 0
-  borderConfiguration: 2
   rarity: 0
-  prefab: {fileID: 6956966189760493563, guid: 4b405457d1c56db4686e9153f2eb9781, type: 3}
+  prefab: {fileID: 2345112482397380553, guid: 3b9fa36c80320b4498a7683073833169, type: 3}

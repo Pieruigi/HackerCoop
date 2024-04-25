@@ -159,8 +159,6 @@ MonoBehaviour:
   radarCircle: {fileID: 122790194}
   pingPrefab: {fileID: 4758236316284761037, guid: 208047470a69fa3419fbdca0cda8bb67, type: 3}
   pingContent: {fileID: 284754118}
-  pingFadeInSpeed: 0.1
-  pingFadeOutSpeed: 0.5
 --- !u!114 &46512075
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -10,9 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 977e7f34d1f5d104388ea90f3df99561, type: 3}
-  m_Name: 0_NES_Empty
+  m_Name: 0_NES_Default 1
   m_EditorClassIdentifier: 
-  type: 0
-  borderConfiguration: 4
   rarity: 0
-  prefab: {fileID: 6956966189760493563, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+  prefab: {fileID: 4528916967997654505, guid: 59dcb0ce2273e4647b8c1d14e0257282, type: 3}

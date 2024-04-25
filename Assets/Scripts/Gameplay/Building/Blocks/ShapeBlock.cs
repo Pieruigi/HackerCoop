@@ -49,6 +49,7 @@ namespace HKR.Building
 
         public bool isInfectedBlock = false;
 
+
         
 
         // Start is called before the first frame update

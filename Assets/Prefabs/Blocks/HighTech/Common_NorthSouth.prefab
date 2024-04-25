@@ -472,7 +472,7 @@ GameObject:
   - component: {fileID: 2501496646607681279}
   - component: {fileID: 7352810626732478286}
   m_Layer: 0
-  m_Name: Empty_NorthSouth
+  m_Name: Common_NorthSouth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

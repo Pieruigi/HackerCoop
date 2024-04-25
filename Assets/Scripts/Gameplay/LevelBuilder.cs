@@ -51,6 +51,7 @@ namespace HKR.Building
 
         int infectedBlockCount;
         
+        
 
         private void Awake()
         {
