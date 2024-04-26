@@ -20,8 +20,6 @@ namespace HKR.Building
         public Vector2 Coordinates;
         //public Floor Floor { get; private set; }
 
-        int height = 3;
-        
 
         public bool IsNorthBorder = false;
 
@@ -54,7 +52,7 @@ namespace HKR.Building
         //public bool IsInfectedBlock { get { return infectionIndices.Count > 0; } }
         //public List<int> infectionPoints = new List<int>();
 
-        public Vector3 Center { get { return new Vector3(Coordinates.x * BuildingBlock.Size / 2f, floor.Level * height, Coordinates.y * BuildingBlock.Size / 2f); } }
+        //public Vector3 Center { get { return new Vector3(Coordinates.x * BuildingBlock.Size / 2f, floor.Level * BuildingBlock.Height, Coordinates.y * BuildingBlock.Size / 2f); } }
         
         // Start is called before the first frame update
         void Start()
@@ -95,7 +93,7 @@ namespace HKR.Building
         public void Move()
         {
             Vector3 position = Vector3.zero;
-            position.y = floor.Level * height;
+            position.y = floor.Level * BuildingBlock.Height;
             position.x = BuildingBlock.Size * Coordinates.x;
             position.z = BuildingBlock.Size * Coordinates.y;
             transform.position = position;

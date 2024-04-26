@@ -12,6 +12,14 @@ PrefabInstance:
       propertyPath: SortKey
       value: 155354847
       objectReference: {fileID: 0}
+    - target: {fileID: 2025762369912212064, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5719401942553793067, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6956966189760493563, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
       propertyPath: m_Name
       value: Column_Free Variant
@@ -129,9 +137,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4559072470480944581, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6982447195413172219, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
       propertyPath: m_Name
       value: Column1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982447195413172219, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

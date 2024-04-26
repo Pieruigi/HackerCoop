@@ -124,14 +124,29 @@ namespace HKR.Building
 
         void BuildGeometry()
         {
-            // Create floors
-            CreateFloors();
+            // Spawn floors
+            SpawnFloors();
 
-            // Choose infected nodes
-            //ChooseInfectedNodes();
+            // Spawn infected nodes
+            SpawnInfectedNodes();
         }
 
-        void CreateFloors()
+        void SpawnInfectedNodes()
+        {
+            // Load all the infected node assets
+            List<InfectedNodeAsset> assets = new List<InfectedNodeAsset>(Resources.LoadAll<InfectedNodeAsset>(InfectedNodeAsset.ResourceFolder));
+            Debug.Log($"SpawnInfectedNodes() - Loaded {assets.Count} asset(s) from resources.");
+            // Spawn nodes
+            foreach(var point in infectionPoints)
+            {
+                // Get a random asset
+                InfectedNodeAsset currentAsset = assets[Random.Range(0, assets.Count)];
+                // Spawn the prefab
+                SessionManager.Instance.NetworkRunner.Spawn(currentAsset.Prefab, point.position, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f));
+            }
+        }
+
+        void SpawnFloors()
         {
             // Load resources
 #if BUILDING_TEST
@@ -418,11 +433,11 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             // Assign an asset to each block
             AssignAssetToShapeBlocks();
 
-            // Fill shape blocks with spawn points and other elements
+            // Fill shape blocks with spawn points
             FillShapeBlocks();
 
             // Choose infected nodes
-            //ChooseInfectedNodes();
+            ChooseInfectedNodes();
 
             foreach (var b in shapeBlocks)
             {
@@ -442,8 +457,6 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             {
                 // Get the root object
                 Transform root = sb.transform.GetChild(0);
-                // Adjust the position to be sure
-                //root.position = new Vector3(BuildingBlock.Size / 2f, 0, BuildingBlock.Size / 2f);
                 // Get the asset
                 BuildingBlockAsset asset = sb.blockAsset;
                 // Get infection spawn points from the prefab
@@ -453,14 +466,15 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                 {
                     // Create a new empty object
                     GameObject pObj = new GameObject("InfectionPoint");
-                    // Put the empty object inside the root object
+                    pObj.tag = Tags.InfectionNode;
+                    // Assign the root as parent of the current node
                     pObj.transform.parent = root;
                     // Adjust position and rotation
                     pObj.transform.localPosition = p.localPosition;
                     pObj.transform.localRotation = p.localRotation;
                 }
 
-                // Rotate the root as intended
+                // Rotate the root depending on the block orientation
                 float angle = GetGeometryRootAngle(sb);
                 root.rotation = Quaternion.Euler(0f, angle, 0f);
 
@@ -492,8 +506,9 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
         void ChooseInfectedNodes()
         {
+            // How many infected nodes are in the whole building
             infectedBlockCount = Random.Range(MinInfectedCount, MaxInfectedCount + 1);
-            // Arrange infected nodes among floors
+            // Distribute infected nodes among floors
             int[] floorInfections = new int[floors.Count];
             for (int i = 0; i < infectedBlockCount; i++)
             {
@@ -501,39 +516,24 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                 floorInfections[index]++;
             }
 
-            // Create infected nodes in every floor
+            // Loop through each floor and fill them with infected nodes
             for (int i = 0; i < floorInfections.Length; i++)
             {
-                // Get all the available infection spawn points for the current floor
+                // Get all the available infection spawn points for the current floor.
+                // We've already spawned all the infection spawn points in every block, so we just look for them using tag.
                 List<ShapeBlock> blocks = shapeBlocks.Where(s=>s.floor == floors[i]).ToList();
                 List<Transform> spawnList = new List<Transform>();
                 foreach (var b in blocks)
-                {
-                    BuildingBlockAsset asset = b.blockAsset;
-                    List<Transform> tmp = asset.Prefab.GetComponentsInChildren<Transform>().Where(t => t.CompareTag(Tags.InfectionNode)).ToList();
-                    foreach(Transform t in tmp)
-                    {
-                        GameObject g = new GameObject(b.name);
-                        g.transform.position = b.Center;
-                        GameObject g2 = new GameObject(t.name);
-                        g2.transform.parent = g.transform;
-                        g2.transform.localPosition = t.position;
-                        float angle = GetGeometryRootAngle(b);
-                        g.transform.rotation = Quaternion.Euler(0, angle, 0);
-                        spawnList.Add(g2.transform);
-                    }
-
-                    
-                }
-                    
+                    spawnList.AddRange(b.GetComponentsInChildren<Transform>().Where(t=>t.CompareTag(Tags.InfectionNode)));
+    
 
                 for (int j = 0; j < floorInfections[i]; j++)
                 {
+                    // Get a random node
                     Transform point = spawnList[Random.Range(0, spawnList.Count)];
+                    // We don't want to use the same node twice, so remove it from the list
                     spawnList.Remove(point);
-
-                    // Create 
-
+                    // Add the new infected node to the list
                     infectionPoints.Add(point);
                 }
 
@@ -541,33 +541,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
         }
 
-        //void ChooseInfectedBlocks()
-        //{
-        //    infectedBlockCount = Random.Range(MinInfectedCount, MaxInfectedCount+1);
-        //    // Arrange infected nodes among floors
-        //    int[] floorInfections = new int[floors.Count];
-        //    for(int i=0; i < infectedBlockCount; i++)
-        //    {
-        //        int index = Random.Range(0, floors.Count);
-        //        floorInfections[index]++;
-        //    }
-        //    // Create infected nodes in every floor
-        //    for(int i=0; i<floorInfections.Length; i++)
-        //    {
-        //        Debug.Log($"Floor {i} has {floorInfections[i]} infections");
-        //        List<ShapeBlock> candidates = shapeBlocks.Where(b => b.floor == floors[i] && b.IsCommonBlock()).ToList();
-        //        for(int j=0; j < floorInfections[i]; j++)
-        //        {
-        //            // Choose a common block to replace with an infected one
-        //            var block = candidates[Random.Range(0, candidates.Count)];
-        //            // Remove the chosen block
-        //            candidates.Remove(block);
-        //            // Set the block as infected
-        //            block.isInfectedBlock = true;
-        //        }
-        //    }
-
-        //}
+        
 
         void ShapeRemainingFloors(GameObject root)
         {
