@@ -25,7 +25,7 @@ namespace HKR
 
         [SerializeField]
         float delay = 1;
-
+        public float Delay { get { return delay; } }
        
 
         float range = 0;
@@ -86,7 +86,7 @@ namespace HKR
                     Collider[] coll = Physics.OverlapSphere(transform.position, range, mask, QueryTriggerInteraction.Collide);
                     foreach (Collider collider in coll)
                     {
-                        if (collider.CompareTag(Tags.InfectionNode))
+                        //if (collider.CompareTag(Tags.InfectionNode))
                         {
                             if (!pingList.Contains(collider)) // We just ping once
                             {

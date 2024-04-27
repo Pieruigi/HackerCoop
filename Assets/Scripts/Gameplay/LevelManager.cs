@@ -17,6 +17,10 @@ namespace HKR
         [Networked]
         public int Seed { get; set; }
 
+        [UnitySerializeField]
+        [Networked]
+        public int BlockCount { get; set; }
+
         string theme = "HighTech";
         public string Theme { get { return theme; } }
 

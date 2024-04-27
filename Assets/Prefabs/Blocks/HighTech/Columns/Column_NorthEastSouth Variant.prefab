@@ -98,6 +98,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[0]
+      value: 8377356719447817271
+      objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[1]
+      value: 921816653131070536
+      objectReference: {fileID: 0}
     - target: {fileID: 3630284811629132160, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4
@@ -164,8 +172,28 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2900542087147480905, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4420204173298207432}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6956966189760493563, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: -1827029975230358618}
   m_SourcePrefab: {fileID: 100100000, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+--- !u!1 &1741139871758667376 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6956966189760493563, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+  m_PrefabInstance: {fileID: 8693599429642582411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-1827029975230358618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741139871758667376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384f63c19051d6f4db263c2b624e76ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5829088622008901314 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2900542087147480905, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}

@@ -38,11 +38,7 @@ namespace HKR.UI
 
             radarCircle.transform.localScale = new Vector2(radarController.Range, radarController.Range) / radarController.MaxRange;
 
-            // Update ping signals 
-            foreach(GameObject go in pingList)
-            {
-
-            }
+            
         }
 
         private void OnEnable()
@@ -95,7 +91,7 @@ namespace HKR.UI
 
             ping.transform.localPosition = new Vector2(direction.x, direction.z).normalized * distance / radarController.MaxRange * radarScreenRadius;
             //ping.transform.localPosition = Vector2.one;
-            ping.GetComponent<PingerUI>().SetLifeTime(radarController.MaxRange / radarController.Speed);
+            ping.GetComponent<PingerUI>().SetLifeTime(radarController.MaxRange / radarController.Speed + radarController.Delay);
         }
 
         private void HandleOnStopScanning()

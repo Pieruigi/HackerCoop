@@ -545,6 +545,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[0]
+      value: -1990810886927828470
+      objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[1]
+      value: -4568565197971767685
+      objectReference: {fileID: 0}
     - target: {fileID: 5719401942553793067, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4
@@ -602,8 +610,28 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2900542087147480905, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4834339140070617149}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6956966189760493563, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: -2539093841162711843}
   m_SourcePrefab: {fileID: 100100000, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+--- !u!1 &1965243922499373591 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6956966189760493563, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+  m_PrefabInstance: {fileID: 8919916777929031148}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-2539093841162711843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965243922499373591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384f63c19051d6f4db263c2b624e76ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6019380471824079525 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2900542087147480905, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}

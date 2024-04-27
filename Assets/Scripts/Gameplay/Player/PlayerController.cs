@@ -1,4 +1,5 @@
 using Fusion;
+using HKR.Building;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -282,6 +283,7 @@ namespace HKR
             {
                 moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
                 aimInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+               
                 crouchInput = Input.GetAxis("Crouch") > 0;
                 walkInput = !crouchInput && Input.GetAxis("Walk") > 0;
                 jumpInput = !jumping && !crouchInput && Input.GetAxis("Jump") > 0;
@@ -300,17 +302,15 @@ namespace HKR
 
         void SetPitchAndJaw()
         {
-            yaw += aimInput.x * mouseSensitivity * Time.deltaTime;
-            pitch += -aimInput.y * mouseSensitivity * Time.deltaTime;
+            // Mouse is already frame independent, so we don't need delta time
+            yaw += aimInput.x * mouseSensitivity;// * Time.deltaTime;
+            pitch += -aimInput.y * mouseSensitivity;// * Time.deltaTime;
             pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
         }
 
         void Yaw()
         {
-            //characterController.transform.rotation = Quaternion.Lerp(characterController.transform.rotation, Quaternion.Euler(0f, yaw, 0f), Time.fixedDeltaTime);
-            //playerCamera.transform.localRotation = Quaternion.Lerp(playerCamera.transform.localRotation, Quaternion.Euler(pitch, 0f, 0f), Time.fixedDeltaTime);
-            characterController.transform.rotation = Quaternion.Euler(0f, yaw, 0f);
-            //playerCamera.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+            transform.rotation = Quaternion.Euler(0f, yaw, 0f);
         }
 
         void Pitch()
@@ -437,6 +437,18 @@ namespace HKR
         //    if (HasStateAuthority)
         //        State = PlayerState.Normal;
         //}
+
+        /// <summary>
+        /// Returns the floor level the player stands in
+        /// </summary>
+        /// <returns></returns>
+        public int GetCurrentFloorLevel()
+        {
+            float playerY = transform.position.y;
+            int level = Mathf.FloorToInt(playerY / BuildingBlock.Height);
+            
+            return level;
+        }
     }
 
 }

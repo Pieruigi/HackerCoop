@@ -545,6 +545,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[0]
+      value: 3815257911726276707
+      objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[1]
+      value: 6544906226550903657
+      objectReference: {fileID: 0}
     - target: {fileID: 3630284811629132160, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4
@@ -614,8 +622,28 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2900542087147480905, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7304816430867264388}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6956966189760493563, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 2936972154720436379}
   m_SourcePrefab: {fileID: 100100000, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+--- !u!1 &550676039796795886 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6956966189760493563, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}
+  m_PrefabInstance: {fileID: 7433330905050750485}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2936972154720436379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550676039796795886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384f63c19051d6f4db263c2b624e76ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5722022037615376732 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2900542087147480905, guid: 3c41a6965afde1d42a2bc83ccdf2dc94, type: 3}

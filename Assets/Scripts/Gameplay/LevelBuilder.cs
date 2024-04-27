@@ -184,8 +184,16 @@ namespace HKR.Building
                 
             }
 
+            //// Arrange all the blocks under some root objects
+            //// Create the base root
+            //GameObject floorRoot = new GameObject("FloorRoot");
+            //// For each floor create a new game object as root child
+            //for(int i = 0; i< floors.Count; i++)
+            //{
+            //    var fObj = new GameObject($"Floor-{i}");
+            //    fObj.transform.parent = floorRoot.transform;
+            //}
                 
-          
         }
 
        
@@ -448,7 +456,8 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 #endif
             }
 
-            
+            // At this point we know exactly how many blocks we are going to spawn
+            LevelManager.Instance.BlockCount = shapeBlocks.Count;
         }
 
         void FillShapeBlocks()

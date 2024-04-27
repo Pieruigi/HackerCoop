@@ -545,6 +545,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[0]
+      value: -6611537613786170811
+      objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[1]
+      value: -6296005952567258920
+      objectReference: {fileID: 0}
     - target: {fileID: 3630284811629132160, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4
@@ -606,8 +614,28 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2900542087147480905, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6965467177582044801}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6956966189760493563, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 4301082986934013713}
   m_SourcePrefab: {fileID: 100100000, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+--- !u!1 &4071869660739738787 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6956966189760493563, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+  m_PrefabInstance: {fileID: 6345066108928043864}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4301082986934013713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4071869660739738787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384f63c19051d6f4db263c2b624e76ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8092686691199372305 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2900542087147480905, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}

@@ -16,6 +16,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[0]
+      value: -7740662965247450438
+      objectReference: {fileID: 0}
+    - target: {fileID: 2479316674513015685, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
+      propertyPath: Guid.RawGuidValue.Array.data[1]
+      value: -3851603306393844837
+      objectReference: {fileID: 0}
     - target: {fileID: 3630284811629132160, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4
@@ -78,13 +86,33 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2900542087147480905, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2518118301464439746}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6956966189760493563, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 5755539975166853259}
   m_SourcePrefab: {fileID: 100100000, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
 --- !u!4 &3901279517587084140 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2900542087147480905, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
   m_PrefabInstance: {fileID: 2190133309965071397}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &9144824334515454942 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6956966189760493563, guid: 07d856f8aad0ac74fa597b379126d593, type: 3}
+  m_PrefabInstance: {fileID: 2190133309965071397}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5755539975166853259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9144824334515454942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384f63c19051d6f4db263c2b624e76ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2615065781176705799
 PrefabInstance:
   m_ObjectHideFlags: 0

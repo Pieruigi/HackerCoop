@@ -12,12 +12,7 @@ namespace HKR.UI
         Image image;
 
         //[SerializeField]
-        float fadeInSpeed = .1f;
-
-        //[SerializeField]
-        float fadeOutSpeed = .25f;
-
-        float lifeTime;
+        
 
         // Start is called before the first frame update
         void Start()
@@ -33,17 +28,17 @@ namespace HKR.UI
 
         public void SetLifeTime(float lifeTime)
         {
-            this.lifeTime = lifeTime;
-            fadeInSpeed = lifeTime * .25f;
-            fadeOutSpeed = lifeTime * .75f;
+            float fadeInTime = lifeTime * .1f;
+            float fadeOutTime = lifeTime * .5f;
+            float fadeOutDelay = lifeTime - fadeInTime - fadeOutTime;
 
             Color c = Color.red;
             c.a = 0;
             image.color = c;
             Sequence seq = DOTween.Sequence();
 
-            seq.Append(DOTween.To(() => image.color, x => image.color = x, Color.red, fadeInSpeed));
-            seq.Append(DOTween.To(() => image.color, x => image.color = x, c, fadeOutSpeed)).onComplete += () => { Destroy(gameObject); };
+            seq.Append(DOTween.To(() => image.color, x => image.color = x, Color.red, fadeInTime));
+            seq.Append(DOTween.To(() => image.color, x => image.color = x, c, fadeOutTime).SetDelay(fadeOutDelay)).onComplete += () => { Destroy(gameObject); };
             seq.Play();
         }
     }
