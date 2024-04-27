@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -84,13 +85,21 @@ namespace HKR.UI
             // Create a new ping object
             GameObject ping = Instantiate(pingPrefab, pingContent);
             pingList.Add(ping);
+            ping.transform.localPosition = Vector3.zero;
+            ping.transform.localEulerAngles = new Vector3 (90, 0, 0);
             // Set the position on the radar screen
             Vector3 direction = Vector3.ProjectOnPlane(target.transform.position - radarController.transform.position, Vector3.up);
             float distance = direction.magnitude;
             Debug.Log($"Ping:{target.gameObject.name}, distance:{distance}");
 
-            ping.transform.localPosition = new Vector2(direction.x, direction.z).normalized * distance / radarController.MaxRange * radarScreenRadius;
-            //ping.transform.localPosition = Vector2.one;
+            //distance =  pingContent.transform.worldToLocalMatrix ;
+            direction = pingContent.InverseTransformDirection(direction);
+
+            //Vector3 pingDirection = new Vector3(direction.x, 0f, direction.z).normalized;
+            //pingDirection = Quaternion.AngleAxis(Vector3.SignedAngle(transform.root.forward, direction, Vector3.up), Vector3.up) * pingDirection;
+
+            ping.transform.localPosition = direction.normalized * distance / radarController.MaxRange * radarScreenRadius;
+            
             ping.GetComponent<PingerUI>().SetLifeTime(radarController.MaxRange / radarController.Speed + radarController.Delay);
         }
 
