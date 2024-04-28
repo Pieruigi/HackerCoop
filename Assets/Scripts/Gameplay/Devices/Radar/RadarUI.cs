@@ -94,12 +94,13 @@ namespace HKR.UI
 
             //distance =  pingContent.transform.worldToLocalMatrix ;
             direction = pingContent.InverseTransformDirection(direction);
-
+            
             //Vector3 pingDirection = new Vector3(direction.x, 0f, direction.z).normalized;
             //pingDirection = Quaternion.AngleAxis(Vector3.SignedAngle(transform.root.forward, direction, Vector3.up), Vector3.up) * pingDirection;
 
             ping.transform.localPosition = direction.normalized * distance / radarController.MaxRange * radarScreenRadius;
-            
+            ping.transform.localPosition = new Vector3(ping.transform.localPosition.x, 0f, ping.transform.localPosition.z);
+
             ping.GetComponent<PingerUI>().SetLifeTime(radarController.MaxRange / radarController.Speed + radarController.Delay);
         }
 

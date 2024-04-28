@@ -1,5 +1,7 @@
+using HKR.Building;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -39,6 +41,8 @@ namespace HKR
         LayerMask mask;
 
         List<Collider> pingList = new List<Collider>();
+
+        bool currentLevelOnly = true;
 
         private void Awake()
         {
@@ -86,14 +90,18 @@ namespace HKR
                     Collider[] coll = Physics.OverlapSphere(transform.position, range, mask, QueryTriggerInteraction.Collide);
                     foreach (Collider collider in coll)
                     {
-                        //if (collider.CompareTag(Tags.InfectionNode))
+                        if (currentLevelOnly)
                         {
-                            if (!pingList.Contains(collider)) // We just ping once
-                            {
-                                pingList.Add(collider);
-                                OnPing?.Invoke(collider);
-                            }
+                            int currentLevel = PlayerController.Local.GetCurrentFloorLevel();
+                            int colliderLevel = Mathf.FloorToInt(collider.transform.position.y / BuildingBlock.Height);
+                            if (colliderLevel != currentLevel)
+                                continue;
+                        }
 
+                        if (!pingList.Contains(collider)) // We just ping once
+                        {
+                            pingList.Add(collider);
+                            OnPing?.Invoke(collider);
                         }
                     }
 

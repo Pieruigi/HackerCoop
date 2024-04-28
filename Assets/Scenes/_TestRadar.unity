@@ -400,6 +400,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 189689097269047741, guid: a2b18d6432ce1174a96745057157c365, type: 3}
+      propertyPath: maxRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2122461280853392030, guid: a2b18d6432ce1174a96745057157c365, type: 3}
       propertyPath: m_Camera
       value: 
@@ -410,7 +414,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3897098731537530936, guid: a2b18d6432ce1174a96745057157c365, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.68
+      value: 10.65
       objectReference: {fileID: 0}
     - target: {fileID: 3897098731537530936, guid: a2b18d6432ce1174a96745057157c365, type: 3}
       propertyPath: m_LocalPosition.y
@@ -418,7 +422,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3897098731537530936, guid: a2b18d6432ce1174a96745057157c365, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.33
+      value: -7.03
       objectReference: {fileID: 0}
     - target: {fileID: 3897098731537530936, guid: a2b18d6432ce1174a96745057157c365, type: 3}
       propertyPath: m_LocalRotation.w
@@ -451,6 +455,14 @@ PrefabInstance:
     - target: {fileID: 4724095081930444048, guid: a2b18d6432ce1174a96745057157c365, type: 3}
       propertyPath: m_Name
       value: PlayerController
+      objectReference: {fileID: 0}
+    - target: {fileID: 5807801970614634215, guid: a2b18d6432ce1174a96745057157c365, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5807801970614634215, guid: a2b18d6432ce1174a96745057157c365, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

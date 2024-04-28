@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxRange: 20
-  speed: 15
+  speed: 30
   delay: 1
 --- !u!1 &8994599701829415547
 GameObject:
@@ -214,7 +214,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2943593506738315078, guid: 31e315243c7c2064f9e9d363e1cf742c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.062
+      value: 0.0508
       objectReference: {fileID: 0}
     - target: {fileID: 2943593506738315078, guid: 31e315243c7c2064f9e9d363e1cf742c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
