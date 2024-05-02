@@ -17,8 +17,8 @@ namespace HKR.Building
     {
         public static UnityAction<BuildingBlock> OnSpawned;
 
-        public const float Size = 18;
-        public const float Height = 6;
+        public const float Size = 9;
+        public const float Height = 3;
 
         [UnitySerializeField]
         [Networked]

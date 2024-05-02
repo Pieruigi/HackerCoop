@@ -562,6 +562,18 @@ PrefabInstance:
       value: Common_Free Variant
       objectReference: {fileID: 0}
     - target: {fileID: 8307585558721449009, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8307585558721449009, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8307585558721449009, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8307585558721449009, guid: 432849a79fd54b74b8d86ed8fffa50cb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}

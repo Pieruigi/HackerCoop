@@ -22,7 +22,7 @@ namespace HKR.Building
         public static LevelBuilder Instance {  get; private set; }
 
         public const int MinFloorCount = 3;
-        public const int MaxFloorCount = 8;
+        public const int MaxFloorCount = 5;
 
         public const int MinInfectedCount = 9;
         public const int MaxInfectedCount = 12;
@@ -35,13 +35,17 @@ namespace HKR.Building
         
         
         int floorCount;
-        FloorSize floorSize = FloorSize.Small;
+        //FloorSize floorSize = FloorSize.Small;
         int connectorCount = 3;
         int startingFloor = 0;
         
         //List<Vector2> blocksPerSize = new List<Vector2>(new Vector2[] { new Vector2(10, 12), new Vector2(14, 16), new Vector2(18, 20) });
-        List<int> minBlocksPerSize = new List<int>(new int[] { 20, 28, 36 });
-        List<int> maxBlocksPerSize = new List<int>(new int[] { 24, 32, 40 });
+        //List<int> minBlocksPerSize = new List<int>(new int[] { 20, 28, 36 });
+        //List<int> maxBlocksPerSize = new List<int>(new int[] { 24, 32, 40 });
+
+        int minBlocks = 80;
+        int maxBlocks = 90;
+
         int blockCount;
 
         List<Floor> floors = new List<Floor>();
@@ -56,8 +60,8 @@ namespace HKR.Building
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
 
         int infectedBlockCount;
-        
-        
+
+        int width, length;
 
         private void Awake()
         {
@@ -369,13 +373,14 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
         void CreateShape()
         {
-            blockCount = Random.Range(minBlocksPerSize[(int)floorSize], maxBlocksPerSize[(int)floorSize] + 1);
+            //blockCount = Random.Range(minBlocksPerSize[(int)floorSize], maxBlocksPerSize[(int)floorSize] + 1);
+            blockCount = Random.Range(minBlocks, maxBlocks) / floorCount;
             Debug.Log($"CreateShape() - blockCount:{blockCount}");
             // Width must be greater than length
-            float widthLengthRatio = Random.Range(1.5f, 3f);
+            float widthLengthRatio = Random.Range(.7f, 1.5f);//Random.Range(1.5f, 3f);
             // width * length = blockCount => r*length * length = blockCount => length = Sqrt(blockCount/r)
-            int length = (int)Mathf.Sqrt(blockCount / widthLengthRatio);
-            int width = blockCount / length;
+            length = (int)Mathf.Sqrt(blockCount / widthLengthRatio);
+            width = blockCount / length;
             // Check for remaining blocks
             int left = blockCount - (width * length);
             Debug.Log($"CreateShape() - width:{width}, length:{length}, diff:{left}");
@@ -611,9 +616,11 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
         void ChooseConnectorBlocks(GameObject root)
         {
+            bool useWidth = width > length;
+
             // Get the minimum and maximum X coordinates
-            float xMin = shapeBlocks.Min(b => b.Coordinates.x);
-            float xMax = shapeBlocks.Max(b => b.Coordinates.x);
+            float xMin = useWidth ? shapeBlocks.Min(b => b.Coordinates.x) : shapeBlocks.Min(b => b.Coordinates.y);
+            float xMax = useWidth ? shapeBlocks.Max(b => b.Coordinates.x) : shapeBlocks.Max(b => b.Coordinates.y);
 
             //
             // Choose connectors
@@ -632,8 +639,16 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                         max = min + 2;
                         break;
                     case 1:
-                        min = middle - 1;
-                        max = middle + 1;
+                        if(connectorCount == 3)
+                        {
+                            min = middle - 1;
+                            max = middle + 1;
+                        }
+                        else
+                        {
+                            min = xMax - 2;
+                            max = xMax;
+                        }
                         break;
                     case 2:
                         min = xMax - 2;
@@ -644,7 +659,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                 Debug.Log($"ChooseConnectorBlocks() - X coordinates, min:{min}, max:{max}");
 
                 // Get candidates
-                List<ShapeBlock> blocks = shapeBlocks.Where(b => b.Coordinates.x >= min && b.Coordinates.x <= max && !b.IsEnteringBlock).ToList();
+                List<ShapeBlock> blocks = shapeBlocks.Where(b => (useWidth ? b.Coordinates.x : b.Coordinates.y) >= min && (useWidth ? b.Coordinates.x : b.Coordinates.y) <= max && !b.IsEnteringBlock).ToList();
                 ShapeBlock chosen = blocks[Random.Range(0, blocks.Count)];
                 
                 int connType = Random.Range(0, 2); // 0: staircase, 1:elevator
@@ -904,7 +919,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
         {
             // Twist values
             List<int> moves = new List<int>();
-            for (int k = 0; k < 7; k++)
+            for (int k = 0; k < 3; k++)
                 moves.Add(0);
 
             for (int j = 1; j < length; j++)
@@ -1024,27 +1039,33 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             Debug.Log($"SetBuildingSchema() - FloorCount:{floorCount}");
             int step  = (MaxFloorCount + 1 - MinFloorCount) / 3;
             Debug.Log($"SetBuildingSchema() - Step:{step}");
-            bool found = false;
-            int size = 0;
-            int max = MinFloorCount + step;
-            while(!found)
-            {
-                if(floorCount < max)
-                {
-                    found = true;
-                }
-                else
-                {
-                    size++;
-                    max += step;
-                }
-            }
-            floorSize = (FloorSize)size;
-            Debug.Log($"SetBuildingSchema() - FloorSize:{floorSize}");
+            //bool found = false;
+            //int size = 0;
+            //int max = MinFloorCount + step;
+            //while(!found)
+            //{
+            //    if(floorCount < max)
+            //    {
+            //        found = true;
+            //    }
+            //    else
+            //    {
+            //        size++;
+            //        max += step;
+            //    }
+            //}
+            //floorSize = (FloorSize)size;
+            
         }
 
         void BuildLogicStructure()
         {
+            if(floorCount == 3)
+                connectorCount = 2;
+            else
+                connectorCount = Random.Range(2, 4);
+
+         
             // Create connectors
             for (int i = 0; i < connectorCount; i++)
             {
@@ -1092,7 +1113,12 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                 // Connect both floors
                 nextConnector.AddFloor(nextFloor);
                 // Get any elevator different from the last two used elevators
-                List<FloorConnector> tmpConnectors = connectors.FindAll(e => e != nextConnector && e != lastConnector);
+                List<FloorConnector> tmpConnectors = null;
+                if(connectorCount > 2)
+                    tmpConnectors = connectors.FindAll(e => e != nextConnector && e != lastConnector);
+                else
+                    tmpConnectors = connectors.FindAll(e => e != nextConnector);
+
                 lastConnector = nextConnector;
                 nextConnector = tmpConnectors[Random.Range(0, tmpConnectors.Count)];
 
@@ -1107,7 +1133,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             }
 
             // Set the floor you want to start from
-            startingFloor = Random.Range(0, floorCount);
+            startingFloor = Random.Range(1, floorCount);
             // Reset floor levels if you are not starting from the floor 0
             if(startingFloor > 0)
             {

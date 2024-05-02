@@ -5219,6 +5219,18 @@ PrefabInstance:
       value: Common_North Variant 1
       objectReference: {fileID: 0}
     - target: {fileID: 8307585558721449009, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8307585558721449009, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8307585558721449009, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8307585558721449009, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
