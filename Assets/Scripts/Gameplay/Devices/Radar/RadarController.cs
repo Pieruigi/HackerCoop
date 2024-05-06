@@ -118,6 +118,17 @@ namespace HKR
             
         }
 
+
+        private void OnEnable()
+        {
+            Activate();
+        }
+
+        private void OnDisable()
+        {
+            Deactivate();
+        }
+
         private void Reset()
         {
             range = 0;

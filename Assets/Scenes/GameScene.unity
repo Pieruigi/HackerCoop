@@ -275,7 +275,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1752562276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,6 +333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   helperBlockPrefab: {fileID: 7806526281932985924, guid: 51e761bf574c3b54ca7646a9a41f3c35, type: 3}
+  alarmSystemPrefab: {fileID: 6015644684697252032, guid: 7c7463ad874d6ff46a57550475859ee0, type: 3}
   shapeBlocks: []
 --- !u!4 &1921222430
 Transform:

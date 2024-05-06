@@ -1,5 +1,6 @@
 using Fusion;
 using HKR.Building;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,12 +16,20 @@ namespace HKR
         [Capacity(LevelBuilder.MaxFloorCount)]
         public NetworkLinkedList<int> ConnectedFloorLevels { get; } = default;// MakeInitializer<int>(new int[] { });
 
+       
+
+        
+
+
+        
+
         public override void Spawned()
         {
             base.Spawned();
 
         }
 
+        
     }
 
 }

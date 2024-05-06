@@ -15,6 +15,9 @@ namespace HKR
 
         ConnectorBlock connectorBlock;
 
+       
+        bool doorOpen = false;
+
         private void Awake()
         {
             connectorBlock = GetComponent<ConnectorBlock>();
@@ -35,11 +38,13 @@ namespace HKR
         private void OnEnable()
         {
             BuildingBlock.OnSpawned += HandleOnConnectorBlockSpawned;
+            AlarmSystemController.OnStateChanged += HandleOnAlarmSystemStateChanged;
         }
 
         private void OnDisable()
         {
             BuildingBlock.OnSpawned -= HandleOnConnectorBlockSpawned;
+            AlarmSystemController.OnStateChanged -= HandleOnAlarmSystemStateChanged;
         }
 
         private void HandleOnConnectorBlockSpawned(BuildingBlock block)
@@ -52,9 +57,37 @@ namespace HKR
             }
         }
 
+        private void HandleOnAlarmSystemStateChanged(AlarmSystemController alarmSystem, AlarmSystemState oldState, AlarmSystemState  newState)
+        {
+            if (alarmSystem.FloorLevel != connectorBlock.FloorLevel)
+                return;
+
+            if (!connectorBlock.ConnectedFloorLevels.Contains(connectorBlock.FloorLevel))
+                return;
+
+            if (newState == AlarmSystemState.Activated)
+            {
+                CloseDoor();
+            }
+            else
+            {
+                OpenDoor();
+            }
+            
+        }
+
         void OpenDoor()
         {
+            if (doorOpen) return;
+            doorOpen = true;
             door.transform.localPosition -= Vector3.right;
+        }
+
+        void CloseDoor()
+        {
+            if(!doorOpen) return;
+            doorOpen = false;
+            door.transform.localPosition += Vector3.right;
         }
     }
 

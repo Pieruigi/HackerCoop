@@ -10,7 +10,9 @@ using UnityEngine.SceneManagement;
 
 namespace HKR
 {
-    public enum PlayerState: byte { Paused, Alive, Dead }
+    public enum PlayerState: byte { Paused, Normal, Dead }
+
+    
 
     public class PlayerController : NetworkBehaviour
     {
@@ -85,7 +87,9 @@ namespace HKR
         bool isSpawned = false;
 
         bool inputDisabled = false;
+
         
+
 
         private void Awake()
         {
@@ -177,7 +181,7 @@ namespace HKR
         {
             switch (State)
             {
-                case PlayerState.Alive:
+                case PlayerState.Normal:
                     UpdateNormalState();
                     break;
             }
@@ -188,7 +192,7 @@ namespace HKR
         {
             switch (State)
             {
-                case PlayerState.Alive:
+                case PlayerState.Normal:
                     LateUpdateNormalState();
                     break;
             }
@@ -198,7 +202,7 @@ namespace HKR
         {
             switch (State)
             {
-                case PlayerState.Alive:
+                case PlayerState.Normal:
                     FixedUpdateNetworkNormalState();
                     break;
             }
@@ -258,7 +262,7 @@ namespace HKR
         {
             switch(newState)
             {
-                case PlayerState.Alive:
+                case PlayerState.Normal:
 
                     break;
 
@@ -429,7 +433,7 @@ namespace HKR
 
         public void SetAlive()
         {
-            State = PlayerState.Alive;
+            State = PlayerState.Normal;
         }
 
         //public void SetNormalState()
@@ -449,6 +453,8 @@ namespace HKR
             
             return level;
         }
+
+       
     }
 
 }

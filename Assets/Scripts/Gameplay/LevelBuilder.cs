@@ -30,7 +30,10 @@ namespace HKR.Building
         //#if BUILDING_TEST
         [SerializeField]
         GameObject helperBlockPrefab;
-//#endif
+        //#endif
+
+        [SerializeField]
+        GameObject alarmSystemPrefab;
 
         
         
@@ -133,6 +136,9 @@ namespace HKR.Building
 
             // Spawn infected nodes
             SpawnInfectedNodes();
+
+            // Alarm system controllers
+            SpawnAlarmSystemControllers();
         }
 
         void SpawnInfectedNodes()
@@ -143,11 +149,36 @@ namespace HKR.Building
             // Spawn nodes
             foreach(var point in infectionPoints)
             {
+                // Get floor level
+                float objectY = point.position.y;
+                int level = Mathf.FloorToInt(objectY / BuildingBlock.Height);
+
                 // Get a random asset
                 InfectedNodeAsset currentAsset = assets[Random.Range(0, assets.Count)];
                 // Spawn the prefab
-                SessionManager.Instance.NetworkRunner.Spawn(currentAsset.Prefab, point.position, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f));
+                SessionManager.Instance.NetworkRunner.Spawn(currentAsset.Prefab, point.position, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f), null,
+                    (r, o) =>
+                    {
+                        o.GetComponent<InfectionNodeController>().FloorLevel = level;
+                    });
             }
+        }
+
+        void SpawnAlarmSystemControllers()
+        {
+            for(int i=0; i<floors.Count; i++)
+            {
+                Debug.Log($"Floors[i]:{floors[i].Level}");
+                int level = floors[i].Level;
+
+                SessionManager.Instance.NetworkRunner.Spawn(alarmSystemPrefab, Vector3.zero, Quaternion.identity, null,
+                   (r, o) =>
+                   {
+                       o.GetComponent<AlarmSystemController>().FloorLevel = level;
+                   });
+            }
+            
+            
         }
 
         void SpawnFloors()
