@@ -15,17 +15,17 @@ namespace HKR
                 
         }
 
-        protected bool IsLeftHandEquipped()
+        public bool IsLeftHandEquipped()
         {
             return Equipment.Local.LeftHandIndex == Equipment.Local.GetDeviceIndex(this);
         }
 
-        protected bool IsRightHandEquipped()
+        public bool IsRightHandEquipped()
         {
             return Equipment.Local.RightHandIndex == Equipment.Local.GetDeviceIndex(this);
         }
 
-        protected bool IsEquipped()
+        public bool IsEquipped()
         {
             return IsLeftHandEquipped() || IsRightHandEquipped();
         }

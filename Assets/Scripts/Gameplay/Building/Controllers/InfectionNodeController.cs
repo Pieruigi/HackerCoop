@@ -103,6 +103,22 @@ namespace HKR
             if (State != InfectedNodeState.Hacking) return;
             State = InfectedNodeState.Clear;
         }
+
+        public void SetHackingState()
+        {
+            if (State != InfectedNodeState.Infected)
+                return;
+
+            State = InfectedNodeState.Hacking;
+        }
+
+        public void ResetHackingState()
+        {
+            if (State != InfectedNodeState.Hacking)
+                return;
+
+            State = InfectedNodeState.Infected;
+        }
     }
 
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6744858618365444771}
   - component: {fileID: 7755282421979459282}
+  - component: {fileID: 5816494586451191599}
   m_Layer: 0
   m_Name: HackingDevice
   m_TagString: Untagged
@@ -45,6 +46,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34c14069d52fdf34ea949e0ea0b8882f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5816494586451191599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325115705502636216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05b816a0040c5184b9d117532e9c24a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hackingRadius: 3
 --- !u!1 &1121599475344326924
 GameObject:
   m_ObjectHideFlags: 0
