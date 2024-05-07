@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace HKR
 {
     public class HackingController : MonoBehaviour
     {
-        
+        public UnityAction<bool> OnAiming;
 
         [SerializeField]
         float hackingRadius;
@@ -34,10 +35,15 @@ namespace HKR
             
 
             InfectionNodeController node;
-            TryCheckForInfectionNodeAiming(out node);
+            if(TryCheckForInfectionNodeAiming(out node))
+                OnAiming?.Invoke(true);
+            else
+                OnAiming?.Invoke(false);
+
             Debug.Log($"Node:{node}");
             if (currentHackingNode) // We are already hacking a node
             {
+                
                 // Check if we are still aiming the node
                 if (node != currentHackingNode)
                     StopHacking();
@@ -48,13 +54,12 @@ namespace HKR
             {
                 if (node)
                 {
-                    // We may call some event to report the UI here
-
-                   
                     // Check for input
                     if (device.GetButtonDown())
                         StartHacking(node);
+                        
                 }
+              
             }
         }
 
@@ -105,6 +110,7 @@ namespace HKR
             Debug.Log("Start kacking...");
             node.SetHackingState();
             currentHackingNode = node;
+            
         }
     }
 

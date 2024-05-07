@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace HKR
@@ -84,7 +85,7 @@ namespace HKR
 
         private void OnEnable()
         {
-           
+            
 
             // We should check which device is available here
 
@@ -95,7 +96,12 @@ namespace HKR
             base.Spawned();
 
             if (HasStateAuthority)
+            {
                 Local = this;
+                // Move hands under the camera
+                SetHandsRoot();
+            }
+                
             
 
             changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
@@ -104,6 +110,15 @@ namespace HKR
             {
                 device.Hide();
             }
+
+            
+        }
+
+        async void SetHandsRoot()
+        {
+            await Task.Delay(500);
+            leftHand.transform.parent = Camera.main.transform;
+            rightHand.transform.parent = Camera.main.transform;
         }
 
         void DetectChanges()
@@ -140,8 +155,11 @@ namespace HKR
 
             if (newValue >= 0)
             {
-                devices[newValue].transform.position = leftHand.transform.position;
-                devices[newValue].transform.rotation = leftHand.transform.rotation;
+                //devices[newValue].transform.position = leftHand.transform.position;
+                //devices[newValue].transform.rotation = leftHand.transform.rotation;
+                devices[newValue].transform.parent = leftHand.transform;
+                devices[newValue].transform.localPosition = Vector3.zero;
+                devices[newValue].transform.localRotation = Quaternion.identity;
                 devices[newValue].Show();
             }
                 
@@ -161,8 +179,12 @@ namespace HKR
             // Show the new device
             if (newValue >= 0)
             {
-                devices[newValue].transform.position = rightHand.transform.position;
-                devices[newValue].transform.rotation = rightHand.transform.rotation;
+                devices[newValue].transform.parent = rightHand.transform;
+                devices[newValue].transform.localPosition = Vector3.zero;
+                devices[newValue].transform.localRotation = Quaternion.identity;
+
+                //devices[newValue].transform.position = rightHand.transform.position;
+                //devices[newValue].transform.rotation = rightHand.transform.rotation;
                 devices[newValue].Show();
             }
                 

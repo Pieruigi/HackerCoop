@@ -12,6 +12,8 @@ namespace HKR
 
         public const int RarityMinLevel = 0;
         public const int RarityMaxLevel = 9;
+
+        public const int InfectionTypeCount = 3;
     }
 
     public class Layers

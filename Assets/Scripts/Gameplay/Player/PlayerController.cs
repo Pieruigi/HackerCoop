@@ -16,7 +16,7 @@ namespace HKR
 
     public class PlayerController : NetworkBehaviour
     {
-        public static UnityAction OnSpawned;
+        public static UnityAction<PlayerController> OnSpawned;
 
         public static PlayerController Local { get; private set; }
 
@@ -150,7 +150,7 @@ namespace HKR
           
             changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
-            OnSpawned?.Invoke();
+            OnSpawned?.Invoke(this);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)

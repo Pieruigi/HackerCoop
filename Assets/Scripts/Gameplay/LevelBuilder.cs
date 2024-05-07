@@ -159,7 +159,9 @@ namespace HKR.Building
                 SessionManager.Instance.NetworkRunner.Spawn(currentAsset.Prefab, point.position, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f), null,
                     (r, o) =>
                     {
-                        o.GetComponent<InfectionNodeController>().FloorLevel = level;
+                        InfectionNodeController controller = o.GetComponent<InfectionNodeController>();
+                        controller.FloorLevel = level;
+                        controller.InfectionType = (byte)Random.Range(0, Constants.InfectionTypeCount);
                     });
             }
         }

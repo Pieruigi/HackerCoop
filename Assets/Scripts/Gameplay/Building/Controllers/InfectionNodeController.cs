@@ -8,6 +8,8 @@ namespace HKR
 {
     public enum InfectedNodeState : byte { Infected, Clear, Locked, Hacking }
 
+    
+
     public class InfectionNodeController : NetworkBehaviour
     {
         [UnitySerializeField]
@@ -18,9 +20,14 @@ namespace HKR
         [Networked]
         public int FloorLevel { get; set; }
 
+        [UnitySerializeField]
+        [Networked]
+        public byte InfectionType { get; set; }
+
         ChangeDetector changeDetector;
 
         AlarmSystemController alarmSystemController;
+
 
 
         private void Update()
