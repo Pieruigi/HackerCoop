@@ -10,15 +10,25 @@ namespace HKR
     public class HackingController : MonoBehaviour
     {
         public UnityAction<bool> OnAiming;
+        public UnityAction<float> OnStartConnecting;
+        public UnityAction OnStopConnecting;
 
         [SerializeField]
         float hackingRadius;
 
+        [SerializeField]
+        float connectingTime = 3;
+
+        
         InfectionNodeController currentHackingNode; // The node we are actually hacking
 
         List<InfectionNodeController> infectionNodes;
 
         PlayerDevice device;
+
+        bool connecting = false;
+        float connectionTimeElapsed = 0;
+
 
         private void Awake()
         {
@@ -38,7 +48,16 @@ namespace HKR
             if(TryCheckForInfectionNodeAiming(out node))
                 OnAiming?.Invoke(true);
             else
+            {
                 OnAiming?.Invoke(false);
+                // You must keep aiming at the node to connect the hacking device
+                if (connecting)
+                {
+                    connecting = false;
+                    OnStopConnecting?.Invoke();
+                }
+            }
+                
 
             Debug.Log($"Node:{node}");
             if (currentHackingNode) // We are already hacking a node
@@ -55,11 +74,38 @@ namespace HKR
                 if (node)
                 {
                     // Check for input
-                    if (device.GetButtonDown())
-                        StartHacking(node);
-                        
+                    //if (device.GetButtonDown())
+                    //    StartHacking(node);
+                    if (device.GetButton())
+                    {
+                        if(!connecting)
+                        {
+                            connecting = true;
+                            connectionTimeElapsed = 0;
+                            OnStartConnecting?.Invoke(connectingTime);
+                        }
+
+                    }
+                    else
+                    {
+                        if(connecting)
+                        {
+                            connecting = false;
+                            OnStopConnecting?.Invoke();
+                        }
+                    }    
                 }
               
+            }
+
+            if (connecting)
+            {
+                connectionTimeElapsed += Time.deltaTime;
+                if(connectionTimeElapsed > connectingTime)
+                {
+                    connecting = false;
+                    StartHacking(node);
+                }
             }
         }
 
@@ -76,6 +122,8 @@ namespace HKR
         {
            
         }
+
+        
 
         bool TryCheckForInfectionNodeAiming(out InfectionNodeController node)
         {

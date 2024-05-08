@@ -17,6 +17,8 @@ namespace HKR.UI
         [SerializeField]
         Image aimingImage;
 
+        
+
         bool aiming = false;
         float aimingAnimationTime = 3;
 
