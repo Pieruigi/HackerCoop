@@ -24,9 +24,6 @@ namespace HKR
 
         ChangeDetector changeDetector;
 
-        //List<InfectionNodeController> infectionNodeControllers;
-        //List<ConnectorBlock> connectorBlocks;
-
         private void Update()
         {
             DetectChanges();
@@ -41,6 +38,8 @@ namespace HKR
             OnSpawned?.Invoke(this);
             
         }
+
+
 
         void DetectChanges()
         {
@@ -65,7 +64,8 @@ namespace HKR
             OnStateChanged?.Invoke(this, oldState, newState);
         }
 
-        public void SwitchAlarmOn()
+        [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+        public void SwitchAlarmOnRpc()
         {
             State = AlarmSystemState.Activated;
         }
@@ -73,6 +73,11 @@ namespace HKR
         public void SwitchAlarmOff()
         {
             State = AlarmSystemState.Deactivated;
+        }
+
+        public static AlarmSystemController GetAlarmSystemController(int floorLevel)
+        {
+            return FindObjectsOfType<AlarmSystemController>().Where(o=>o.FloorLevel == floorLevel).FirstOrDefault();
         }
     }
 

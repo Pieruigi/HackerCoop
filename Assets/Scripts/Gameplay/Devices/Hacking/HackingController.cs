@@ -1,7 +1,10 @@
+using Fusion;
 using HKR;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,14 +15,23 @@ namespace HKR
         public UnityAction<bool> OnAiming;
         public UnityAction<float> OnStartConnecting;
         public UnityAction OnStopConnecting;
-
+        
         [SerializeField]
         float hackingRadius;
 
         [SerializeField]
         float connectingTime = 3;
 
-        
+        [SerializeField]
+        float detectingTime = 6;
+
+        [SerializeField]
+        List<GameObject> apps;
+
+        [SerializeField]
+        HackingTimer hackingTimer;
+
+
         InfectionNodeController currentHackingNode; // The node we are actually hacking
 
         List<InfectionNodeController> infectionNodes;
@@ -65,7 +77,10 @@ namespace HKR
                 
                 // Check if we are still aiming the node
                 if (node != currentHackingNode)
+                {
+                    currentHackingNode.ResetHackingStateRpc();
                     StopHacking();
+                }
                 else
                     KeepHacking();
             }
@@ -73,9 +88,6 @@ namespace HKR
             {
                 if (node)
                 {
-                    // Check for input
-                    //if (device.GetButtonDown())
-                    //    StartHacking(node);
                     if (device.GetButton())
                     {
                         if(!connecting)
@@ -104,7 +116,8 @@ namespace HKR
                 if(connectionTimeElapsed > connectingTime)
                 {
                     connecting = false;
-                    StartHacking(node);
+                    //StartHacking(node);
+                    node.SendStartHackingRequestRpc(new RpcInfo() { Source = SessionManager.Instance.NetworkRunner.LocalPlayer });
                 }
             }
         }
@@ -116,11 +129,14 @@ namespace HKR
                 return;
             // Load all the infection nodes
             infectionNodes = FindObjectsOfType<InfectionNodeController>().ToList();
+
         }
 
         protected  void OnDisable()
         {
-           
+           // Deactivate all apps 
+           foreach(var app in apps)
+                app.SetActive(false);
         }
 
         
@@ -144,8 +160,11 @@ namespace HKR
 
         void StopHacking()
         {
-            currentHackingNode.ResetHackingState();
+            // Disable the current app
+            apps[currentHackingNode.InfectionType].SetActive(false);
             currentHackingNode = null;
+            // Reset timer
+            hackingTimer.ResetTimer();
         }
 
         void KeepHacking()
@@ -153,12 +172,39 @@ namespace HKR
             Debug.Log("Keep hacking...");
         }
 
-        void StartHacking(InfectionNodeController node)
+        public void StartHacking(InfectionNodeController node)
         {
             Debug.Log("Start kacking...");
-            node.SetHackingState();
+            // Set the node state
             currentHackingNode = node;
-            
+            // Launch the suitable app
+            apps[currentHackingNode.InfectionType].SetActive(true);
+            // Start timer
+            hackingTimer.StartTimer(detectingTime);
+        }
+
+        
+
+        public void OnHackingSucceded()
+        {
+            hackingTimer.ResetTimer();
+            currentHackingNode.SetClearStateRpc();
+            StopHacking();
+        }
+
+        public void OnHackingFailed()
+        {
+            hackingTimer.ResetTimer();
+            AlarmSystemController asc = AlarmSystemController.GetAlarmSystemController(currentHackingNode.FloorLevel);
+            // Switch the alarm on
+            asc.SwitchAlarmOnRpc();
+            StopHacking();
+        }
+
+        public void OnHackingDetected()
+        {
+            // If you get detected the hacking failed
+            OnHackingFailed();
         }
     }
 

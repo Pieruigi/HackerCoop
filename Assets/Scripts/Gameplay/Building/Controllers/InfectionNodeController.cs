@@ -98,34 +98,52 @@ namespace HKR
         }
 
 
-        public void OnHackingFailed()
+    
+
+        [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+        public void SendStartHackingRequestRpc(RpcInfo rpcInfo)
         {
-            if (State != InfectedNodeState.Hacking) return;
-            // Activate alarm 
-            alarmSystemController.SwitchAlarmOn();
+            
+            if (State != InfectedNodeState.Infected)
+            {
+                SendStartHackingResponseRpc(rpcInfo.Source, false);
+            }
+            else
+            {
+                State = InfectedNodeState.Hacking;
+                SendStartHackingResponseRpc(rpcInfo.Source, true);
+            }
+
+            
+
         }
 
-        public void OnHackingSucceeded()
+        [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
+        public void SendStartHackingResponseRpc([RpcTarget] PlayerRef target, NetworkBool allowed)
         {
-            if (State != InfectedNodeState.Hacking) return;
-            State = InfectedNodeState.Clear;
+            if(allowed)
+                PlayerController.Local.GetComponentInChildren<HackingController>().StartHacking(this);
         }
 
-        public void SetHackingState()
+        [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+        public void ResetHackingStateRpc()
+        {
+
+            if (State != InfectedNodeState.Hacking)
+                return;
+            
+            State = InfectedNodeState.Infected;
+        }
+
+        [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+        public void SetClearStateRpc()
         {
             if (State != InfectedNodeState.Infected)
                 return;
 
-            State = InfectedNodeState.Hacking;
+            State = InfectedNodeState.Clear;
         }
 
-        public void ResetHackingState()
-        {
-            if (State != InfectedNodeState.Hacking)
-                return;
-
-            State = InfectedNodeState.Infected;
-        }
     }
 
 }

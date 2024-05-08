@@ -6,17 +6,23 @@ namespace HKR
 {
     public class CouplerApp : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
-        {
+        [SerializeField]
+        GameObject circles;
 
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.T)) 
+            {
+                GetComponentInParent<HackingController>().OnHackingSucceded();
+            }
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                GetComponentInParent<HackingController>().OnHackingFailed();
+            }
         }
 
-        // Update is called once per frame
-        void Update()
-        {
 
-        }
     }
 
 }
