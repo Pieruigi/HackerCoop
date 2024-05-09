@@ -41,12 +41,18 @@ namespace HKR
 
         ChangeDetector changeDetector;
 
+        HandController leftHandController;
+        HandController rightHandController;
+
         private void Awake()
         {
             foreach (var device in devices)
             {
                 device.gameObject.SetActive(false);
             }
+
+            leftHandController = leftHand.GetComponent<HandController>();
+            rightHandController = rightHand.GetComponent<HandController>();
         }
 
         private void Update()
@@ -117,8 +123,8 @@ namespace HKR
         async void SetHandsRoot()
         {
             await Task.Delay(500);
-            leftHand.transform.parent = Camera.main.transform;
-            rightHand.transform.parent = Camera.main.transform;
+            leftHand.transform.parent.parent = Camera.main.transform;
+            rightHand.transform.parent.parent = Camera.main.transform;
         }
 
         void DetectChanges()
@@ -220,9 +226,13 @@ namespace HKR
             {
                 case BodyPart.LeftHand:
                     LeftHandIndex = -1;
+                    // Be sure the hand is down
+                    leftHandController.MoveDown();
                     break;
                 case BodyPart.RightHand:
                     RightHandIndex = -1;
+                    // Be sure the hand is down
+                    rightHandController.MoveDown();
                     break;
             }
         }

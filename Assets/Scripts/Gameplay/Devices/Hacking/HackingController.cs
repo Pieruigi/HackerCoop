@@ -1,5 +1,6 @@
 using Fusion;
 using HKR;
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,6 +41,8 @@ namespace HKR
 
         bool connecting = false;
         float connectionTimeElapsed = 0;
+        HandController handController;
+
 
 
         private void Awake()
@@ -95,6 +98,8 @@ namespace HKR
                             connecting = true;
                             connectionTimeElapsed = 0;
                             OnStartConnecting?.Invoke(connectingTime);
+                            // Move hand up
+                            handController.MoveUp();
                         }
 
                     }
@@ -104,6 +109,8 @@ namespace HKR
                         {
                             connecting = false;
                             OnStopConnecting?.Invoke();
+                            // Move hand down
+                            handController.MoveDown();
                         }
                     }
 
@@ -126,11 +133,14 @@ namespace HKR
         protected void OnEnable()
         {
           
-            if (!device.IsLocalPlayer() || infectionNodes != null)
+            if (!device.IsLocalPlayer())
                 return;
             // Load all the infection nodes
-            infectionNodes = FindObjectsOfType<InfectionNodeController>().ToList();
+            if(infectionNodes == null)
+                infectionNodes = FindObjectsOfType<InfectionNodeController>().ToList();
 
+            // Get the hand controller
+            handController = GetComponentInParent<HandController>();
         }
 
         protected  void OnDisable()
@@ -138,6 +148,7 @@ namespace HKR
            // Deactivate all apps 
            foreach(var app in apps)
                 app.SetActive(false);
+
         }
 
         
@@ -172,6 +183,8 @@ namespace HKR
             ResetNodeAndApp();
             // Reset timer
             hackingTimer.StopTimer();
+            // Move hand down
+            handController.MoveDown();
         }
 
         void KeepHacking()
@@ -188,6 +201,8 @@ namespace HKR
             apps[currentHackingNode.InfectionType].SetActive(true);
             // Start timer
             hackingTimer.StartTimer(detectingTime);
+            
+
         }
 
         

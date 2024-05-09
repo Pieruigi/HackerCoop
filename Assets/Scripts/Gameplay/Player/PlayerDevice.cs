@@ -7,8 +7,7 @@ namespace HKR
 {
     public class PlayerDevice : MonoBehaviour
     {
-
-        
+               
         public bool IsLocalPlayer()
         {
             return transform.root == PlayerController.Local.transform;
@@ -101,6 +100,7 @@ namespace HKR
         public void Show()
         {
             gameObject.SetActive(true);
+            
         }
 
         public void Hide()
