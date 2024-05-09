@@ -1,4 +1,5 @@
 using Fusion;
+using Fusion.Photon.Realtime;
 using HKR.Building;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,17 +107,19 @@ namespace HKR
         // Update is called once per frame
         void Update()
         {
+
 #if UNITY_EDITOR
-            if(Input.GetKeyDown(KeyCode.P)) 
+            
+            if (Input.GetKeyDown(KeyCode.P)) 
             {
-                //if (Time.timeScale > 0)
+                if (Time.timeScale > 0)
                     Time.timeScale = 0.0f;
-                //else
-                //    Time.timeScale = 1f;
+                 else
+                    Time.timeScale = 1f;
             }
 #endif
 
-            if (!isSpawned)
+            if (!isSpawned || Time.timeScale == 0)
                 return;
 
             DetectChanges();
@@ -126,7 +129,7 @@ namespace HKR
 
         private void LateUpdate()
         {
-            if (!isSpawned)
+            if (!isSpawned || Time.timeScale == 0)
                 return;
 
             LateUpdateState();
@@ -134,7 +137,7 @@ namespace HKR
 
         public override void FixedUpdateNetwork()
         {
-            if (!isSpawned)
+            if (!isSpawned || Time.timeScale == 0)
                 return;
 
             base.FixedUpdateNetwork();

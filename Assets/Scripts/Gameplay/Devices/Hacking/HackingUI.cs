@@ -17,6 +17,9 @@ namespace HKR.UI
         [SerializeField]
         Image aimingImage;
 
+        [SerializeField]
+        Image lockedImage;
+
         
 
         bool aiming = false;
@@ -59,7 +62,7 @@ namespace HKR.UI
             hackingController.OnAiming -= HandleOnAiming;
         }
 
-        private void HandleOnAiming(bool value)
+        private void HandleOnAiming(bool value, InfectedNodeState nodeState)
         {
             if (aiming == value)
                 return;
@@ -68,6 +71,21 @@ namespace HKR.UI
             aimingImage.enabled = value;
             aiming = value;
             lastAimingFrameTime = System.DateTime.Now;
+
+            // Check the node state on aiming
+            if (aiming)
+            {
+                switch (nodeState)
+                {
+                    case InfectedNodeState.Locked:
+                        lockedImage.enabled = true;
+                        break;
+                }
+            }
+            else
+            {
+                lockedImage.enabled = false;
+            }
         }
 
         void ResetAll()
@@ -75,6 +93,7 @@ namespace HKR.UI
             aiming = false;
             aimingImage.enabled = false;
             currentAimingFrame = 0;
+            lockedImage.enabled = false;
         }
     }
 

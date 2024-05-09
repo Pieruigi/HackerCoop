@@ -12,14 +12,7 @@ namespace HKR
 
         private void Update()
         {
-            if(Input.GetKeyDown(KeyCode.T)) 
-            {
-                GetComponentInParent<HackingController>().OnHackingSucceded();
-            }
-            if (Input.GetKeyDown(KeyCode.Y))
-            {
-                GetComponentInParent<HackingController>().OnHackingFailed();
-            }
+            
         }
 
 

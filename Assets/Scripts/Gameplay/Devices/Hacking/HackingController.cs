@@ -12,7 +12,7 @@ namespace HKR
 {
     public class HackingController : MonoBehaviour
     {
-        public UnityAction<bool> OnAiming;
+        public UnityAction<bool, InfectedNodeState> OnAiming;
         public UnityAction<float> OnStartConnecting;
         public UnityAction OnStopConnecting;
         
@@ -58,10 +58,10 @@ namespace HKR
 
             InfectionNodeController node;
             if(TryCheckForInfectionNodeAiming(out node))
-                OnAiming?.Invoke(true);
+                OnAiming?.Invoke(true, node.State);
             else
             {
-                OnAiming?.Invoke(false);
+                OnAiming?.Invoke(false, default);
                 // You must keep aiming at the node to connect the hacking device
                 if (connecting)
                 {
@@ -86,11 +86,11 @@ namespace HKR
             }
             else
             {
-                if (node)
+                if (node && node.State == InfectedNodeState.Infected)
                 {
                     if (device.GetButton())
                     {
-                        if(!connecting)
+                        if (!connecting)
                         {
                             connecting = true;
                             connectionTimeElapsed = 0;
@@ -100,12 +100,13 @@ namespace HKR
                     }
                     else
                     {
-                        if(connecting)
+                        if (connecting)
                         {
                             connecting = false;
                             OnStopConnecting?.Invoke();
                         }
-                    }    
+                    }
+
                 }
               
             }
@@ -158,13 +159,19 @@ namespace HKR
             return node;
         }
 
-        void StopHacking()
+        void ResetNodeAndApp()
         {
             // Disable the current app
             apps[currentHackingNode.InfectionType].SetActive(false);
             currentHackingNode = null;
+        }
+
+        void StopHacking()
+        {
+            // Disable the current app
+            ResetNodeAndApp();
             // Reset timer
-            hackingTimer.ResetTimer();
+            hackingTimer.StopTimer();
         }
 
         void KeepHacking()
@@ -187,14 +194,13 @@ namespace HKR
 
         public void OnHackingSucceded()
         {
-            hackingTimer.ResetTimer();
+            hackingTimer.StopTimer();
             currentHackingNode.SetClearStateRpc();
             StopHacking();
         }
 
         public void OnHackingFailed()
         {
-            hackingTimer.ResetTimer();
             AlarmSystemController asc = AlarmSystemController.GetAlarmSystemController(currentHackingNode.FloorLevel);
             // Switch the alarm on
             asc.SwitchAlarmOnRpc();

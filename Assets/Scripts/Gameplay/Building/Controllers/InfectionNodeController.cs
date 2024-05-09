@@ -138,7 +138,7 @@ namespace HKR
         [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
         public void SetClearStateRpc()
         {
-            if (State != InfectedNodeState.Infected)
+            if (State != InfectedNodeState.Hacking)
                 return;
 
             State = InfectedNodeState.Clear;
