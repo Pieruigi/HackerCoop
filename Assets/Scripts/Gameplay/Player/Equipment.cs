@@ -46,13 +46,13 @@ namespace HKR
 
         private void Awake()
         {
-            foreach (var device in devices)
-            {
-                device.gameObject.SetActive(false);
-            }
+            //foreach (var device in devices)
+            //{
+            //    device.gameObject.SetActive(false);
+            //}
 
-            leftHandController = leftHand.GetComponent<HandController>();
-            rightHandController = rightHand.GetComponent<HandController>();
+            leftHandController = leftHand.GetComponentInParent<HandController>();
+            rightHandController = rightHand.GetComponentInParent<HandController>();
         }
 
         private void Update()
@@ -112,12 +112,12 @@ namespace HKR
 
             changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
-            foreach(var device in devices)
+            foreach (var device in devices)
             {
                 device.Hide();
             }
 
-            
+
         }
 
         async void SetHandsRoot()

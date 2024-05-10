@@ -12,7 +12,7 @@ namespace HKR
     {
 
         [SerializeField]
-        List<Image> connectionImages;
+        List<SpriteRenderer> connectionImages;
 
         bool connecting = false;
         float connectionElapsed;
@@ -116,13 +116,13 @@ namespace HKR
 
         void TweenColorAll(Color newColor)
         {
-            foreach (Image image in connectionImages)
+            foreach (SpriteRenderer image in connectionImages)
             {
                 TweenColor(image, newColor);
             }
         }
 
-        void TweenColor(Image target, Color newColor)
+        void TweenColor(SpriteRenderer target, Color newColor)
         {
             target.DOColor(newColor, colorTime);
         }

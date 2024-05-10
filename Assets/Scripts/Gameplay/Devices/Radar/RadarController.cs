@@ -86,7 +86,7 @@ namespace HKR
                 {
                     // Scanning
                     range = Mathf.Min(range + Time.deltaTime * speed, maxRange);
-                    Debug.Log($"Range:{range}");
+                    
                     Collider[] coll = Physics.OverlapSphere(transform.position, range, mask, QueryTriggerInteraction.Collide);
                     foreach (Collider collider in coll)
                     {

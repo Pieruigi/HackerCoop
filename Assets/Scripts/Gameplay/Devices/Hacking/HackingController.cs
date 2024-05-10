@@ -56,8 +56,6 @@ namespace HKR
             if (!device.IsLocalPlayer() || PlayerController.Local.State != PlayerState.Normal)
                 return;
 
-            
-            
 
             InfectionNodeController node;
             if(TryCheckForInfectionNodeAiming(out node))
@@ -69,12 +67,12 @@ namespace HKR
                 if (connecting)
                 {
                     connecting = false;
+                    handController.MoveDown();
                     OnStopConnecting?.Invoke();
                 }
             }
                 
 
-            Debug.Log($"Node:{node}");
             if (currentHackingNode) // We are already hacking a node
             {
                 
@@ -141,17 +139,23 @@ namespace HKR
 
             // Get the hand controller
             handController = GetComponentInParent<HandController>();
+
+            // Deactivate all apps 
+            DeactivateAppAll();
         }
 
         protected  void OnDisable()
         {
-           // Deactivate all apps 
-           foreach(var app in apps)
-                app.SetActive(false);
+            // Deactivate all apps 
+            DeactivateAppAll();
 
         }
 
-        
+        void DeactivateAppAll()
+        {
+            foreach (var app in apps)
+                app.SetActive(false);
+        }
 
         bool TryCheckForInfectionNodeAiming(out InfectionNodeController node)
         {
@@ -161,10 +165,7 @@ namespace HKR
             LayerMask mask = LayerMask.GetMask();
             mask = ~mask; // We may need to upgrade the hacking device and let it do its work through walls for example
             if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hitInfo, hackingRadius, mask, QueryTriggerInteraction.Collide))
-            {
-                Debug.Log($"Hit:{hitInfo.collider.gameObject.name}");
                 node = hitInfo.collider.GetComponentInParent<InfectionNodeController>();
-            }
                 
 
             return node;

@@ -24,7 +24,7 @@ namespace HKR.UI
 
         List<GameObject> pingList = new List<GameObject>();
 
-        float radarScreenRadius = 5;
+        float radarScreenRadius = .120f;
         // Start is called before the first frame update
         void Start()
         {
@@ -87,33 +87,25 @@ namespace HKR.UI
             pingList.Add(ping);
             ping.transform.localPosition = Vector3.zero;
             ping.transform.localEulerAngles = new Vector3 (90, 0, 0);
-            // Set the position on the radar screen
-            Vector3 direction = Vector3.ProjectOnPlane(target.transform.position - radarController.transform.position, Vector3.up);
-            float distance = direction.magnitude;
-            Debug.Log($"Ping:{target.gameObject.name}, distance:{distance}");
-
-            //distance =  pingContent.transform.worldToLocalMatrix ;
-            direction = pingContent.InverseTransformDirection(direction);
             
-            //Vector3 pingDirection = new Vector3(direction.x, 0f, direction.z).normalized;
-            //pingDirection = Quaternion.AngleAxis(Vector3.SignedAngle(transform.root.forward, direction, Vector3.up), Vector3.up) * pingDirection;
-
+            // Set the position on the radar screen
+            Vector3 direction = Vector3.ProjectOnPlane(target.transform.position - PlayerController.Local.transform.position, Vector3.up);
+            float distance = direction.magnitude;
+            direction = PlayerController.Local.transform.InverseTransformVector(direction);
+            
             ping.transform.localPosition = direction.normalized * distance / radarController.MaxRange * radarScreenRadius;
-            ping.transform.localPosition = new Vector3(ping.transform.localPosition.x, 0f, ping.transform.localPosition.z);
 
             ping.GetComponent<PingerUI>().SetLifeTime(radarController.MaxRange / radarController.Speed + radarController.Delay);
         }
 
         private void HandleOnStopScanning()
         {
-            Debug.Log("Stop scanning");
             radarCircle.transform.localScale = Vector2.zero;
             pingList.Clear();
         }
 
         private void HandleOnStartScanning()
         {
-            Debug.Log("Start scanning");
             // Reset scale
             radarCircle.transform.localScale = Vector2.zero;
             

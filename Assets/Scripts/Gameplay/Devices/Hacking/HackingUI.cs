@@ -15,10 +15,10 @@ namespace HKR.UI
         List<Sprite> aimingSprites;
 
         [SerializeField]
-        Image aimingImage;
+        SpriteRenderer aimingImage;
 
         [SerializeField]
-        Image lockedImage;
+        SpriteRenderer lockedImage;
 
         
 

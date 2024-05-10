@@ -7,10 +7,10 @@ namespace HKR
 {
     public class PlayerDevice : MonoBehaviour
     {
-               
+
         public bool IsLocalPlayer()
         {
-            return transform.root == PlayerController.Local.transform;
+            return PlayerController.Local && transform.root == PlayerController.Local.transform;
                 
         }
 

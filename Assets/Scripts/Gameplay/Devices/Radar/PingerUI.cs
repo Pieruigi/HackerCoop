@@ -9,7 +9,7 @@ namespace HKR.UI
     public class PingerUI : MonoBehaviour
     {
         [SerializeField]
-        Image image;
+        SpriteRenderer image;
 
         //[SerializeField]
         
