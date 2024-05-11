@@ -59,6 +59,8 @@ namespace HKR
 
         private void HandleOnAlarmSystemStateChanged(AlarmSystemController alarmSystem, AlarmSystemState oldState, AlarmSystemState  newState)
         {
+            Debug.Log($"Staircase - AlarmChanged from {oldState.ToString()} to {newState.ToString()}");
+
             if (alarmSystem.FloorLevel != connectorBlock.FloorLevel)
                 return;
 
@@ -67,6 +69,7 @@ namespace HKR
 
             if (newState == AlarmSystemState.Activated)
             {
+                Debug.Log($"Staircase - Closing door");
                 CloseDoor();
             }
             else

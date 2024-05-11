@@ -11,6 +11,7 @@ namespace HKR
         HackingController hackingController;
         float timer = 0;
         bool loop = false;
+        float delay = 0;
 
         public float Timer
         {
@@ -38,18 +39,28 @@ namespace HKR
         {
             if(loop)
             {
-                timer-=Time.deltaTime;
-                if(timer < 0)
+                if(delay > 0)
                 {
-                    hackingController.OnHackingDetected();
-                    loop = false; 
+                    delay -= Time.deltaTime;
                 }
+                else
+                {
+                    timer -= Time.deltaTime;
+                    if (timer < 0)
+                    {
+                        hackingController.OnHackingDetected();
+                        loop = false;
+                    }
+                }
+
+                
             }
         }
 
         public void StartTimer(float duration)
         {
             timer = duration;
+            delay = Constants.HackingAppPlayDelay;
             loop = true;
         }
 

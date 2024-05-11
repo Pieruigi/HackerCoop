@@ -14,6 +14,7 @@ namespace HKR
             public GameObject spawnedObject;
             public bool hittable = false;
             public Vector3 moveDirection;
+            public bool hit = false;
         }
 
         [SerializeField]
@@ -32,15 +33,15 @@ namespace HKR
 
         float spawnRadius = 0.01f;
 
-        float spawnRate = 1f;
+        float spawnRate = .3f;
 
-        float spawnSpeed = 0.5f;
+        float spawnSpeed = 0.2f;
 
         int hitCount = 0;
 
         int hitTarget = 6;
 
-        
+        PlayerDevice device;
 
         List<SpawnInfo> spawnInfoList = new List<SpawnInfo>();
         float elapsed = 0;
@@ -48,6 +49,8 @@ namespace HKR
         
         private void Awake()
         {
+            device = GetComponentInParent<PlayerDevice>();
+            spawnRate = radius * .8f / spawnSpeed;
         }
 
         private void Update()
@@ -67,9 +70,26 @@ namespace HKR
 
             // Update spawned objects
             foreach(var info in spawnInfoList )
-                info.spawnedObject.transform.localPosition += info.moveDirection * spawnSpeed * Time.deltaTime;
+                info.spawnedObject.transform.localPosition += info.moveDirection.normalized * spawnSpeed * Time.deltaTime;
 
-
+            // Check input
+            if (device.GetButtonDown())
+            {
+                // Target info
+                var info = spawnInfoList.Find(s => s.hittable && !s.hit);
+                if (info != null)
+                {
+                    info.hit = true;
+                    hitCount++;
+                    Destroy(info.spawnedObject);
+                    spawnInfoList.Remove(info);
+                }
+                else
+                {
+                    
+                }
+                
+            }
             
         }
 
@@ -77,7 +97,7 @@ namespace HKR
         {
             ClearAll();
             ui.SetActive(true);
-            
+            elapsed = Constants.HackingAppPlayDelay;
         }
 
         private void OnDisable()
@@ -94,9 +114,35 @@ namespace HKR
             if (info == null)
                 return;
 
+            // Set the object as hittable
+            info.hittable = true;
+
+            // Change the color
             Sequence seq = DOTween.Sequence();
-            seq.SetDelay(3);
+            SpriteRenderer sr = info.spawnedObject.GetComponent<SpriteRenderer>();
+            Color targetColor = sr.color * 3f;
+            seq.Append(DOTween.To(() => sr.color, x => sr.color = x, targetColor, .05f));
+            seq.Play();
+            //seq.SetDelay(3);
+            //seq.onComplete += () => { Destroy(info.spawnedObject); spawnInfoList.Remove(info); };
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            SpawnInfo info = spawnInfoList.Where(i => i.spawnedObject == other.gameObject).First();
+            if (info == null)
+                return;
+
+            // No longer hittable
+            info.hittable = false;
+
+            // Move alpha to zero
+            SpriteRenderer sr = info.spawnedObject.GetComponent<SpriteRenderer>();
+            Color targetColor = new Color(sr.color.r, sr.color.g, sr.color.b, 0f);
+            Sequence seq = DOTween.Sequence();
+            seq.Append(DOTween.To(() => sr.color, x => sr.color = x, targetColor, .2f));
             seq.onComplete += () => { Destroy(info.spawnedObject); spawnInfoList.Remove(info); };
+            seq.Play();
         }
 
         void ClearAll()

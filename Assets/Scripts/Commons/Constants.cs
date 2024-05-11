@@ -14,6 +14,7 @@ namespace HKR
         public const int RarityMaxLevel = 9;
 
         public const int InfectionTypeCount = 1;
+        public const float HackingAppPlayDelay = .5f;
     }
 
     public class Layers
