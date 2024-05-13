@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace HKR
 {
@@ -12,6 +13,8 @@ namespace HKR
 
     public class InfectionNodeController : NetworkBehaviour
     {
+        public UnityAction</*Old*/InfectedNodeState, /*New*/InfectedNodeState> OnStateChanged;
+
         [UnitySerializeField]
         [Networked]
         public InfectedNodeState State { get; private set; }
@@ -67,10 +70,15 @@ namespace HKR
                     case nameof(State):
                         var stateReader = GetPropertyReader<InfectedNodeState>(propertyName);
                         var (statePrev, stateCurr) = stateReader.Read(previousBuffer, currentBuffer);
-                        //EnterNewState(statePrev, stateCurr);
+                        EnterNewState(statePrev, stateCurr);
                         break;
                 }
             }
+        }
+
+        void EnterNewState(InfectedNodeState prevState, InfectedNodeState currState)
+        {
+            OnStateChanged?.Invoke(prevState, currState);
         }
 
         private void HandleOnAlarmSystemSpawned(AlarmSystemController arg0)

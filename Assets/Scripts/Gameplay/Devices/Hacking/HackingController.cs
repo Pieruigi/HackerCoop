@@ -16,6 +16,8 @@ namespace HKR
         public UnityAction<bool, InfectedNodeState> OnAiming;
         public UnityAction<float> OnStartConnecting;
         public UnityAction OnStopConnecting;
+        public UnityAction OnHitSuccedeed;
+        public UnityAction OnHitFailed;
         
         [SerializeField]
         float hackingRadius;
@@ -23,7 +25,7 @@ namespace HKR
         [SerializeField]
         float connectingTime = 3;
 
-        [SerializeField]
+        //[SerializeField]
         float detectingTime = 6;
 
         [SerializeField]
@@ -32,7 +34,7 @@ namespace HKR
         [SerializeField]
         HackingTimer hackingTimer;
 
-
+        
         InfectionNodeController currentHackingNode; // The node we are actually hacking
 
         List<InfectionNodeController> infectionNodes;
@@ -43,7 +45,10 @@ namespace HKR
         float connectionTimeElapsed = 0;
         HandController handController;
 
-
+        int appHitTarget = 0;
+        int appMaxErrors = 0;
+        int appHitCount = 0;
+        int appErrorCount = 0;
 
         private void Awake()
         {
@@ -228,6 +233,38 @@ namespace HKR
             // If you get detected the hacking failed
             OnHackingFailed();
         }
+
+        public void SetAppData(float timer, int target, int maxErrors)
+        {
+            appHitTarget = target;
+            appMaxErrors = maxErrors;
+            detectingTime = timer;
+            appHitCount = 0;
+            appErrorCount = 0;
+        }
+
+        public void HitSucceded()
+        {
+            appHitCount++;
+            if(appHitCount >= appHitTarget)
+            {
+                // Succeed and stop
+                OnHackingSucceded();
+            }
+            OnHitSuccedeed?.Invoke();
+        }
+
+        public void HitFailed()
+        {
+            appErrorCount++;
+            if(appErrorCount >= appMaxErrors)
+            {
+                // Fail and stop
+                OnHackingFailed();
+            }
+            OnHitFailed?.Invoke();
+        }
+
     }
 
 }

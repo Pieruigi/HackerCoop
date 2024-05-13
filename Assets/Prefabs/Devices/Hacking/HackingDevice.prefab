@@ -61,7 +61,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hackingRadius: 3
   connectingTime: 3
-  detectingTime: 6
   apps:
   - {fileID: 7838680852143159711}
   hackingTimer: {fileID: 8370893858479852032}
@@ -617,6 +616,11 @@ MonoBehaviour:
   spawnPrefab: {fileID: 6630107422213937240, guid: a93f2435b4ffca342a6cb9496094512c, type: 3}
   spawnLayer: {fileID: 400714800616923072}
   hittableSpawnColor: {r: 0, g: 1, b: 0, a: 1}
+  timer: 15
+  hitTarget: 10
+  maxErrors: 2
+  radius: 0.115
+  objectSpeed: 0.2
 --- !u!135 &8861227109265718576
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -855,6 +859,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2400100439717241590, guid: 196a53773e80a2844bc9d070504c4c5c, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 5816494586451191599}
     - target: {fileID: 6177641116155553243, guid: 196a53773e80a2844bc9d070504c4c5c, type: 3}
       propertyPath: m_Name
       value: CommonUI
