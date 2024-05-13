@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 5474773465000909178}
   - component: {fileID: 8560198112451151432}
   - component: {fileID: 5338657453236006490}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -654,7 +654,7 @@ GameObject:
   - component: {fileID: 3190786562148078024}
   - component: {fileID: 2056610252163806382}
   - component: {fileID: 5938431346654618380}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -860,6 +860,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2400100439717241590, guid: 196a53773e80a2844bc9d070504c4c5c, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 5816494586451191599}
+    - target: {fileID: 5439899049754635749, guid: 196a53773e80a2844bc9d070504c4c5c, type: 3}
       propertyPath: controller
       value: 
       objectReference: {fileID: 5816494586451191599}

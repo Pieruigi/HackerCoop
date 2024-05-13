@@ -18,7 +18,9 @@ namespace HKR
         public UnityAction OnStopConnecting;
         public UnityAction OnHitSuccedeed;
         public UnityAction OnHitFailed;
-        
+        public UnityAction OnHackingStarted;
+        public UnityAction OnHackingStopped;
+
         [SerializeField]
         float hackingRadius;
 
@@ -49,6 +51,26 @@ namespace HKR
         int appMaxErrors = 0;
         int appHitCount = 0;
         int appErrorCount = 0;
+
+        public int HitTarget
+        {
+            get { return appHitTarget; }
+        }
+
+        public int HitCount
+        {
+            get { return appHitCount; }
+        }
+
+        public int MaxErrors
+        {
+            get { return appMaxErrors; }
+        }
+
+        public int ErrorCount
+        {
+            get { return appErrorCount; }
+        }
 
         private void Awake()
         {
@@ -191,6 +213,8 @@ namespace HKR
             hackingTimer.StopTimer();
             // Move hand down
             handController.MoveDown();
+
+            OnHackingStopped?.Invoke();
         }
 
         void KeepHacking()
@@ -207,7 +231,8 @@ namespace HKR
             apps[currentHackingNode.InfectionType].SetActive(true);
             // Start timer
             hackingTimer.StartTimer(detectingTime);
-            
+
+            OnHackingStarted?.Invoke();
 
         }
 
@@ -241,6 +266,8 @@ namespace HKR
             detectingTime = timer;
             appHitCount = 0;
             appErrorCount = 0;
+
+            
         }
 
         public void HitSucceded()
@@ -264,6 +291,8 @@ namespace HKR
             }
             OnHitFailed?.Invoke();
         }
+
+        
 
     }
 
