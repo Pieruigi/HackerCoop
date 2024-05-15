@@ -49,6 +49,8 @@ namespace HKR.Building
 
         public bool IsColumnBlock = false;
 
+        public SecurityCameraAsset SecurityCameraAsset = null;
+
         //public bool IsInfectedBlock { get { return infectionIndices.Count > 0; } }
         //public List<int> infectionPoints = new List<int>();
 
@@ -105,6 +107,14 @@ namespace HKR.Building
             return !IsEnteringBlock && !IsConnectorBlock && !IsColumnBlock;
         }
 
+        public Vector3 GetPhysicalPosition()
+        {
+            Vector3 position = Vector3.zero;
+            position.y = floor.Level * BuildingBlock.Height;
+            position.x = BuildingBlock.Size * Coordinates.x;
+            position.z = BuildingBlock.Size * Coordinates.y;
+            return position;
+        }
         
     }
 

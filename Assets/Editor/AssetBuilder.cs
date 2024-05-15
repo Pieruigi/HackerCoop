@@ -53,6 +53,26 @@ namespace HKR.Editor
             Selection.activeObject = asset;
         }
 
+
+        [MenuItem("Assets/Create/HKR/SecurityCamera")]
+        public static void CreateSecurityCameraAsset()
+        {
+            SecurityCameraAsset asset = ScriptableObject.CreateInstance<SecurityCameraAsset>();
+            string name = "SecurityCamera.asset";
+
+            string folder = System.IO.Path.Combine(ResourceFolder, SecurityCameraAsset.ResourceFolder);
+
+            if (!System.IO.Directory.Exists(folder))
+                System.IO.Directory.CreateDirectory(folder);
+
+            AssetDatabase.CreateAsset(asset, System.IO.Path.Combine(folder, name));
+
+            AssetDatabase.SaveAssets();
+
+            EditorUtility.FocusProjectWindow();
+
+            Selection.activeObject = asset;
+        }
     }
 
    

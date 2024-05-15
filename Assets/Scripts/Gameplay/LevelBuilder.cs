@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static Fusion.Sockets.NetBitBuffer;
@@ -61,6 +60,8 @@ namespace HKR.Building
         List<Transform> infectionPoints = new List<Transform>();
 
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
+
+        //Dictionary<Vector3, Camera> securityCameras = new List<Vector3>();
 
         int infectedBlockCount;
 
@@ -139,6 +140,30 @@ namespace HKR.Building
 
             // Alarm system controllers
             SpawnAlarmSystemControllers();
+
+            // Spawn security cameras
+            SpawnSecurityCameras();
+        }
+
+        void SpawnSecurityCameras()
+        {
+            foreach(var block in shapeBlocks)
+            {
+                if (block.SecurityCameraAsset)
+                {
+                    // Position and rotation
+                    Vector3 position = block.GetPhysicalPosition() + new Vector3(BuildingBlock.Size / 2f, 0f, BuildingBlock.Size / 2f);
+                    Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0);
+
+                    SessionManager.Instance.NetworkRunner.Spawn(block.SecurityCameraAsset.Prefab, position, rotation, null,
+                    (r, o) =>
+                    {
+                        //InfectionNodeController controller = o.GetComponent<InfectionNodeController>();
+                        //controller.FloorLevel = level;
+                        //controller.InfectionType = (byte)Random.Range(0, Constants.InfectionTypeCount);
+                    });
+                }
+            }
         }
 
         void SpawnInfectedNodes()
@@ -485,6 +510,9 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             // Choose infected nodes
             ChooseInfectedNodes();
 
+            // Choose security camera positions
+            ChooseSecurityCameras();
+            
             foreach (var b in shapeBlocks)
             {
 
@@ -496,6 +524,24 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
             // At this point we know exactly how many blocks we are going to spawn
             LevelManager.Instance.BlockCount = shapeBlocks.Count;
+        }
+
+        void ChooseSecurityCameras()
+        {
+            // Load all the available assets
+            List<SecurityCameraAsset> assets = new List<SecurityCameraAsset>(Resources.LoadAll<SecurityCameraAsset>(SecurityCameraAsset.ResourceFolder));
+            Debug.Log($"SpawnSecurityCameras() - Loaded {assets.Count} asset(s) from resources.");
+
+            List<SecurityCameraAsset> tmp = new List<SecurityCameraAsset>();
+            foreach (var asset in assets)
+            {
+                for (int i = 0; i < asset.Weight; i++)
+                    tmp.Add(asset);
+            }
+            assets = tmp;
+
+            ShapeBlock block = shapeBlocks.Where(s=>s.IsEnteringBlock).First();
+            block.SecurityCameraAsset = assets[Random.Range(0, assets.Count)];
         }
 
         void FillShapeBlocks()

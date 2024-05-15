@@ -16,11 +16,6 @@ namespace HKR
         [Capacity(LevelBuilder.MaxFloorCount)]
         public NetworkLinkedList<int> ConnectedFloorLevels { get; } = default;// MakeInitializer<int>(new int[] { });
 
-       
-
-        
-
-
         
 
         public override void Spawned()

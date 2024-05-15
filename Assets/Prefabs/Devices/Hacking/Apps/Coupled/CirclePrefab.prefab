@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3195865262041021943}
   - component: {fileID: 5936788536614561105}
   - component: {fileID: -7471886223130167678}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: CirclePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}

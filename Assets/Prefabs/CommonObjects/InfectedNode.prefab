@@ -886,6 +886,7 @@ GameObject:
   - component: {fileID: 8485423733965867974}
   - component: {fileID: 4919782136415131471}
   - component: {fileID: 1527780523424693969}
+  - component: {fileID: 1152980898240915941}
   m_Layer: 0
   m_Name: InfectedNode
   m_TagString: Untagged
@@ -957,6 +958,23 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 8485423733965867974}
+  - {fileID: 1152980898240915941}
+--- !u!114 &1152980898240915941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6649661473067966117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &6887131869633029961
 GameObject:
   m_ObjectHideFlags: 0
