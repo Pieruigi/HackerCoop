@@ -17,6 +17,8 @@ namespace HKR
         [Networked]
         public SecurityState State { get; set; } = SecurityState.Normal;
 
+        
+
         ChangeDetector changeDetector;
 
         // Start is called before the first frame update

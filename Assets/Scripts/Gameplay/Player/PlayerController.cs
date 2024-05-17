@@ -57,6 +57,7 @@ namespace HKR
         [SerializeField]
         Transform cameraRoot;
 
+
         CharacterController characterController;
         Camera playerCamera;
         Vector3 velocity = Vector3.zero;
@@ -467,6 +468,10 @@ namespace HKR
             return level;
         }
 
+        public Transform GetSightTarget()
+        {
+            return cameraRoot;
+        }
        
     }
 
