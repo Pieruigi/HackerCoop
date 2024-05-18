@@ -20,6 +20,7 @@ namespace HKR
     public class Layers
     {
         public const string RadarTarget = "RadarTarget";
+
     }
 
     public class Tags

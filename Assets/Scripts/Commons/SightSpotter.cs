@@ -41,7 +41,7 @@ namespace HKR
         {
             // Adjust the trigger size
             Vector3 scale = transform.localScale;
-            scale.x = scale.z = sightRange * .5f;
+            scale.x = scale.z = sightRange * 2f;
             transform.localScale = scale;
         }
 
@@ -85,7 +85,49 @@ namespace HKR
                 case SecurityState.Normal:
                     UpdateNormalState();
                     break;
+                case SecurityState.Suspect:
+                    UpdateSuspectState();
+                    break;
             }
+        }
+
+        bool IsPlayerInSight(PlayerController player)
+        {
+            // Get the sight target which is the camera root
+            Transform sightTarget = player.GetSightTarget();
+
+            // Get the direction 
+            Vector3 direction = sightTarget.position - eyes.position;
+
+            // Check the horizontal angle
+            Vector3 hDir = Vector3.ProjectOnPlane(direction, Vector3.up);
+            Vector3 hFwd = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
+            float angle = Vector3.Angle(hDir, hFwd);
+            if (angle < sightAngles.x)
+            {
+                // Check the vertical angle
+                Vector3 vDir = Vector3.ProjectOnPlane(direction, eyes.right);
+                angle = Vector3.Angle(vDir, eyes.forward);
+
+                if (angle < sightAngles.y)
+                {
+                    Debug.Log($"Vertical Angle:{angle}, SightAngle:{sightAngles.y}");
+                    // Do raycast to check if there is any obstacle between the camera and the potential target
+                    RaycastHit hitInfo;
+                    Ray ray = new Ray(eyes.position, direction.normalized);
+                    if (Physics.Raycast(ray, out hitInfo, sightRange, ~LayerMask.GetMask(), QueryTriggerInteraction.Ignore))
+                    {
+                        Debug.Log($"Raycast hit:{hitInfo.collider.gameObject.name}");
+                        // Check if the hit object is the player we are checking 
+                        if (hitInfo.collider.gameObject == player.gameObject)
+                            return true;
+                    }
+
+
+                }
+            }
+
+            return false;
         }
 
         void UpdateNormalState()
@@ -93,21 +135,26 @@ namespace HKR
             // Being in normal state means the camera has no target at all, so we check for a new target if any
             for(int i=0; i<inTriggerList.Count && !currentTarget; i++)
             {
-                // Get the sight target which is the camera root
-                Transform sightTarget = inTriggerList[i].GetSightTarget();
-
-                // Check if the target is in the sight range
-                Vector3 hDir = Vector3.ProjectOnPlane(sightTarget.position-eyes.position, Vector3.up);
-                Vector3 hFwd = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
-                float angle = Vector3.Angle(hDir, hFwd);
-                if(angle < sightAngles.x)
+                if (IsPlayerInSight(inTriggerList[i]))
                 {
-                    currentTarget = inTriggerList[i]; // Target found
+                    currentTarget = inTriggerList[i];
+                    currentTargetTime = System.DateTime.Now;
                 }
+                    
             }
 
             if(currentTarget)
                 securityStateController.State = SecurityState.Suspect;
+        }
+
+        void UpdateSuspectState()
+        {
+            if (!IsPlayerInSight(currentTarget))
+            {
+                currentTarget = null;
+                securityStateController.State = SecurityState.Normal;
+            }
+                
         }
     }
 

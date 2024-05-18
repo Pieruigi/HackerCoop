@@ -17,6 +17,9 @@ namespace HKR
         [SerializeField]
         float rotationSpeed;
 
+        [SerializeField]
+        float aimingRotationSpeed;
+
         bool spawned = false;
         
         private void Awake()
@@ -76,17 +79,17 @@ namespace HKR
 
         private void UpdateFreezedState()
         {
-            throw new NotImplementedException();
+            
         }
 
         private void UpdateSpottedState()
         {
-            throw new NotImplementedException();
+            
         }
 
         private void UpdateSuspectState()
         {
-            throw new NotImplementedException();
+            
         }
 
         private void UpdateNormalState()
