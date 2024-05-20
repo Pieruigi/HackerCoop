@@ -1,3 +1,5 @@
+using HKR.Building;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,7 +30,7 @@ namespace HKR
         SecurityStateController securityStateController;
 
         [SerializeField]
-        float alarmTollerance = 4;
+        float alarmTolleranceThreshold = 4;
 
         //List<Data> dataList = new List<Data>();
 
@@ -37,12 +39,14 @@ namespace HKR
 
         List<PlayerController> inTriggerList = new List<PlayerController>();
 
+        
         private void Awake()
         {
             // Adjust the trigger size
             Vector3 scale = transform.localScale;
             scale.x = scale.z = sightRange * 2f;
             transform.localScale = scale;
+            
         }
 
         // Update is called once per frame
@@ -54,6 +58,8 @@ namespace HKR
             // Check the player list
             UpdateState();
         }
+
+               
 
         private void OnTriggerEnter(Collider other)
         {
@@ -78,6 +84,8 @@ namespace HKR
 
         }
 
+        
+
         void UpdateState()
         {
             switch (securityStateController.State)
@@ -85,8 +93,11 @@ namespace HKR
                 case SecurityState.Normal:
                     UpdateNormalState();
                     break;
-                case SecurityState.Suspect:
-                    UpdateSuspectState();
+                case SecurityState.Spotted:
+                    UpdateSpottedState();
+                    break;
+                case SecurityState.Alarmed:
+                    UpdateAlarmedState();
                     break;
             }
         }
@@ -111,13 +122,12 @@ namespace HKR
 
                 if (angle < sightAngles.y)
                 {
-                    Debug.Log($"Vertical Angle:{angle}, SightAngle:{sightAngles.y}");
                     // Do raycast to check if there is any obstacle between the camera and the potential target
                     RaycastHit hitInfo;
                     Ray ray = new Ray(eyes.position, direction.normalized);
                     if (Physics.Raycast(ray, out hitInfo, sightRange, ~LayerMask.GetMask(), QueryTriggerInteraction.Ignore))
                     {
-                        Debug.Log($"Raycast hit:{hitInfo.collider.gameObject.name}");
+                   
                         // Check if the hit object is the player we are checking 
                         if (hitInfo.collider.gameObject == player.gameObject)
                             return true;
@@ -128,6 +138,33 @@ namespace HKR
             }
 
             return false;
+        }
+
+        void UpdateAlarmedState()
+        {
+            if (currentTarget)
+            {
+                // Camera already has a target, check if it's still in sight
+                if (!IsPlayerInSight(currentTarget))
+                    currentTarget = null;
+            }
+            else
+            {
+                // No target, check any
+                for (int i = 0; i < inTriggerList.Count && !currentTarget; i++)
+                {
+                    if (IsPlayerInSight(inTriggerList[i]))
+                    {
+                        currentTarget = inTriggerList[i];
+                    }
+
+                }
+            }
+
+            // If there is a target we reset the alarm system timer
+            if (currentTarget)
+                AlarmSystemController.GetAlarmSystemController(securityStateController.FloorLevel).ResetAlarmTimer();
+            
         }
 
         void UpdateNormalState()
@@ -144,17 +181,26 @@ namespace HKR
             }
 
             if(currentTarget)
-                securityStateController.State = SecurityState.Suspect;
+                securityStateController.State = SecurityState.Spotted;
         }
 
-        void UpdateSuspectState()
+        void UpdateSpottedState()
         {
             if (!IsPlayerInSight(currentTarget))
             {
+                // Target is no longer in sight, we go back to the normal state
                 currentTarget = null;
                 securityStateController.State = SecurityState.Normal;
             }
-                
+            else
+            {
+                // Target is in sight, we check for how long
+                if((System.DateTime.Now-currentTargetTime).TotalSeconds > alarmTolleranceThreshold) 
+                {
+                    // Lock the floor down
+                    AlarmSystemController.GetAlarmSystemController(securityStateController.FloorLevel).SwitchAlarmOnRpc();
+                }
+            }
         }
     }
 

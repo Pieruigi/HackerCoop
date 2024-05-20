@@ -158,6 +158,7 @@ namespace HKR.Building
                     SessionManager.Instance.NetworkRunner.Spawn(block.SecurityCameraAsset.Prefab, position, rotation, null,
                     (r, o) =>
                     {
+                        o.GetComponent<SecurityStateController>().FloorLevel = block.floor.Level;
                         //InfectionNodeController controller = o.GetComponent<InfectionNodeController>();
                         //controller.FloorLevel = level;
                         //controller.InfectionType = (byte)Random.Range(0, Constants.InfectionTypeCount);
@@ -540,8 +541,28 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             }
             assets = tmp;
 
-            ShapeBlock block = shapeBlocks.Where(s=>s.IsEnteringBlock).First();
-            block.SecurityCameraAsset = assets[Random.Range(0, assets.Count)];
+#if UNITY_EDITOR
+            // Testing the entering block
+            //ShapeBlock block = shapeBlocks.Where(s=>s.IsEnteringBlock).First();
+            //block.SecurityCameraAsset = assets[Random.Range(0, assets.Count)];
+#endif
+            foreach(var floor in floors)
+            {
+                // Get all the blocks in the current floor ( except for entering and connection blocks )
+                List<ShapeBlock> blocks = shapeBlocks.Where(b=>b.floor == floor && !b.IsEnteringBlock && !b.IsConnectorBlock).ToList();
+                float ratioMin = .05f;
+                float ratioMax = .1f;
+                int count = Mathf.RoundToInt(Random.Range(ratioMin, ratioMax) * blocks.Count);
+                for(int i=0; i<count; i++)
+                {
+                    // Choose a new block to set the security camera in
+                    ShapeBlock b = blocks[Random.Range(0, blocks.Count)];
+                    // Remove the block from the list
+                    blocks.Remove(b);
+                    // Add the camera
+                    b.SecurityCameraAsset = assets[Random.Range(0, assets.Count)];
+                }
+            }
         }
 
         void FillShapeBlocks()

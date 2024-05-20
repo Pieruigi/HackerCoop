@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +23,28 @@ namespace HKR
         [Networked]
         public AlarmSystemState State { get; private set; } = AlarmSystemState.Deactivated;
 
+        [SerializeField]
+        float alarmDuration = 20;
+
         ChangeDetector changeDetector;
+
+        DateTime alarmLastTime;
 
         private void Update()
         {
+            // Single player and master client only
+            if(SessionManager.Instance.NetworkRunner.IsSinglePlayer || SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
+            {
+                // Reset alarm if any player is no longer spotted
+                if(State == AlarmSystemState.Activated)
+                {
+                    if((DateTime.Now - alarmLastTime).TotalSeconds > alarmDuration)
+                    {
+                        SwitchAlarmOff();
+                    }
+                }
+            }
+
             DetectChanges();
         }
 
@@ -67,6 +86,8 @@ namespace HKR
         [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
         public void SwitchAlarmOnRpc()
         {
+            // Set when the alarm was triggered
+            alarmLastTime = DateTime.Now;
             State = AlarmSystemState.Activated;
         }
 
@@ -78,6 +99,11 @@ namespace HKR
         public static AlarmSystemController GetAlarmSystemController(int floorLevel)
         {
             return FindObjectsOfType<AlarmSystemController>().Where(o=>o.FloorLevel == floorLevel).FirstOrDefault();
+        }
+
+        public void ResetAlarmTimer()
+        {
+            alarmLastTime = DateTime.Now;
         }
     }
 

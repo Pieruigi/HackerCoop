@@ -64,10 +64,10 @@ namespace HKR
                 case SecurityState.Normal:
                     UpdateNormalState();
                     break;
-                case SecurityState.Suspect:
+                case SecurityState.Spotted:
                     UpdateSuspectState();
                     break;
-                case SecurityState.Spotted:
+                case SecurityState.Alarmed:
                     UpdateSpottedState();
                     break;
                 case SecurityState.Freezed:

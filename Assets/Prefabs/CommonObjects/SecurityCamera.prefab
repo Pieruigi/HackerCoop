@@ -283,6 +283,7 @@ GameObject:
   - component: {fileID: 1653454097687342504}
   - component: {fileID: 8269453548091731867}
   - component: {fileID: 7025552468100680753}
+  - component: {fileID: 3765337436223083363}
   - component: {fileID: 4868742362735011477}
   - component: {fileID: 8331420800245689292}
   m_Layer: 0
@@ -322,6 +323,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _State: 0
+  _FloorLevel: 0
+  freezingRecoveryTime: 10
 --- !u!114 &7025552468100680753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +340,20 @@ MonoBehaviour:
   stateController: {fileID: 8269453548091731867}
   rotationPivot: {fileID: 6436010413783044912}
   rotationSpeed: 10
+  aimingRotationSpeed: 0
+--- !u!114 &3765337436223083363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359998615537282542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64359469a775e3d46b27009203b8ec30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorLevel: 0
 --- !u!114 &4868742362735011477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -711,10 +728,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eyes: {fileID: 2068231274076670834}
-  sightAngles: {x: 60, y: 45}
+  sightAngles: {x: 40, y: 45}
   sightRange: 9
   securityStateController: {fileID: 8269453548091731867}
-  alarmTollerance: 4
+  alarmTolleranceThreshold: 4
 --- !u!64 &1116947671491243084
 MeshCollider:
   m_ObjectHideFlags: 0
