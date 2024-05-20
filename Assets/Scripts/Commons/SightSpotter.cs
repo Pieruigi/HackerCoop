@@ -35,6 +35,11 @@ namespace HKR
         //List<Data> dataList = new List<Data>();
 
         PlayerController currentTarget = null;
+        public PlayerController CurrentTarget
+        {
+            get { return currentTarget; }
+        }
+
         System.DateTime currentTargetTime;
 
         List<PlayerController> inTriggerList = new List<PlayerController>();
@@ -55,6 +60,9 @@ namespace HKR
             if (!SessionManager.Instance.NetworkRunner.IsSinglePlayer && !SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
                 return;
 
+            if (!PlayerManager.Instance.PlayerInGameAll())
+                return;
+
             // Check the player list
             UpdateState();
         }
@@ -63,6 +71,7 @@ namespace HKR
 
         private void OnTriggerEnter(Collider other)
         {
+           
             if (!other.CompareTag(Tags.Player))
                 return;
 
@@ -70,18 +79,17 @@ namespace HKR
                 return;
 
             // Add player to the check list
-            //dataList.Add(new Data() { player = other.gameObject.GetComponent<PlayerController>(), seen = false });
             inTriggerList.Add(other.GetComponent<PlayerController>());
         }
 
         private void OnTriggerExit(Collider other)
         {
+         
             if (!other.CompareTag(Tags.Player))
                 return;
             // Remove player from the check list
             inTriggerList.RemoveAll(p=>p.gameObject == other.gameObject);
-            //dataList.RemoveAll(d=>d.player.gameObject == other.gameObject);
-
+         
         }
 
         

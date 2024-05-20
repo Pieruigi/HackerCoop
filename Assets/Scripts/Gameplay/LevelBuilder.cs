@@ -543,8 +543,9 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
 #if UNITY_EDITOR
             // Testing the entering block
-            //ShapeBlock block = shapeBlocks.Where(s=>s.IsEnteringBlock).First();
-            //block.SecurityCameraAsset = assets[Random.Range(0, assets.Count)];
+            ShapeBlock block = shapeBlocks.Where(s=>s.IsEnteringBlock).First();
+            block.SecurityCameraAsset = assets[Random.Range(0, assets.Count)];
+            return;
 #endif
             foreach(var floor in floors)
             {

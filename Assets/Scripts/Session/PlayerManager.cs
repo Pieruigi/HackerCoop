@@ -122,6 +122,17 @@ namespace HKR
 
             OnPlayerRemoved?.Invoke(player);
         }
+
+        public bool PlayerInGameAll()
+        {
+            foreach(Player p in players)
+            {
+                if(!p.InGame)
+                    return false;
+            }
+
+            return true;
+        }
     }
 
 }
