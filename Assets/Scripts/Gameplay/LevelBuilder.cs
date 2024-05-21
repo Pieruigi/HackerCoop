@@ -59,7 +59,12 @@ namespace HKR.Building
         [SerializableType]
         List<Transform> infectionPoints = new List<Transform>();
 
+        [SerializeField]
+        GameObject navMeshPrefab;
+        
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
+
+
 
         //Dictionary<Vector3, Camera> securityCameras = new List<Vector3>();
 
@@ -126,8 +131,28 @@ namespace HKR.Building
             // Build geometry
             BuildGeometry();
 
-            
+            // Create nav meshes
+            CreateNavMeshes();
 
+        }
+
+        void CreateNavMeshes()
+        {
+            // We attach the nav mesh to the initial block ( and all the block at the same coordinates in any other floor )
+            // Get the entering block
+            ShapeBlock enteringBlock = shapeBlocks.First(b => b.IsEnteringBlock);
+            foreach(var f in floors)
+            {
+                // Get the block corresponding to the entering block on the current floor ( or the entering block itself )
+                ShapeBlock b = enteringBlock;
+                if(f.Level != 0)
+                {
+                    b = shapeBlocks.Find(b => b.Coordinates == enteringBlock.Coordinates && b.floor == f);
+                }
+
+                // Spawn object on network ( we need the navmesh to be baked on every client to support host migration )
+                SessionManager.Instance.NetworkRunner.Spawn(navMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
+            }
         }
 
         void BuildGeometry()
