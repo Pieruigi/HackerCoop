@@ -60,8 +60,11 @@ namespace HKR.Building
         List<Transform> infectionPoints = new List<Transform>();
 
         [SerializeField]
-        GameObject navMeshPrefab;
-        
+        GameObject flyingAgentNavMeshPrefab;
+
+        [SerializeField]
+        GameObject groundedAgentNavMeshPrefab;
+
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
 
 
@@ -151,7 +154,8 @@ namespace HKR.Building
                 }
 
                 // Spawn object on network ( we need the navmesh to be baked on every client to support host migration )
-                SessionManager.Instance.NetworkRunner.Spawn(navMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
+                SessionManager.Instance.NetworkRunner.Spawn(groundedAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
+                SessionManager.Instance.NetworkRunner.Spawn(flyingAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
             }
         }
 

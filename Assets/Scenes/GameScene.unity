@@ -419,7 +419,8 @@ MonoBehaviour:
   helperBlockPrefab: {fileID: 7806526281932985924, guid: 51e761bf574c3b54ca7646a9a41f3c35, type: 3}
   alarmSystemPrefab: {fileID: 6015644684697252032, guid: 7c7463ad874d6ff46a57550475859ee0, type: 3}
   shapeBlocks: []
-  navMeshPrefab: {fileID: 6295413527965445394, guid: b0f2cdae23c5f7747a9801f401ef4842, type: 3}
+  flyingAgentNavMeshPrefab: {fileID: 6295413527965445394, guid: a42662617d414c540adc42f8accf5091, type: 3}
+  groundedAgentNavMeshPrefab: {fileID: 6295413527965445394, guid: b0f2cdae23c5f7747a9801f401ef4842, type: 3}
 --- !u!4 &1921222430
 Transform:
   m_ObjectHideFlags: 0

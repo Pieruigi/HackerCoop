@@ -25,6 +25,10 @@ PrefabInstance:
       value: 4538726292773761786
       objectReference: {fileID: 0}
     - target: {fileID: 3630284811629132160, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3630284811629132160, guid: 533ee6ca8bfca6d4781704d1f3f31563, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4
       objectReference: {fileID: 0}
@@ -182,6 +186,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4559072470480944581, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4559072470480944581, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4
       objectReference: {fileID: 0}
@@ -196,8 +204,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4559072470480944581, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6145498126587177258}
   m_SourcePrefab: {fileID: 100100000, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
+--- !u!1 &5203231288903118981 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4559072470480944581, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
+  m_PrefabInstance: {fileID: 8606522974780247360}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6145498126587177258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5203231288903118981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: f2652fae
 --- !u!4 &8198856113964205445 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 484334021269227717, guid: 3de42911962ce2545a0681b1c5941652, type: 3}
