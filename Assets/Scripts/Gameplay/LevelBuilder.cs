@@ -129,13 +129,10 @@ namespace HKR.Building
             BuildLogicStructure();
 
             // Create shape
-            CreateShape();
+            ShapeLevel();
 
             // Build geometry
             BuildGeometry();
-
-            // Create nav meshes
-            CreateNavMeshes();
 
         }
 
@@ -164,6 +161,9 @@ namespace HKR.Building
             // Spawn floors
             SpawnFloors();
 
+            // Create nav meshes
+            CreateNavMeshes();
+
             // Spawn infected nodes
             SpawnInfectedNodes();
 
@@ -172,6 +172,53 @@ namespace HKR.Building
 
             // Spawn security cameras
             SpawnSecurityCameras();
+
+            // Spawn drones
+
+        }
+
+        void SpawnSecurityDrones()
+        {
+            foreach(var floor in floors)
+            {
+
+            }
+
+#if UNITY_EDITOR
+            // Get all the ground blocks
+            List<BuildingBlock> blocks = BuildingBlock.Blocks.Where(b=>b.FloorLevel == 0).ToList();
+            Vector3 position = blocks[5].transform.position + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f;
+            
+            // We need the asset prefab
+            //SessionManager.Instance.NetworkRunner.Spawn(block.SecurityCameraAsset.Prefab, position, rotation, null,
+            //        (r, o) =>
+            //        {
+            //            o.GetComponent<SecurityStateController>().FloorLevel = block.floor.Level;
+            //            //InfectionNodeController controller = o.GetComponent<InfectionNodeController>();
+            //            //controller.FloorLevel = level;
+            //            //controller.InfectionType = (byte)Random.Range(0, Constants.InfectionTypeCount);
+            //        });
+
+#endif
+
+            //foreach (var block in shapeBlocks)
+            //{
+            //    if (block.SecurityCameraAsset)
+            //    {
+            //        // Position and rotation
+            //        Vector3 position = block.GetPhysicalPosition() + new Vector3(BuildingBlock.Size / 2f, 0f, BuildingBlock.Size / 2f);
+            //        Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0);
+
+            //        SessionManager.Instance.NetworkRunner.Spawn(block.SecurityCameraAsset.Prefab, position, rotation, null,
+            //        (r, o) =>
+            //        {
+            //            o.GetComponent<SecurityStateController>().FloorLevel = block.floor.Level;
+            //            //InfectionNodeController controller = o.GetComponent<InfectionNodeController>();
+            //            //controller.FloorLevel = level;
+            //            //controller.InfectionType = (byte)Random.Range(0, Constants.InfectionTypeCount);
+            //        });
+            //    }
+            //}
         }
 
         void SpawnSecurityCameras()
@@ -206,7 +253,7 @@ namespace HKR.Building
             {
                 // Get floor level
                 float objectY = point.position.y;
-                int level = Mathf.FloorToInt(objectY / BuildingBlock.Height);
+                int level = Utility.GetFloorLevelByVerticalCoordinate(objectY);  //Mathf.FloorToInt(objectY / BuildingBlock.Height);
 
                 // Get a random asset
                 InfectedNodeAsset currentAsset = assets[Random.Range(0, assets.Count)];
@@ -459,7 +506,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
         }
 
-        void CreateShape()
+        void ShapeLevel()
         {
             //blockCount = Random.Range(minBlocksPerSize[(int)floorSize], maxBlocksPerSize[(int)floorSize] + 1);
             blockCount = Random.Range(minBlocks, maxBlocks) / floorCount;

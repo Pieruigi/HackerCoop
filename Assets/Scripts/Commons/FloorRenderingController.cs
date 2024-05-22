@@ -64,7 +64,7 @@ namespace HKR
 
         void UpdateFloors()
         {
-            int level = PlayerController.Local.GetCurrentFloorLevel();
+            int level = Utility.GetFloorLevelByVerticalCoordinate(PlayerController.Local.transform.position.y);
 
             // Enable block in the current level and disable blocks in the other levels depending on the tollerance
             foreach(var key in levels.Keys)

@@ -21,7 +21,7 @@ namespace HKR
         void Start()
         {
             // Get the floor level
-            floorLevel = Mathf.FloorToInt(transform.position.y / BuildingBlock.Height);
+            floorLevel = Utility.GetFloorLevelByVerticalCoordinate(transform.position.y);// Mathf.FloorToInt(transform.position.y / BuildingBlock.Height);
 
             // Fill the renderer list
             renderers = GetComponentsInChildren<Renderer>().ToList();
@@ -33,7 +33,8 @@ namespace HKR
         // Update is called once per frame
         void Update()
         {
-            if(PlayerController.Local.GetCurrentFloorLevel() == floorLevel)
+            //if(PlayerController.Local.GetCurrentFloorLevel() == floorLevel)
+            if(Utility.GetFloorLevelByVerticalCoordinate(PlayerController.Local.transform.position.y) == floorLevel)
             {
                 if (hidden)
                 {

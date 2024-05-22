@@ -456,17 +456,18 @@ namespace HKR
         //        State = PlayerState.Normal;
         //}
 
-        /// <summary>
-        /// Returns the floor level the player stands in
-        /// </summary>
-        /// <returns></returns>
-        public int GetCurrentFloorLevel()
-        {
-            float playerY = transform.position.y;
-            int level = Mathf.FloorToInt(playerY / BuildingBlock.Height);
+        ///// <summary>
+        ///// Returns the floor level the player stands in
+        ///// </summary>
+        ///// <returns></returns>
+        //public int GetCurrentFloorLevel()
+        //{
+        //    //float playerY = transform.position.y;
+        //    //int level = Mathf.FloorToInt(playerY / BuildingBlock.Height);
+        //    int level = Utility.GetFloorLevelByVerticalCoordinate(transform.position.y);
             
-            return level;
-        }
+        //    return level;
+        //}
 
         public Transform GetSightTarget()
         {

@@ -1,6 +1,9 @@
+using HKR.Building;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,6 +19,8 @@ namespace HKR
 
         NavMeshAgent agent;
 
+        
+
         private void Awake()
         {
             stateController = GetComponent<SecurityStateController>();
@@ -25,7 +30,7 @@ namespace HKR
         // Start is called before the first frame update
         void Start()
         {
-
+            
         }
 
         // Update is called once per frame
@@ -75,8 +80,31 @@ namespace HKR
 
         void UpdateNormalState()
         {
-            //if(agent.destination == null)
+            // If the agent already has a path then keep moving,
+            // otherwise it hangs around for a while and then starts moving.
+            if (!agent.hasPath)
+            {
+                // Get the current floor level
+                int floorLevel = Utility.GetFloorLevelByVerticalCoordinate(transform.position.y);
+
+                // Get all the blocks in the current floor
+                IList<BuildingBlock> availables = BuildingBlock.Blocks;
+                BuildingBlock currentBlock;
+                // Remove the current block
+                if(BuildingBlock.TryGetBlockByPoint(transform.position, out currentBlock))
+                    availables.Remove(currentBlock);
+
+                BuildingBlock nextBlock = availables[UnityEngine.Random.Range(0, availables.Count)];
+                // Get a random destination point 
+                Vector3 blockPos = nextBlock.transform.position;
+                Vector3 destination = new Vector3(UnityEngine.Random.Range(blockPos.x, blockPos.x + BuildingBlock.Size), blockPos.y, UnityEngine.Random.Range(blockPos.z, blockPos.z + BuildingBlock.Size));
+                // Set destination
+                agent.destination = destination;
+            }
+            
         }
+
+       
     }
 
 }

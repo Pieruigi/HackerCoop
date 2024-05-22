@@ -92,8 +92,8 @@ namespace HKR
                     {
                         if (currentLevelOnly)
                         {
-                            int currentLevel = PlayerController.Local.GetCurrentFloorLevel();
-                            int colliderLevel = Mathf.FloorToInt(collider.transform.position.y / BuildingBlock.Height);
+                            int currentLevel = Utility.GetFloorLevelByVerticalCoordinate(PlayerController.Local.transform.position.y);
+                            int colliderLevel = Utility.GetFloorLevelByVerticalCoordinate(collider.transform.position.y);
                             if (colliderLevel != currentLevel)
                                 continue;
                         }

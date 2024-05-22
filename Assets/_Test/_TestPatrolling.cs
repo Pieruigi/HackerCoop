@@ -33,5 +33,12 @@ public class _TestPatrolling : MonoBehaviour
             currentTarget = targets[Random.Range(0, targets.Count)];
             agent.destination = currentTarget.transform.position;
         }
+        else
+        {
+            if(currentTarget != null)
+            {
+                // Start hanging around
+            }
+        }
     }
 }
