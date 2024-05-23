@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3784080700854972930}
   - component: {fileID: 306136498333609700}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7464473424523213303}
   - component: {fileID: 7076704386544640202}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RadarBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5304190038199805367}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RadarCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 8490515911186041568}
   - component: {fileID: 2946382421394117077}
   - component: {fileID: 820795744828108812}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

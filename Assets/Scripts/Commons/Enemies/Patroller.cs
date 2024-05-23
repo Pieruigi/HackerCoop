@@ -89,6 +89,9 @@ namespace HKR
 
         void UpdateNormalState()
         {
+            if (!agent.isOnNavMesh)
+                return;
+
             // If the agent already has a path then keep moving,
             // otherwise it hangs around for a while and then starts moving.
             if (!agent.hasPath)
