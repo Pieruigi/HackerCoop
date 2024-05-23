@@ -1,0 +1,18 @@
+{
+    "name": "OmniShade.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ec0e4a68124564aee8f5cbc26a40ca15"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

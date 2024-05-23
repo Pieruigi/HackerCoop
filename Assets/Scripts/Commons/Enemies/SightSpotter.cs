@@ -122,6 +122,7 @@ namespace HKR
             Vector3 hDir = Vector3.ProjectOnPlane(direction, Vector3.up);
             Vector3 hFwd = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
             float angle = Vector3.Angle(hDir, hFwd);
+            
             if (angle < sightAngles.x)
             {
                 // Check the vertical angle

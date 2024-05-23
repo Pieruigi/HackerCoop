@@ -267,8 +267,8 @@ MonoBehaviour:
   lightRenderer: {fileID: 9037573369884278938}
   _light: {fileID: 5773742606673329409}
   normalMaterial: {fileID: 2100000, guid: cd3bdef499a5ee849b73fddd1176ad32, type: 2}
-  suspectMaterial: {fileID: 2100000, guid: 0030659b971fdb142bdc693d82a43683, type: 2}
-  spottedMaterial: {fileID: 2100000, guid: 3c9cf54d1a13e5f418f004d2e414bac4, type: 2}
+  spottedMaterial: {fileID: 2100000, guid: 0030659b971fdb142bdc693d82a43683, type: 2}
+  alarmedMaterial: {fileID: 2100000, guid: 3c9cf54d1a13e5f418f004d2e414bac4, type: 2}
   freezedMaterial: {fileID: 2100000, guid: bd8d89fa681e44c46a5bee0dff34b3a2, type: 2}
 --- !u!1 &2359998615537282542
 GameObject:

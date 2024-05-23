@@ -15,7 +15,7 @@ namespace HKR
 
 
         [SerializeField]
-        Material normalMaterial, suspectMaterial, spottedMaterial, freezedMaterial;
+        Material normalMaterial, spottedMaterial, alarmedMaterial, freezedMaterial;
 
         //[SerializeField]
         //Color normalColor, suspectColor, spottedColor, freezedColor;
@@ -72,10 +72,10 @@ namespace HKR
                     lightRenderer.material = normalMaterial;
                     break;
                 case SecurityState.Spotted:
-                    lightRenderer.material = suspectMaterial;
+                    lightRenderer.material = spottedMaterial;
                     break;
                 case SecurityState.Alarmed:
-                    lightRenderer.material = spottedMaterial;
+                    lightRenderer.material = alarmedMaterial;
                     break;
                 case SecurityState.Freezed:
                     lightRenderer.material = freezedMaterial;
@@ -91,10 +91,10 @@ namespace HKR
             switch (state)
             {
                 case SecurityState.Spotted:
-                    c = suspectMaterial.GetColor("_Color");
+                    c = spottedMaterial.GetColor("_Color");
                     break;
                 case SecurityState.Alarmed:
-                    c = spottedMaterial.GetColor("_Color");
+                    c = alarmedMaterial.GetColor("_Color");
                     break;
                 case SecurityState.Freezed:
                     c = freezedMaterial.GetColor("_Color");
