@@ -28,4 +28,5 @@ namespace HKR
         public const string Player = "Player";
         public const string InfectionNode = "InfectionNode";
     }
+
 }

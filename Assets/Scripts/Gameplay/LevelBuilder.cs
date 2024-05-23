@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UIElements;
 using static Fusion.Sockets.NetBitBuffer;
 
@@ -67,6 +68,7 @@ namespace HKR.Building
 
         List<BuildingBlock> buildingBlocks = new List<BuildingBlock>();
 
+        List<ShapeDrone> drones = new List<ShapeDrone>();
 
 
         //Dictionary<Vector3, Camera> securityCameras = new List<Vector3>();
@@ -151,7 +153,7 @@ namespace HKR.Building
                 }
 
                 // Spawn object on network ( we need the navmesh to be baked on every client to support host migration )
-                SessionManager.Instance.NetworkRunner.Spawn(groundedAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
+                //SessionManager.Instance.NetworkRunner.Spawn(groundedAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
                 SessionManager.Instance.NetworkRunner.Spawn(flyingAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
             }
         }
@@ -174,21 +176,22 @@ namespace HKR.Building
             SpawnSecurityCameras();
 
             // Spawn drones
-
+            SpawnSecurityDrones();
         }
 
         void SpawnSecurityDrones()
         {
-            foreach(var floor in floors)
+            foreach(var drone in drones)
             {
-
+                SessionManager.Instance.NetworkRunner.Spawn(drone.Asset.Prefab, drone.transform.position, Quaternion.identity, null,
+                        (r, o) =>
+                        {
+                            o.GetComponent<SecurityStateController>().FloorLevel = drone.Floor.Level;
+                          
+                        });
             }
 
 #if UNITY_EDITOR
-            // Get all the ground blocks
-            List<BuildingBlock> blocks = BuildingBlock.Blocks.Where(b=>b.FloorLevel == 0).ToList();
-            Vector3 position = blocks[5].transform.position + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f;
-            
             // We need the asset prefab
             //SessionManager.Instance.NetworkRunner.Spawn(block.SecurityCameraAsset.Prefab, position, rotation, null,
             //        (r, o) =>
@@ -528,19 +531,19 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             // Create the root
             GameObject root = new GameObject("Shape");
             root.transform.parent = transform;
-            
 
-            for(int i=0; i<blockCount-left; i++)
+
+            for (int i = 0; i < blockCount - left; i++)
             {
                 GameObject block = CreateShapeBlock();
                 ShapeBlock bb = block.GetComponent<ShapeBlock>();
                 block.transform.parent = root.transform;
-                Vector2 coords = new Vector2(i%width, i/width);
+                Vector2 coords = new Vector2(i % width, i / width);
                 bb.SetCoordinates(coords);
                 bb.name = $"S_{bb.Coordinates}";
 
             }
-
+            
             //
             // Twist the main shape
             //
@@ -589,6 +592,9 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
             // Choose security camera positions
             ChooseSecurityCameras();
+
+            // Choose drones
+            ChooseSecurityDrones();
             
             foreach (var b in shapeBlocks)
             {
@@ -601,6 +607,43 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
             // At this point we know exactly how many blocks we are going to spawn
             LevelManager.Instance.BlockCount = shapeBlocks.Count;
+        }
+
+      
+        void ChooseSecurityDrones()
+        {
+            // Load all the available assets
+            List<SecurityDroneAsset> assets = new List<SecurityDroneAsset>(Resources.LoadAll<SecurityDroneAsset>(SecurityDroneAsset.ResourceFolder));
+            Debug.Log($"SpawnSecurityDrones() - Loaded {assets.Count} asset(s) from resources.");
+            // Take into account weight
+            List<SecurityDroneAsset> tmp = new List<SecurityDroneAsset>();
+            foreach (var asset in assets)
+            {
+                Debug.Log($"Asset, name:{asset.name}, weight:{asset.Weight}");
+                for (int i = 0; i < asset.Weight; i++)
+                    tmp.Add(asset);
+            }
+            assets = tmp;
+            Debug.Log($"SecuritDrones asset count:{assets.Count}");
+#if UNITY_EDITOR
+            // Just add a drone to the entering level ( for testing purpose )
+            List<ShapeBlock> tmpB = shapeBlocks.Where(b => b.floor.Level == 0 && b.IsEnteringBlock).ToList();
+            ShapeBlock chosenBlock = tmpB[0];
+            // Starting from the middle of the block we look for an available point on the navmesh
+            Vector3 spawnPosition = chosenBlock.GetPhysicalPosition() + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f + Vector3.up * BuildingBlock.Height * .75f;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(spawnPosition, out hit, BuildingBlock.Size * .5f, 1 << 3))
+                spawnPosition = hit.position;
+
+            var chosenDrone = assets[UnityEngine.Random.Range(0, assets.Count)];
+            // Instantiate the helper 
+            GameObject drone = new GameObject("Drone");
+            drone.transform.position = spawnPosition;
+            var comp = drone.AddComponent<ShapeDrone>();
+            comp.Init(chosenDrone, floors.First(f=>f.Level == 0));
+            drones.Add(comp);
+
+#endif
         }
 
         void ChooseSecurityCameras()

@@ -48,11 +48,20 @@ namespace HKR
         private void OnEnable()
         {
             stateController.OnStateChanged += HandleOnStateChanged;
+            stateController.OnSpawned += HandleOnStateControllerSpawned;
         }
 
         private void OnDisable()
         {
             stateController.OnStateChanged -= HandleOnStateChanged;
+            stateController.OnSpawned -= HandleOnStateControllerSpawned;
+        }
+
+        private void HandleOnStateControllerSpawned()
+        {
+            
+            if (stateController.State == SecurityState.Normal)
+                activated = true;
         }
 
         private void HandleOnStateChanged(SecurityState oldState, SecurityState newState)

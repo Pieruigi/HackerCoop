@@ -163,7 +163,7 @@ MonoBehaviour:
   eyes: {fileID: 5149289404011883088}
   sightAngles: {x: 60, y: 45}
   sightRange: 9
-  securityStateController: {fileID: 0}
+  securityStateController: {fileID: 3132815747060551591}
   alarmTolleranceThreshold: 4
 --- !u!1 &5695572166808421847
 GameObject:
