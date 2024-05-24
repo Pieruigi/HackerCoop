@@ -74,8 +74,8 @@ namespace HKR
                 case SecurityState.Spotted:
                     lightRenderer.material = spottedMaterial;
                     break;
-                case SecurityState.Alarmed:
-                    lightRenderer.material = alarmedMaterial;
+                //case SecurityState.Alarmed:
+                //    lightRenderer.material = alarmedMaterial;
                     break;
                 case SecurityState.Freezed:
                     lightRenderer.material = freezedMaterial;
@@ -93,8 +93,8 @@ namespace HKR
                 case SecurityState.Spotted:
                     c = spottedMaterial.GetColor("_Color");
                     break;
-                case SecurityState.Alarmed:
-                    c = alarmedMaterial.GetColor("_Color");
+                //case SecurityState.Alarmed:
+                //    c = alarmedMaterial.GetColor("_Color");
                     break;
                 case SecurityState.Freezed:
                     c = freezedMaterial.GetColor("_Color");

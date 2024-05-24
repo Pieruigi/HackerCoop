@@ -11,6 +11,9 @@ namespace HKR
 {
     public class Patroller : MonoBehaviour
     {
+        [SerializeField]
+        float speed = 3f;
+
         SecurityStateController stateController;
 
         bool activated = false;
@@ -19,12 +22,13 @@ namespace HKR
 
         NavMeshAgent agent;
 
-        
+        float stoppingDistance;
 
         private void Awake()
         {
             stateController = GetComponent<SecurityStateController>();
             agent = GetComponent<NavMeshAgent>();
+            stoppingDistance = agent.stoppingDistance;
         }
 
         // Start is called before the first frame update
@@ -62,6 +66,7 @@ namespace HKR
             
             if (stateController.State == SecurityState.Normal)
                 activated = true;
+            
         }
 
         private void HandleOnStateChanged(SecurityState oldState, SecurityState newState)
@@ -70,6 +75,10 @@ namespace HKR
             {
                 case SecurityState.Normal:
                     activated = true;
+                    agent.ResetPath();
+                    agent.stoppingDistance = stoppingDistance;
+                    agent.speed = speed;
+
                     break;
                 default:
                     activated = false;

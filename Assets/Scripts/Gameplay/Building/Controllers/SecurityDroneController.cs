@@ -9,9 +9,12 @@ namespace HKR
         [SerializeField]
         SecurityStateController stateController;
 
+        [SerializeField]
+        SightSpotter spotter;
+
+        
         private void Awake()
         {
-            stateController = GetComponent<SecurityStateController>();
         }
 
         // Start is called before the first frame update
@@ -40,11 +43,20 @@ namespace HKR
                     break;
                 case SecurityState.Spotted:
                     break;
-                case SecurityState.Alarmed:
-                    break;
+                //case SecurityState.Alarmed:
+                //    break;
                 case SecurityState.Freezed:
                     break;
             }
+        }
+
+        void UpdateSpotted()
+        {
+            //// Get the target
+            //var target = spotter.CurrentTarget;
+            //if(!target) return; 
+
+
         }
     }
 

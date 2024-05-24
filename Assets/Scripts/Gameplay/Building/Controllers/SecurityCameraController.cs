@@ -84,8 +84,8 @@ namespace HKR
                 case SecurityState.Spotted:
                     UpdateSpottedState();
                     break;
-                case SecurityState.Alarmed:
-                    UpdateAlarmeddState();
+                //case SecurityState.Alarmed:
+                //    UpdateAlarmeddState();
                     break;
                 case SecurityState.Freezed:
                     UpdateFreezedState();
@@ -99,20 +99,20 @@ namespace HKR
             
         }
 
-        private void UpdateAlarmeddState()
-        {
-            if (sightSpotter.CurrentTarget)
-            {
-                YawTarget();
-                PitchTarget();
-            }
-            else
-            {
-                YawNoTarget();
-                PitchNoTarget();
-            }
+        //private void UpdateAlarmeddState()
+        //{
+        //    if (sightSpotter.CurrentTarget)
+        //    {
+        //        YawTarget();
+        //        PitchTarget();
+        //    }
+        //    else
+        //    {
+        //        YawNoTarget();
+        //        PitchNoTarget();
+        //    }
                 
-        }
+        //}
 
         private void UpdateSpottedState()
         {

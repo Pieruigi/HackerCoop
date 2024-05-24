@@ -8,7 +8,7 @@ using UnityEngine.Events;
 
 namespace HKR
 {
-    public enum SecurityState { Normal, Spotted, Alarmed, Freezed }
+    public enum SecurityState { Normal, Spotted, /*Alarmed, */Freezed, Searching }
 
     public class SecurityStateController : NetworkBehaviour
     {
@@ -46,10 +46,10 @@ namespace HKR
                     // We check the recovery from freezing
                     if ((System.DateTime.Now - freezingTime).TotalSeconds > freezingRecoveryTime)
                     {
-                        if (AlarmSystemController.GetAlarmSystemController(FloorLevel).State == AlarmSystemState.Activated)
-                            State = SecurityState.Alarmed;
-                        else
-                            State = SecurityState.Normal;
+                        //if (AlarmSystemController.GetAlarmSystemController(FloorLevel).State == AlarmSystemState.Activated)
+                        //    State = SecurityState.Alarmed;
+                        //else
+                        State = SecurityState.Normal;
                     }
                 }
                 
@@ -73,14 +73,14 @@ namespace HKR
             switch(newState)
             {
                 case AlarmSystemState.Activated:
-                    if (State == SecurityState.Alarmed || State == SecurityState.Freezed)
-                        return;
-                    State = SecurityState.Alarmed;
+                    //if (State == SecurityState.Alarmed || State == SecurityState.Freezed)
+                    //    return;
+                    //State = SecurityState.Alarmed;
                     break;
                 case AlarmSystemState.Deactivated:
-                    if (State == SecurityState.Freezed)
-                        return;
-                    State = SecurityState.Normal;
+                    //if (State == SecurityState.Freezed)
+                    //    return;
+                    //State = SecurityState.Normal;
                     break;
 
             }
