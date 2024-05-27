@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace HKR
@@ -15,13 +16,14 @@ namespace HKR
 
 
         [SerializeField]
-        Material normalMaterial, spottedMaterial, alarmedMaterial, freezedMaterial;
+        Material notAlarmedMaterial, spottedMaterial, alarmedMaterial, freezedMaterial;
 
         //[SerializeField]
         //Color normalColor, suspectColor, spottedColor, freezedColor;
 
         
         SecurityStateController controller;
+        
 
         private void Awake()
         {
@@ -45,17 +47,22 @@ namespace HKR
         {
             controller.OnSpawned += HandleOnControllerSpawned;
             controller.OnStateChanged += HandleOnControllerStateChanged;
+            AlarmSystemController.OnStateChanged += HandleOnAlarmStateChanged;
         }
+
+        
 
         private void OnDisable()
         {
             controller.OnSpawned -= HandleOnControllerSpawned;
             controller.OnStateChanged -= HandleOnControllerStateChanged;
+            AlarmSystemController.OnStateChanged -= HandleOnAlarmStateChanged;
         }
 
         private void HandleOnControllerStateChanged(SecurityState arg0, SecurityState arg1)
         {
             HandleOnControllerSpawned();
+
         }
 
         private void HandleOnControllerSpawned()
@@ -64,18 +71,32 @@ namespace HKR
             SetLight(controller.State);
         }
 
+        private void HandleOnAlarmStateChanged(AlarmSystemController asc, AlarmSystemState oldState, AlarmSystemState newState)
+        {
+            HandleOnControllerSpawned();
+        }
+
         void SetMaterial(SecurityState state)
         {
             switch (state)
             {
                 case SecurityState.Normal:
-                    lightRenderer.material = normalMaterial;
+                    if (AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
+                        lightRenderer.material = alarmedMaterial;
+                    else
+                        lightRenderer.material = notAlarmedMaterial;
                     break;
                 case SecurityState.Spotted:
-                    lightRenderer.material = spottedMaterial;
+                    if(AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
+                        lightRenderer.material = alarmedMaterial;
+                    else
+                        lightRenderer.material = spottedMaterial;
                     break;
-                //case SecurityState.Alarmed:
-                //    lightRenderer.material = alarmedMaterial;
+                case SecurityState.Searching:
+                    if (AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
+                        lightRenderer.material = alarmedMaterial;
+                    else
+                        lightRenderer.material = spottedMaterial;
                     break;
                 case SecurityState.Freezed:
                     lightRenderer.material = freezedMaterial;
@@ -90,17 +111,30 @@ namespace HKR
             Color c;
             switch (state)
             {
-                case SecurityState.Spotted:
-                    c = spottedMaterial.GetColor("_Color");
+                case SecurityState.Normal:
+                    if (AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
+                        c = alarmedMaterial.color;
+                    else
+                        c = notAlarmedMaterial.color;
                     break;
-                //case SecurityState.Alarmed:
-                //    c = alarmedMaterial.GetColor("_Color");
+
+                case SecurityState.Spotted:
+                    if (AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
+                        c = alarmedMaterial.GetColor("_Color");
+                    else
+                        c = spottedMaterial.GetColor("_Color");
+                    break;
+                case SecurityState.Searching:
+                    if (AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
+                        c = alarmedMaterial.GetColor("_Color");
+                    else
+                        c = spottedMaterial.GetColor("_Color");
                     break;
                 case SecurityState.Freezed:
                     c = freezedMaterial.GetColor("_Color");
                     break;
                 default:
-                    c = normalMaterial.GetColor("_Color");
+                    c = notAlarmedMaterial.GetColor("_Color");
                     break;
             }
             _light.color = c;

@@ -40,6 +40,10 @@ namespace HKR
 
         DateTime startSearchingTime;
         Vector3 lastSpottedPosition;
+        public Vector3 LastSpottedPosition
+        {
+            get { return lastSpottedPosition; }
+        }
 
 
         protected virtual void Awake()
@@ -120,9 +124,6 @@ namespace HKR
                 case SecurityState.Spotted:
                     UpdateSpottedState();
                     break;
-                //case SecurityState.Alarmed:
-                //    UpdateAlarmedState();
-                //    break;
                 case SecurityState.Searching:
                     UpdateSearchingState();
                     break;
@@ -145,29 +146,7 @@ namespace HKR
             return false;
         }
 
-        //void UpdateAlarmedState()
-        //{
-        //    if (currentTarget)
-        //    {
-        //        // Camera already has a target, check if it's still in sight
-        //        if (!IsPlayerSpotted(currentTarget))
-        //            currentTarget = null;
-        //        else
-        //            lastSpottedPosition = currentTarget.transform.position;
-        //    }
-        //    else
-        //    {
-        //        // No target, check any
-        //        if (CheckAnyTarget())
-        //            lastSpottedPosition = currentTarget.transform.position;
-        //    }
-
-        //    // If there is a target we reset the alarm system timer
-        //    if (currentTarget)
-        //        AlarmSystemController.GetAlarmSystemController(securityStateController.FloorLevel).ResetAlarmTimer();
-
-        //}
-
+       
         void UpdateNormalState()
         {
             // Being in normal state means the camera has no target at all, so we check for a new target if any

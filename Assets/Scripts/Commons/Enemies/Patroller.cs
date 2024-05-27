@@ -18,8 +18,6 @@ namespace HKR
 
         bool activated = false;
 
-        Transform target;
-
         NavMeshAgent agent;
 
         float stoppingDistance;

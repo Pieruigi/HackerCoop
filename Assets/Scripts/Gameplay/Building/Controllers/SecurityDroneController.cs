@@ -43,8 +43,8 @@ namespace HKR
                     break;
                 case SecurityState.Spotted:
                     break;
-                //case SecurityState.Alarmed:
-                //    break;
+                case SecurityState.Searching:
+                    break;
                 case SecurityState.Freezed:
                     break;
             }

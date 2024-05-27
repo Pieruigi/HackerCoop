@@ -266,7 +266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightRenderer: {fileID: 9037573369884278938}
   _light: {fileID: 5773742606673329409}
-  normalMaterial: {fileID: 2100000, guid: cd3bdef499a5ee849b73fddd1176ad32, type: 2}
+  notAlarmedMaterial: {fileID: 2100000, guid: cd3bdef499a5ee849b73fddd1176ad32, type: 2}
   spottedMaterial: {fileID: 2100000, guid: 0030659b971fdb142bdc693d82a43683, type: 2}
   alarmedMaterial: {fileID: 2100000, guid: 3c9cf54d1a13e5f418f004d2e414bac4, type: 2}
   freezedMaterial: {fileID: 2100000, guid: bd8d89fa681e44c46a5bee0dff34b3a2, type: 2}
@@ -831,11 +831,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b81651d979f5d78498c1e5b6dde6c99e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eyes: {fileID: 2068231274076670834}
-  sightAngles: {x: 40, y: 45}
-  sightRange: 9
+  range: 9
   securityStateController: {fileID: 8269453548091731867}
   alarmTolleranceThreshold: 4
+  searchingDuration: 5
+  eyes: {fileID: 2068231274076670834}
+  sightAngles: {x: 40, y: 45}
 --- !u!64 &1116947671491243084
 MeshCollider:
   m_ObjectHideFlags: 0

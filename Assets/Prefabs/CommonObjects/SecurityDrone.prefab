@@ -98,7 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightRenderer: {fileID: 8359090212950703828}
   _light: {fileID: 8687364126254569722}
-  normalMaterial: {fileID: 2100000, guid: cd3bdef499a5ee849b73fddd1176ad32, type: 2}
+  notAlarmedMaterial: {fileID: 2100000, guid: cd3bdef499a5ee849b73fddd1176ad32, type: 2}
   spottedMaterial: {fileID: 2100000, guid: 0030659b971fdb142bdc693d82a43683, type: 2}
   alarmedMaterial: {fileID: 2100000, guid: 3c9cf54d1a13e5f418f004d2e414bac4, type: 2}
   freezedMaterial: {fileID: 2100000, guid: bd8d89fa681e44c46a5bee0dff34b3a2, type: 2}
@@ -217,6 +217,7 @@ MonoBehaviour:
   range: 9
   securityStateController: {fileID: 3132815747060551591}
   alarmTolleranceThreshold: 4
+  searchingDuration: 5
   eyes: {fileID: 7938975332859491158}
   sightAngles: {x: 40, y: 90}
 --- !u!64 &3769669450475886317
@@ -430,6 +431,7 @@ GameObject:
   - component: {fileID: 3132815747060551591}
   - component: {fileID: 90511197005465609}
   - component: {fileID: 6511008377171338292}
+  - component: {fileID: 8146307021566169798}
   - component: {fileID: 4726792655253078}
   - component: {fileID: 6357765419918235096}
   - component: {fileID: 8072289490980796109}
@@ -484,6 +486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886d76334af40c9499a69a9f67f50fd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 3
 --- !u!114 &6511008377171338292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,7 +500,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateController: {fileID: 3132815747060551591}
-  spotter: {fileID: 0}
+  spotter: {fileID: 8564362845358287960}
+--- !u!114 &8146307021566169798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5695572166808421847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eaf0d3570b292b48a2375b7e7c67aee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  securityStateController: {fileID: 3132815747060551591}
+  spotter: {fileID: 8564362845358287960}
+  agent: {fileID: 8072289490980796109}
+  alarmOffSpeed: 2
+  alarmOnSpeed: 3
+  spottedStoppingDistance: 3
+  searchingStoppingDistance: 1
 --- !u!114 &4726792655253078
 MonoBehaviour:
   m_ObjectHideFlags: 0
