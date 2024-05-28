@@ -111,7 +111,7 @@ Transform:
   m_GameObject: {fileID: 2287054178784356903}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.213, y: 2.14, z: -0.446}
+  m_LocalPosition: {x: 0.213, y: 2.14, z: 0.44100007}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -234,8 +234,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 9
   securityStateController: {fileID: 4528520767617875314}
-  alarmTolleranceThreshold: 4
-  searchingDuration: 5
   eyes: {fileID: 8958488127222462972}
   sightAngles: {x: 40, y: 45}
 --- !u!1 &4299795274478720962
@@ -325,6 +323,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
+  standByTime: 10
+  lookAroundAngularSpeed: 30
 --- !u!114 &4528520767617875314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,6 +340,8 @@ MonoBehaviour:
   _State: 0
   _FloorLevel: 0
   freezingRecoveryTime: 10
+  searchingTime: 7
+  alarmTolleranceThreshold: 4
 --- !u!114 &4210563029505216019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,9 +358,10 @@ MonoBehaviour:
   spotter: {fileID: 6312168164522051901}
   agent: {fileID: 6573552119132062256}
   alarmOffSpeed: 1
-  alarmOnSpeed: 1
+  alarmOnSpeed: 2.5
   spottedStoppingDistance: 1.5
   searchingStoppingDistance: 1.5
+  lookAroundTime: 4
 --- !u!114 &3810665231449596949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,6 +379,7 @@ MonoBehaviour:
   Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
+  - {fileID: 7163219858627539560}
   - {fileID: 4528520767617875314}
   - {fileID: 4210563029505216019}
   - {fileID: 6357924654816962903}
@@ -441,13 +445,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7647219328958316630}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 2.112, z: -0.4}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.112, z: 0.365}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5845560610660244354}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8407906208435311621
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,7 +480,7 @@ Transform:
   m_GameObject: {fileID: 8407906208435311621}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.213, y: 2.14, z: -0.446}
+  m_LocalPosition: {x: -0.213, y: 2.14, z: 0.441}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []

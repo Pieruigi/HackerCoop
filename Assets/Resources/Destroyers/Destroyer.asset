@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b00edffd82e2fc46afc70deae0dddc6, type: 3}
   m_Name: Destroyer
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
-  weight: 0
+  prefab: {fileID: 4986155224536151609, guid: 43a2b6669d216954786393e1e89cdacb, type: 3}
+  weight: 1

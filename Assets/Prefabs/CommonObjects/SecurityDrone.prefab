@@ -472,7 +472,7 @@ MonoBehaviour:
   _State: 0
   _FloorLevel: 0
   freezingRecoveryTime: 10
-  searchingTime: 7
+  searchingTime: 15
   alarmTolleranceThreshold: 4
 --- !u!114 &90511197005465609
 MonoBehaviour:
@@ -487,6 +487,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
+  standByTime: 10
+  lookAroundAngularSpeed: 30
 --- !u!114 &6511008377171338292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,8 +522,7 @@ MonoBehaviour:
   alarmOnSpeed: 3
   spottedStoppingDistance: 3
   searchingStoppingDistance: 1
-  lookAroundElapsed: 0
-  lookAroundTime: 2
+  lookAroundTime: 1.5
 --- !u!114 &4726792655253078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,6 +541,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3132815747060551591}
+  - {fileID: 90511197005465609}
   - {fileID: 8146307021566169798}
   - {fileID: 6357765419918235096}
 --- !u!114 &6357765419918235096
