@@ -129,6 +129,7 @@ namespace HKR
             {
                 if (IsPlayerSpotted(inTriggerList[i]))
                 {
+
                     currentTarget = inTriggerList[i];
                     return true;
                 }
@@ -144,6 +145,7 @@ namespace HKR
             // Being in normal state means the camera has no target at all, so we check for a new target if any
             if (CheckAnyTarget())
             {
+                Debug.Log($"TEST - Player seen by {transform.root.gameObject.name} which is on floor {securityStateController.FloorLevel}");
                 lastSpottedPosition = currentTarget.transform.position;
                 securityStateController.State = SecurityState.Spotted;
             }

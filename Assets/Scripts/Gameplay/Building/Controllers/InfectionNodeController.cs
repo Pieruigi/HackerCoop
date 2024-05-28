@@ -27,6 +27,9 @@ namespace HKR
         [Networked]
         public byte InfectionType { get; set; }
 
+        [SerializeField]
+        GameObject radarTrigger;
+
         ChangeDetector changeDetector;
 
         AlarmSystemController alarmSystemController;
@@ -78,6 +81,13 @@ namespace HKR
 
         void EnterNewState(InfectedNodeState prevState, InfectedNodeState currState)
         {
+            switch (currState)
+            {
+                case InfectedNodeState.Clear:
+                    radarTrigger.SetActive(false);
+                    break;
+            }
+
             OnStateChanged?.Invoke(prevState, currState);
         }
 

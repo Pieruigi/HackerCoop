@@ -303,10 +303,7 @@ namespace HKR.Building
             BuildingBlockAsset test = blockAssets[3];
             
             List<Transform> tList = test.Prefab.GetComponentsInChildren<Transform>().Where(t=>t.CompareTag(Tags.InfectionNode)).ToList();
-            Debug.Log($"TEST - block asset name:{test.name}, prefab:{test.Prefab}, infectionNodes.Count:{tList.Count}");
-            foreach (Transform t in tList)
-                Debug.Log($"TEST - node:{t.gameObject.name}, localPosition:{t.localPosition}");
-
+           
             foreach (var b in shapeBlocks)
             {
 
@@ -644,7 +641,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             }
             assets = tmp;
             Debug.Log($"SecurityDrones asset count:{assets.Count}");
-#if UNITY_EDITOR
+#if _UNITY_EDITOR
             // Just add a drone to the entering level ( for testing purpose )
             List<ShapeBlock> tmpB = shapeBlocks.Where(b => b.floor.Level == 0 && b.IsEnteringBlock).ToList();
             ShapeBlock chosenBlock = tmpB[0];
@@ -688,7 +685,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                     GameObject drone = new GameObject("Drone");
                     drone.transform.position = spawnPosition;
                     var comp = drone.AddComponent<ShapeDrone>();
-                    comp.Init(chosenDrone, floors.First(f => f.Level == 0));
+                    comp.Init(chosenDrone, floor);
                     drones.Add(comp);
                 }
                 
@@ -698,7 +695,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
 
         void ChooseSecurityCameras()
         {
-            return;
+           
             // Load all the available assets
             List<SecurityCameraAsset> assets = new List<SecurityCameraAsset>(Resources.LoadAll<SecurityCameraAsset>(SecurityCameraAsset.ResourceFolder));
             Debug.Log($"SpawnSecurityCameras() - Loaded {assets.Count} asset(s) from resources.");

@@ -927,6 +927,7 @@ MonoBehaviour:
   _State: 0
   _FloorLevel: 0
   _InfectionType: 0
+  radarTrigger: {fileID: 4018320836676282029}
 --- !u!114 &4919782136415131471
 MonoBehaviour:
   m_ObjectHideFlags: 0

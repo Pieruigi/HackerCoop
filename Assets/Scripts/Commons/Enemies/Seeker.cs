@@ -1,3 +1,4 @@
+using DG.Tweening.Plugins.Options;
 using Fusion;
 using HKR;
 using System;
@@ -40,6 +41,8 @@ public class Seeker : NetworkBehaviour
 
     [SerializeField]
     float lookAroundTime = 4;
+
+    Quaternion lookAtRotation = Quaternion.identity;
 
     // Update is called once per frame
     void Update()
@@ -110,7 +113,7 @@ public class Seeker : NetworkBehaviour
                 agent.enabled = true;
                 agent.stoppingDistance = searchingStoppingDistance;
                 agent.destination = spotter.LastSpottedPosition;
-                                
+                
                 break;
             case SecurityState.Spotted:
                 activated = true;
@@ -136,7 +139,6 @@ public class Seeker : NetworkBehaviour
                 if(dir.magnitude <= agent.stoppingDistance)
                 {
                     agent.enabled = false;
-                    Debug.Log("TEST - Look around");
                     // Look around
                     lookAroundElapsed += Time.fixedDeltaTime;
                     if (lookAroundElapsed > lookAroundTime)
@@ -144,16 +146,17 @@ public class Seeker : NetworkBehaviour
                         // Choose another direction to look at
                         Vector3 newTarget = transform.position - transform.forward * 2f; ;
                         Vector3 newDir = Vector3.ProjectOnPlane(newTarget - transform.position, Vector3.up);
-                        Quaternion rot = Quaternion.LookRotation(newDir, Vector3.up);
-                        rot = Quaternion.RotateTowards(transform.rotation, rot, agent.angularSpeed * Time.fixedDeltaTime);
-                        transform.rotation = rot;
+                        lookAtRotation = Quaternion.LookRotation(newDir, Vector3.up);
+                        
                         lookAroundElapsed = 0;
                     }
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, lookAtRotation, agent.angularSpeed * Time.fixedDeltaTime);
                 }
                 else
                 {
                     agent.enabled = true;
                     lookAroundElapsed = 0;
+                    lookAtRotation = transform.rotation;
                 }
                 
                 break;
@@ -170,10 +173,9 @@ public class Seeker : NetworkBehaviour
                 {
                     agent.stoppingDistance = spottedStoppingDistance * 1.5f;
                     agent.enabled = false;
-                    Quaternion rot = Quaternion.LookRotation(dir, Vector3.up);
-                    rot = Quaternion.RotateTowards(transform.rotation, rot, agent.angularSpeed * Time.fixedDeltaTime);
-                    transform.rotation = rot;
-                    
+                    lookAtRotation = Quaternion.LookRotation(dir, Vector3.up);
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, lookAtRotation, agent.angularSpeed * Time.fixedDeltaTime);
+
                 }
              
                 break;

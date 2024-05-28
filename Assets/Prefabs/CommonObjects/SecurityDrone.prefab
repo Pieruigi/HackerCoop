@@ -217,7 +217,7 @@ MonoBehaviour:
   range: 9
   securityStateController: {fileID: 3132815747060551591}
   eyes: {fileID: 7938975332859491158}
-  sightAngles: {x: 40, y: 40}
+  sightAngles: {x: 40, y: 30}
 --- !u!64 &3769669450475886317
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -520,6 +520,7 @@ MonoBehaviour:
   alarmOnSpeed: 3
   spottedStoppingDistance: 3
   searchingStoppingDistance: 1
+  lookAroundElapsed: 0
   lookAroundTime: 2
 --- !u!114 &4726792655253078
 MonoBehaviour:
