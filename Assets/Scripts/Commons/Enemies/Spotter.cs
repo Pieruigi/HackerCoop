@@ -18,11 +18,8 @@ namespace HKR
         [SerializeField]
         SecurityStateController securityStateController;
 
-        [SerializeField]
-        float alarmTolleranceThreshold = 4;
-
-        [SerializeField]
-        float searchingDuration = 5;
+        //[SerializeField]
+        //float alarmTolleranceThreshold = 4;
 
         //List<Data> dataList = new List<Data>();
 
@@ -32,13 +29,13 @@ namespace HKR
             get { return currentTarget; }
         }
 
-        System.DateTime currentTargetTime;
+        //System.DateTime currentTargetTime;
 
         List<PlayerController> inTriggerList = new List<PlayerController>();
 
         protected abstract bool IsPlayerSpotted(PlayerController target);
 
-        DateTime startSearchingTime;
+        
         Vector3 lastSpottedPosition;
         public Vector3 LastSpottedPosition
         {
@@ -83,12 +80,7 @@ namespace HKR
 
         private void HandleOnStateChanged(SecurityState oldState, SecurityState newState)
         {
-            switch(newState)
-            {
-                case SecurityState.Spotted:
-                    currentTargetTime = DateTime.Now;
-                    break;
-            }
+            
         }
 
         protected virtual void OnTriggerEnter(Collider other)
@@ -163,40 +155,18 @@ namespace HKR
         {
             if (!IsPlayerSpotted(currentTarget))
             {
+                //Debug.Log($"BUG - current target:{currentTarget} no longer spotted");
                 if (currentTarget)
                 {
                     // Target is no longer in sight, we go back to the normal state
-                    
                     currentTarget = null;
-                    startSearchingTime = System.DateTime.Now;
                     securityStateController.State = SecurityState.Searching;
-                    
                 }
-                
             }
             else
             {
+                // We store the last target position 
                 lastSpottedPosition = currentTarget.transform.position;
-                var asc = AlarmSystemController.GetAlarmSystemController(securityStateController.FloorLevel);
-
-                if (asc.State == AlarmSystemState.Activated)
-                {
-                    // If the alarm is activated we simply reset the timer every time any player is spotted
-                    asc.ResetAlarmTimer();
-                    // We can do something else here, like shoot the target and/or report the others
-                }
-                else
-                {
-                    // If any player is spotted we check if it's time to switch the alarm on
-                    if ((System.DateTime.Now - currentTargetTime).TotalSeconds > alarmTolleranceThreshold)
-                    {
-                        // Lock the floor down
-                        asc.SwitchAlarmOnRpc();
-                    }
-                }    
-
-                
-                
             }
         }
 
@@ -207,16 +177,7 @@ namespace HKR
                 lastSpottedPosition = currentTarget.transform.position;
                 securityStateController.State = SecurityState.Spotted;
             }
-            else
-            {
-                if((System.DateTime.Now-startSearchingTime).TotalSeconds > searchingDuration) 
-                {
-                    //if(AlarmSystemController.GetAlarmSystemController(securityStateController.FloorLevel).State == AlarmSystemState.Activated)
-                    //    securityStateController.State = SecurityState.Alarmed;
-                    //else
-                    securityStateController.State = SecurityState.Normal;
-                }
-            }
+
         }
     }
 

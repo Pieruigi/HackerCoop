@@ -26,9 +26,17 @@ namespace HKR
         [SerializeField]
         float freezingRecoveryTime = 10f;
 
+        [SerializeField]
+        float searchingTime = 7f;
+
+        [SerializeField]
+        float alarmTolleranceThreshold = 4;
+
         ChangeDetector changeDetector;
 
         DateTime freezingTime;
+        float searchingElapsed = 0;
+        float spottedElapsed = 0;
 
         // Start is called before the first frame update
         void Start()
@@ -38,24 +46,49 @@ namespace HKR
 
         private void Update()
         {
+            DetectChanges();
+
             // Single player and master client only
             if (SessionManager.Instance.NetworkRunner.IsSinglePlayer || SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
             {
-                if(State == SecurityState.Freezed)
+                switch (State)
                 {
-                    // We check the recovery from freezing
-                    if ((System.DateTime.Now - freezingTime).TotalSeconds > freezingRecoveryTime)
-                    {
-                        //if (AlarmSystemController.GetAlarmSystemController(FloorLevel).State == AlarmSystemState.Activated)
-                        //    State = SecurityState.Alarmed;
-                        //else
-                        State = SecurityState.Normal;
-                    }
+                    case SecurityState.Freezed:
+                        // We check the recovery from freezing
+                        if ((System.DateTime.Now - freezingTime).TotalSeconds > freezingRecoveryTime)
+                        {
+                            State = SecurityState.Normal;
+                        }
+                        break;
+                    case SecurityState.Searching:
+                        searchingElapsed += Time.deltaTime;
+                        if(searchingElapsed >= searchingTime)
+                        {
+                            State = SecurityState.Normal;
+                        }
+                        break;
+                    case SecurityState.Spotted:
+                        spottedElapsed += Time.deltaTime;
+                        AlarmSystemController asc = AlarmSystemController.GetAlarmSystemController(FloorLevel);
+                        if(asc.State == AlarmSystemState.Activated)
+                        {
+                            asc.ResetAlarmTimer();
+                        }
+                        else
+                        {
+                            if (spottedElapsed >= alarmTolleranceThreshold)
+                            {
+                                asc.SwitchAlarmOnRpc();
+                            }
+                        }
+                        
+                        break;
                 }
+                
                 
             }
 
-            DetectChanges();
+            
         }
 
         private void OnEnable()
@@ -118,7 +151,18 @@ namespace HKR
 
         void EnterNewState(SecurityState oldState, SecurityState newState)
         {
-            
+            switch (newState)
+            {
+                case SecurityState.Searching:
+                    UnityEngine.Debug.Log("Enter searching...");
+                    searchingElapsed = 0;
+                    break;
+                case SecurityState.Spotted:
+                    spottedElapsed = 0;
+                    break;
+                default: 
+                    break;
+            }
 
             OnStateChanged?.Invoke(oldState, newState);
         }

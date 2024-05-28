@@ -27,7 +27,7 @@ namespace HKR
 
         private void Update()
         {
-            if (!SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient || completed)
+            if (!SessionManager.Instance.NetworkRunner || !SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient || completed)
                 return;
 
             elapsed -= Time.deltaTime;

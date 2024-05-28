@@ -153,7 +153,7 @@ namespace HKR.Building
                 }
 
                 // Spawn object on network ( we need the navmesh to be baked on every client to support host migration )
-                //SessionManager.Instance.NetworkRunner.Spawn(groundedAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
+                SessionManager.Instance.NetworkRunner.Spawn(groundedAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
                 SessionManager.Instance.NetworkRunner.Spawn(flyingAgentNavMeshPrefab, b.GetPhysicalPosition(), Quaternion.identity);
             }
         }
@@ -596,6 +596,9 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             // Choose drones
             ChooseSecurityDrones();
             
+            // Destroyers
+            ChooseDestroyers();
+
             foreach (var b in shapeBlocks)
             {
 
@@ -609,12 +612,28 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             LevelManager.Instance.BlockCount = shapeBlocks.Count;
         }
 
+        void ChooseDestroyers()
+        {
+            // Load all the available assets
+            List<DestroyerAsset> assets = new List<DestroyerAsset>(Resources.LoadAll<DestroyerAsset>(DestroyerAsset.ResourceFolder));
+            Debug.Log($"ChooseDestroyers() - Loaded {assets.Count} asset(s) from resources.");
+            // Take into account weight
+            List<DestroyerAsset> tmp = new List<DestroyerAsset>();
+            foreach (var asset in assets)
+            {
+                Debug.Log($"Asset, name:{asset.name}, weight:{asset.Weight}");
+                for (int i = 0; i < asset.Weight; i++)
+                    tmp.Add(asset);
+            }
+            assets = tmp;
+        }
       
         void ChooseSecurityDrones()
         {
+            
             // Load all the available assets
             List<SecurityDroneAsset> assets = new List<SecurityDroneAsset>(Resources.LoadAll<SecurityDroneAsset>(SecurityDroneAsset.ResourceFolder));
-            Debug.Log($"SpawnSecurityDrones() - Loaded {assets.Count} asset(s) from resources.");
+            Debug.Log($"ChooseSecurityDrones() - Loaded {assets.Count} asset(s) from resources.");
             // Take into account weight
             List<SecurityDroneAsset> tmp = new List<SecurityDroneAsset>();
             foreach (var asset in assets)
@@ -624,7 +643,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                     tmp.Add(asset);
             }
             assets = tmp;
-            Debug.Log($"SecuritDrones asset count:{assets.Count}");
+            Debug.Log($"SecurityDrones asset count:{assets.Count}");
 #if UNITY_EDITOR
             // Just add a drone to the entering level ( for testing purpose )
             List<ShapeBlock> tmpB = shapeBlocks.Where(b => b.floor.Level == 0 && b.IsEnteringBlock).ToList();
@@ -642,12 +661,44 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             var comp = drone.AddComponent<ShapeDrone>();
             comp.Init(chosenDrone, floors.First(f=>f.Level == 0));
             drones.Add(comp);
+#else
+            foreach(var floor in floors)
+            {
+                // We use blocks to get the spawn point only ( drone are free to fly through the entire floor )
+                List<ShapeBlock> blocks = shapeBlocks.Where(b => b.floor == floor && !b.IsEnteringBlock && !b.IsConnectorBlock).ToList();
+                float ratioMin = .15f;
+                float ratioMax = .2f;
+                int count = Mathf.RoundToInt(Random.Range(ratioMin, ratioMax) * blocks.Count);
 
+                for(int i=0; i<count; i++)
+                {
+                    // Get a random block
+                    var chosen = blocks[UnityEngine.Random.Range(0, blocks.Count)];
+                    // Remove the block
+                    blocks.Remove(chosen);
+                    // Get a random point around the chosen block
+                    Vector3 spawnPosition = chosen.GetPhysicalPosition() + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f + Vector3.up * BuildingBlock.Height * .75f;
+                    NavMeshHit hit;
+                    if (NavMesh.SamplePosition(spawnPosition, out hit, BuildingBlock.Size * .5f, 1 << 3))
+                        spawnPosition = hit.position;
+
+                    // Choose a drone amongs the assets
+                    var chosenDrone = assets[UnityEngine.Random.Range(0, assets.Count)];
+                    // Instantiate the helper 
+                    GameObject drone = new GameObject("Drone");
+                    drone.transform.position = spawnPosition;
+                    var comp = drone.AddComponent<ShapeDrone>();
+                    comp.Init(chosenDrone, floors.First(f => f.Level == 0));
+                    drones.Add(comp);
+                }
+                
+            }
 #endif
         }
 
         void ChooseSecurityCameras()
         {
+            return;
             // Load all the available assets
             List<SecurityCameraAsset> assets = new List<SecurityCameraAsset>(Resources.LoadAll<SecurityCameraAsset>(SecurityCameraAsset.ResourceFolder));
             Debug.Log($"SpawnSecurityCameras() - Loaded {assets.Count} asset(s) from resources.");
@@ -660,7 +711,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             }
             assets = tmp;
 
-#if UNITY_EDITOR
+#if _UNITY_EDITOR
             // Testing the entering block
             ShapeBlock block = shapeBlocks.Where(s=>s.IsEnteringBlock).First();
             block.SecurityCameraAsset = assets[Random.Range(0, assets.Count)];
@@ -670,8 +721,8 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             {
                 // Get all the blocks in the current floor ( except for entering and connection blocks )
                 List<ShapeBlock> blocks = shapeBlocks.Where(b=>b.floor == floor && !b.IsEnteringBlock && !b.IsConnectorBlock).ToList();
-                float ratioMin = .05f;
-                float ratioMax = .1f;
+                float ratioMin = .20f;
+                float ratioMax = .30f;
                 int count = Mathf.RoundToInt(Random.Range(ratioMin, ratioMax) * blocks.Count);
                 for(int i=0; i<count; i++)
                 {

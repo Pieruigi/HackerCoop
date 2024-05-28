@@ -93,6 +93,26 @@ namespace HKR.Editor
 
             Selection.activeObject = asset;
         }
+
+        [MenuItem("Assets/Create/HKR/Destroyer")]
+        public static void CreateDestroyerAsset()
+        {
+            DestroyerAsset asset = ScriptableObject.CreateInstance<DestroyerAsset>();
+            string name = "Destroyer.asset";
+
+            string folder = System.IO.Path.Combine(ResourceFolder, DestroyerAsset.ResourceFolder);
+
+            if (!System.IO.Directory.Exists(folder))
+                System.IO.Directory.CreateDirectory(folder);
+
+            AssetDatabase.CreateAsset(asset, System.IO.Path.Combine(folder, name));
+
+            AssetDatabase.SaveAssets();
+
+            EditorUtility.FocusProjectWindow();
+
+            Selection.activeObject = asset;
+        }
     }
 
    

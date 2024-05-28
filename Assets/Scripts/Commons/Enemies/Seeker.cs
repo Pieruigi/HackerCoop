@@ -1,3 +1,4 @@
+using Fusion;
 using HKR;
 using System;
 using System.Collections;
@@ -9,7 +10,7 @@ using UnityEngine.AI;
 /// This is called when the IA is in searching or in spotted state.
 /// This is only applicable to not static entities ( like drones for example ).
 /// </summary>
-public class Seeker : MonoBehaviour
+public class Seeker : NetworkBehaviour
 {
     [SerializeField]
     SecurityStateController securityStateController;
@@ -34,6 +35,12 @@ public class Seeker : MonoBehaviour
 
     bool activated = false;
 
+    [SerializeField]
+    float lookAroundElapsed = 0;
+
+    [SerializeField]
+    float lookAroundTime = 4;
+
     // Update is called once per frame
     void Update()
     {
@@ -49,6 +56,8 @@ public class Seeker : MonoBehaviour
         UpdateState();
     }
 
+
+
     private void OnEnable()
     {
         securityStateController.OnStateChanged += HandleOnStateChanged;
@@ -61,6 +70,21 @@ public class Seeker : MonoBehaviour
         securityStateController.OnStateChanged -= HandleOnStateChanged;
         securityStateController.OnSpawned -= HandleOnStateControllerSpawned;
         AlarmSystemController.OnStateChanged -= HandleOnAlarmStateChanged;
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        base.FixedUpdateNetwork();
+
+        if (!SessionManager.Instance.NetworkRunner.IsSinglePlayer && !SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
+            return;
+
+        if (!PlayerManager.Instance.PlayerInGameAll())
+            return;
+
+        if (!activated) return;
+
+        FixedUpdateNetworkState();
     }
 
     private void HandleOnAlarmStateChanged(AlarmSystemController asc, AlarmSystemState oldState, AlarmSystemState newState)
@@ -80,15 +104,19 @@ public class Seeker : MonoBehaviour
         switch (newState)
         {
             case SecurityState.Searching:
+                // You must activate the agent before setting it
+                activated = true;
                 // We set the destination only once ( if we see any player again the state will change back to spotted )
+                agent.enabled = true;
                 agent.stoppingDistance = searchingStoppingDistance;
                 agent.destination = spotter.LastSpottedPosition;
-                activated = true;
+                                
                 break;
             case SecurityState.Spotted:
-                // We set the destination only once ( if we see any player again the state will change back to spotted )
-                agent.stoppingDistance = spottedStoppingDistance;
                 activated = true;
+                // We set the destination only once ( if we see any player again the state will change back to spotted )
+                agent.enabled = true;
+                agent.stoppingDistance = spottedStoppingDistance;
                 break;
             default:
                 activated = false;
@@ -96,17 +124,68 @@ public class Seeker : MonoBehaviour
         }
     }
 
-    void UpdateState()
+    
+
+    void FixedUpdateNetworkState()
     {
-        switch(securityStateController.State)
+        switch (securityStateController.State)
         {
             case SecurityState.Searching:
-                // We already set the destination in the state changed handler ( we don't have a target to follow anymore )
+
+                Vector3 dir = Vector3.ProjectOnPlane(spotter.LastSpottedPosition - transform.position, Vector3.up);
+                if(dir.magnitude <= agent.stoppingDistance)
+                {
+                    agent.enabled = false;
+                    Debug.Log("TEST - Look around");
+                    // Look around
+                    lookAroundElapsed += Time.fixedDeltaTime;
+                    if (lookAroundElapsed > lookAroundTime)
+                    {
+                        // Choose another direction to look at
+                        Vector3 newTarget = transform.position - transform.forward * 2f; ;
+                        Vector3 newDir = Vector3.ProjectOnPlane(newTarget - transform.position, Vector3.up);
+                        Quaternion rot = Quaternion.LookRotation(newDir, Vector3.up);
+                        rot = Quaternion.RotateTowards(transform.rotation, rot, agent.angularSpeed * Time.fixedDeltaTime);
+                        transform.rotation = rot;
+                        lookAroundElapsed = 0;
+                    }
+                }
+                else
+                {
+                    agent.enabled = true;
+                    lookAroundElapsed = 0;
+                }
+                
                 break;
+
             case SecurityState.Spotted:
-                // We must follow the target
-                agent.destination = spotter.CurrentTarget.transform.position;
+                dir = Vector3.ProjectOnPlane(spotter.CurrentTarget.transform.position - transform.position, Vector3.up);
+                if (dir.magnitude > agent.stoppingDistance)
+                {
+                    agent.enabled = true;
+                    agent.stoppingDistance = spottedStoppingDistance;
+                    agent.destination = spotter.CurrentTarget.transform.position;
+                }
+                else
+                {
+                    agent.stoppingDistance = spottedStoppingDistance * 1.5f;
+                    agent.enabled = false;
+                    Quaternion rot = Quaternion.LookRotation(dir, Vector3.up);
+                    rot = Quaternion.RotateTowards(transform.rotation, rot, agent.angularSpeed * Time.fixedDeltaTime);
+                    transform.rotation = rot;
+                    
+                }
+             
+                break;
+
+            default:
+
                 break;
         }
+    }
+
+    void UpdateState()
+    {
+       
     }
 }

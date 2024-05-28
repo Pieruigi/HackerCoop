@@ -73,10 +73,10 @@ namespace HKR
             {
                 case SecurityState.Normal:
                     activated = true;
-                    agent.ResetPath();
+                    //agent.ResetPath();
                     agent.stoppingDistance = stoppingDistance;
                     agent.speed = speed;
-
+                    agent.enabled = true;
                     break;
                 default:
                     activated = false;

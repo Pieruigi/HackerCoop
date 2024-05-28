@@ -13,6 +13,8 @@ namespace HKR
         SightSpotter spotter;
 
         
+        bool lookAtTarget = false;
+        
         private void Awake()
         {
         }
@@ -35,17 +37,25 @@ namespace HKR
             UpdateState();
         }
 
+        
+
         void UpdateState()
         {
             switch (stateController.State)
             {
-                case SecurityState.Normal:
-                    break;
+                
+                    
                 case SecurityState.Spotted:
+                    // Look at the target
+                    //lookAtTarget = true;
+                    //Vector3 dir = Vector3.ProjectOnPlane(spotter.CurrentTarget.transform.position-transform.position, Vector3.up);
+                    //Quaternion lookRot = Quaternion.LookRotation(dir, Vector3.up);
+                    //Quaternion.RotateTowards(transform.rotation, lookRot, aimingSpeed);
                     break;
                 case SecurityState.Searching:
-                    break;
+                case SecurityState.Normal:
                 case SecurityState.Freezed:
+                    lookAtTarget = false;
                     break;
             }
         }
