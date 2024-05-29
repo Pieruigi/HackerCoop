@@ -361,6 +361,7 @@ MonoBehaviour:
   mouseSensitivity: 5
   crouchHeight: 1
   cameraRoot: {fileID: 1495272487109752042}
+  maxHealth: 100
   _State: 0
 --- !u!114 &4155084939533339423
 MonoBehaviour:

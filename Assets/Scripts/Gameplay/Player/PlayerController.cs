@@ -18,6 +18,7 @@ namespace HKR
     public class PlayerController : NetworkBehaviour
     {
         public static UnityAction<PlayerController> OnSpawned;
+        public static UnityAction<PlayerController> OnDead;
 
         public static PlayerController Local { get; private set; }
 
@@ -57,6 +58,10 @@ namespace HKR
         [SerializeField]
         Transform cameraRoot;
 
+        [SerializeField]
+        float maxHealth;
+
+        float currentHealth;
 
         CharacterController characterController;
         Camera playerCamera;
@@ -90,7 +95,9 @@ namespace HKR
 
         bool inputDisabled = false;
 
-        
+        bool respawn = false;
+        Vector3 spawnPosition;
+        Quaternion spawnRotation;
 
 
         private void Awake()
@@ -159,6 +166,12 @@ namespace HKR
             {
                 Local = this;
                 //State = PlayerState.Alive;
+
+                // Set spawn position and rotation
+                spawnPosition = transform.position;
+                spawnRotation = transform.rotation;
+
+                // Set camera
                 MoveCameraInside();
             }
           
@@ -193,6 +206,14 @@ namespace HKR
 
         void UpdateState()
         {
+#if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                ApplyDamageRpc(100);
+            }
+            
+#endif
+
             switch (State)
             {
                 case PlayerState.Normal:
@@ -219,6 +240,10 @@ namespace HKR
                 case PlayerState.Normal:
                     FixedUpdateNetworkNormalState();
                     break;
+                case PlayerState.Paused:
+                    FixedUpdateNetworkPausedState();
+                    break;
+
             }
         }
 
@@ -228,6 +253,28 @@ namespace HKR
                 return;
 
             Pitch();
+        }
+
+        
+        void FixedUpdateNetworkPausedState()
+        {
+            if(!HasStateAuthority) return;
+
+            if (respawn)
+            {
+                characterController.enabled = false;
+                // Reset yaw and camera pitch
+                yaw = 0;
+                pitch = 0;
+                Yaw();
+                Pitch(); 
+                // Set position and rotation
+                transform.position = spawnPosition;
+                transform.rotation = spawnRotation;
+
+                characterController.enabled = true;
+                respawn = false;
+            }
         }
 
         void FixedUpdateNetworkNormalState()
@@ -272,16 +319,26 @@ namespace HKR
             }
         }
         
-        void EnterNewState(PlayerState oldState, PlayerState newState)
+        async void EnterNewState(PlayerState oldState, PlayerState newState)
         {
             switch(newState)
             {
                 case PlayerState.Normal:
+                    if (HasStateAuthority)
+                    {
+                        inputDisabled = true;
+                        // await FadeIn();
+                        await Task.Delay(500);
+                        inputDisabled = false;
+                    }
 
                     break;
-
-                case PlayerState.Dead:
+                case PlayerState.Paused:
                     
+                    break;
+                case PlayerState.Dead:
+                    // Die
+                    Die();
                     break;
             }
         }
@@ -445,35 +502,67 @@ namespace HKR
             return runSpeed;
         }
 
+        async void Die()
+        {
+            if (HasStateAuthority)
+            {
+                // For testing purpose we just apply some delay, but we should play some animation or ragdoll here
+                await Task.Delay(2000);
+
+                
+
+                // We can fade out here
+                // FadeOut();
+                State = PlayerState.Paused;
+
+                respawn = true;
+
+                
+
+
+                await Task.Delay(1000);
+                
+                State = PlayerState.Normal;
+               
+                
+                await Task.Delay(1000);
+                
+                
+            }
+            else
+            {
+                // We can apply some effect or the radgoll here
+            }
+        }
+
+
         public void SetAlive()
         {
             State = PlayerState.Normal;
         }
 
-        //public void SetNormalState()
-        //{
-        //    if (HasStateAuthority)
-        //        State = PlayerState.Normal;
-        //}
-
-        ///// <summary>
-        ///// Returns the floor level the player stands in
-        ///// </summary>
-        ///// <returns></returns>
-        //public int GetCurrentFloorLevel()
-        //{
-        //    //float playerY = transform.position.y;
-        //    //int level = Mathf.FloorToInt(playerY / BuildingBlock.Height);
-        //    int level = Utility.GetFloorLevelByVerticalCoordinate(transform.position.y);
-            
-        //    return level;
-        //}
-
+      
         public Transform GetSightTarget()
         {
             return cameraRoot;
         }
-       
+
+        /// <summary>
+        /// This method is called by the master client only
+        /// </summary>
+        /// <param name="amount"></param>
+        [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+        public void ApplyDamageRpc(float amount)
+        {
+            currentHealth = Mathf.Max(0, currentHealth - amount);
+            if (currentHealth == 0)
+            {
+                State = PlayerState.Dead;
+
+                OnDead?.Invoke(this);
+            }
+
+        }
     }
 
 }
