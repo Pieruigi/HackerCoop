@@ -115,6 +115,7 @@ namespace HKR
             {
                 if (node && node.State == InfectedNodeState.Infected)
                 {
+
                     if (device.GetButton())
                     {
                         if (!connecting)
