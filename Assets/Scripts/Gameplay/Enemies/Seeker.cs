@@ -139,7 +139,7 @@ public class Seeker : NetworkBehaviour
             case SecurityState.Searching:
 
                 //Vector3 dir = Vector3.ProjectOnPlane(agent.destination - transform.position, Vector3.up);
-                if(agent.remainingDistance <= agent.stoppingDistance)
+                if(!agent.hasPath)// || agent.remainingDistance <= agent.stoppingDistance)
                 {
                     //agent.enabled = false;
                     // Look around
@@ -197,16 +197,17 @@ public class Seeker : NetworkBehaviour
 
             case SecurityState.Spotted:
                 
-                if (agent.remainingDistance > agent.stoppingDistance)
+                if(Vector3.Distance(transform.position, spotter.CurrentTarget.transform.position) > agent.stoppingDistance)
                 {
                     //agent.enabled = true;
                     agent.stoppingDistance = spottedStoppingDistance;
                     agent.destination = spotter.CurrentTarget.transform.position;
+                    Debug.Log($"Setting destination:{agent.destination}");
                 }
                 else
                 {
                     Vector3 dir = Vector3.ProjectOnPlane(spotter.CurrentTarget.transform.position - transform.position, Vector3.up);
-                    agent.stoppingDistance = spottedStoppingDistance * 1.5f;
+                    agent.stoppingDistance = spottedStoppingDistance;// * 1.5f;
                     
                     lookAtRotation = Quaternion.LookRotation(dir, Vector3.up);
                     agent.enabled = false;

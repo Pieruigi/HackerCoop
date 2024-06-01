@@ -19,6 +19,8 @@ namespace HKR
     {
         public static UnityAction<PlayerController> OnSpawned;
         public static UnityAction<PlayerController> OnDead;
+        public static UnityAction<PlayerController> OnEnterSafeZone;
+        public static UnityAction<PlayerController> OnExitSafeZone;
 
         public static PlayerController Local { get; private set; }
 
@@ -98,6 +100,23 @@ namespace HKR
         bool respawn = false;
         Vector3 spawnPosition;
         Quaternion spawnRotation;
+
+        bool inSafeZone = false;
+        public bool InSafeZone
+        {
+            get { return inSafeZone; }
+            set
+            {
+                if (value != inSafeZone)
+                {
+                    inSafeZone = value;
+                    if (inSafeZone)
+                        OnEnterSafeZone?.Invoke(this);
+                    else
+                        OnExitSafeZone?.Invoke(this);
+                }
+            }
+        }
 
 
         private void Awake()
@@ -548,7 +567,7 @@ namespace HKR
         }
 
         /// <summary>
-        /// This method is called by the master client only
+        /// Called by the master client on every player
         /// </summary>
         /// <param name="amount"></param>
         [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]

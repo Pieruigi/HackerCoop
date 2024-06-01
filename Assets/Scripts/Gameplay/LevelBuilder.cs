@@ -293,7 +293,7 @@ namespace HKR.Building
         {
             for(int i=0; i<floors.Count; i++)
             {
-                Debug.Log($"Floors[i]:{floors[i].Level}");
+                
                 int level = floors[i].Level;
 
                 SessionManager.Instance.NetworkRunner.Spawn(alarmSystemPrefab, Vector3.zero, Quaternion.identity, null,
@@ -612,7 +612,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             //ChooseSecurityDrones();
             
             // Destroyers
-            //ChooseDestroyers();
+            ChooseDestroyers();
 
             foreach (var b in shapeBlocks)
             {
@@ -641,17 +641,19 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                     tmp.Add(asset);
             }
             assets = tmp;
-#if _UNITY_EDITOR
+#if UNITY_EDITOR
             // Just add a drone to the entering level ( for testing purpose )
             List<ShapeBlock> tmpB = shapeBlocks.Where(b => b.floor.Level == 0 && b.IsEnteringBlock).ToList();
             ShapeBlock chosenBlock = tmpB[0];
+            var chosenAsset = assets[UnityEngine.Random.Range(0, assets.Count)];
             // Starting from the middle of the block we look for an available point on the navmesh
-            Vector3 spawnPosition = chosenBlock.GetPhysicalPosition() + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f + Vector3.up * BuildingBlock.Height * .75f;
+            Vector3 spawnPosition = chosenBlock.GetPhysicalPosition() + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f + Vector3.up * BuildingBlock.Height * .5f;
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(spawnPosition, out hit, BuildingBlock.Size * .5f, 1 << 3))
+            if (NavMesh.SamplePosition(spawnPosition, out hit, BuildingBlock.Size * .5f, chosenAsset.Prefab.GetComponent<NavMeshAgent>().areaMask))
                 spawnPosition = hit.position;
 
-            var chosenAsset = assets[UnityEngine.Random.Range(0, assets.Count)];
+            Debug.Log($"Destroyer spawn position:{spawnPosition}");
+            
             // Instantiate the helper 
             GameObject destroyer = new GameObject("Destroyer");
             destroyer.transform.position = spawnPosition;
@@ -676,7 +678,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                     // Choose a drone amongs the assets
                     var chosenAsset = assets[UnityEngine.Random.Range(0, assets.Count)];
                     // Get a random point around the chosen block
-                    Vector3 spawnPosition = chosen.GetPhysicalPosition() + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f + Vector3.up * BuildingBlock.Height * .75f;
+                    Vector3 spawnPosition = chosen.GetPhysicalPosition() + Vector3.right * BuildingBlock.Size / 2f + Vector3.forward * BuildingBlock.Size / 2f + Vector3.up * BuildingBlock.Height * .5f;
                     NavMeshHit hit;
                     if (NavMesh.SamplePosition(spawnPosition, out hit, BuildingBlock.Size * .5f, chosenAsset.Prefab.GetComponent<NavMeshAgent>().areaMask))// 1 << 0))
                         spawnPosition = hit.position;

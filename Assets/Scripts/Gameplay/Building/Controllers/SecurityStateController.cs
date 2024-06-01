@@ -115,10 +115,12 @@ namespace HKR
                     //    return;
                     //State = SecurityState.Normal;
                     break;
-
+               
             }
-            
+
         }
+
+  
 
         public override void Spawned()
         {
@@ -159,6 +161,8 @@ namespace HKR
                     break;
                 case SecurityState.Spotted:
                     spottedElapsed = 0;
+                    break;
+                case SecurityState.Freezed:
                     break;
                 default: 
                     break;

@@ -256,13 +256,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3897098731537530936}
-  - component: {fileID: 3495953281543774001}
-  - component: {fileID: 2736885488723353630}
   - component: {fileID: 7072185596140766902}
   - component: {fileID: 4155084939533339423}
+  - component: {fileID: 3495953281543774001}
+  - component: {fileID: 2736885488723353630}
   - component: {fileID: 2083004484453860377}
   - component: {fileID: 1161211494336538736}
   - component: {fileID: 8880493027172762089}
+  - component: {fileID: 6942527836887081881}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: Player
@@ -290,6 +291,52 @@ Transform:
   - {fileID: 6052895733025499020}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7072185596140766902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4724095081930444048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cecfc4f1ae4d2804981fb4402fbd46e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runSpeed: 5
+  walkSpeed: 2.5
+  crouchSpeed: 1.5
+  jumpSpeed: 4
+  rotationSpeed: 360
+  acceleration: 30
+  deceleration: 50
+  maxPitch: 70
+  minPitch: -80
+  mouseSensitivity: 5
+  crouchHeight: 1
+  cameraRoot: {fileID: 1495272487109752042}
+  maxHealth: 100
+  _State: 0
+--- !u!114 &4155084939533339423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4724095081930444048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b45fdef1a9f30ad428ca322a7e07b019, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  devices:
+  - {fileID: 6191684290640324452}
+  - {fileID: 2262952615406757068}
+  availables: 0101
+  rightHand: {fileID: 5683371181091169506}
+  leftHand: {fileID: 295742141422863477}
+  _LeftHandIndex: -1
+  _RightHandIndex: -1
 --- !u!114 &3495953281543774001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,52 +384,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
---- !u!114 &7072185596140766902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4724095081930444048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cecfc4f1ae4d2804981fb4402fbd46e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runSpeed: 5
-  walkSpeed: 2.5
-  crouchSpeed: 1.5
-  jumpSpeed: 4
-  rotationSpeed: 360
-  acceleration: 30
-  deceleration: 50
-  maxPitch: 70
-  minPitch: -80
-  mouseSensitivity: 5
-  crouchHeight: 1
-  cameraRoot: {fileID: 1495272487109752042}
-  maxHealth: 100
-  _State: 0
---- !u!114 &4155084939533339423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4724095081930444048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b45fdef1a9f30ad428ca322a7e07b019, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  devices:
-  - {fileID: 6191684290640324452}
-  - {fileID: 2262952615406757068}
-  availables: 0101
-  rightHand: {fileID: 5683371181091169506}
-  leftHand: {fileID: 295742141422863477}
-  _LeftHandIndex: -1
-  _RightHandIndex: -1
 --- !u!114 &2083004484453860377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -438,6 +439,25 @@ MonoBehaviour:
   SyncSettings: 79
   StateHashes: 000000002b1a167c794069552ef6da876d58e984053fcdbc8f66c918d2ca10d6f048b62bba2059f185f23651
   TriggerHashes: 00000000
+--- !u!114 &6942527836887081881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4724095081930444048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &5683371181091169506
 GameObject:
   m_ObjectHideFlags: 0

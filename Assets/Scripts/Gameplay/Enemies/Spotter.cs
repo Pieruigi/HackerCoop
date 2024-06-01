@@ -2,12 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace HKR
 {
     public abstract class Spotter : MonoBehaviour
     {
+        public UnityAction<PlayerController> OnPlayerSpotted;
+        public UnityAction<PlayerController> OnPlayerLost;
+
         [SerializeField]
         float range = 9f;
         public float Range
@@ -17,19 +22,13 @@ namespace HKR
 
         [SerializeField]
         SecurityStateController securityStateController;
-
-        //[SerializeField]
-        //float alarmTolleranceThreshold = 4;
-
-        //List<Data> dataList = new List<Data>();
+        public SecurityStateController SecurityStateController { get { return securityStateController; } }
 
         PlayerController currentTarget = null;
         public PlayerController CurrentTarget
         {
             get { return currentTarget; }
         }
-
-        //System.DateTime currentTargetTime;
 
         List<PlayerController> inTriggerList = new List<PlayerController>();
 
@@ -71,25 +70,67 @@ namespace HKR
         private void OnEnable()
         {
             securityStateController.OnStateChanged += HandleOnStateChanged;
+            PlayerController.OnDead += HandleOnPlayerDead;
+            PlayerController.OnEnterSafeZone += HandleOnEnterSafeZone;
+
         }
 
         private void OnDisable()
         {
             securityStateController.OnStateChanged -= HandleOnStateChanged;
+            PlayerController.OnDead -= HandleOnPlayerDead;
+            PlayerController.OnEnterSafeZone -= HandleOnEnterSafeZone;
+
+        }
+
+        private void HandleOnEnterSafeZone(PlayerController arg0)
+        {
+            HandleOnPlayerDead(arg0); // It's the same behaviour
+        }
+
+        private void HandleOnPlayerDead(PlayerController arg0)
+        {
+            // Eventually remove the dead player from the trigger list
+            inTriggerList.Remove(arg0);
+
+            // If the player who just died is the target then clear the target field
+            if(currentTarget == arg0)
+            {
+                currentTarget = null;
+                if(securityStateController.State != SecurityState.Freezed)
+                    securityStateController.State = SecurityState.Normal;
+            }
         }
 
         private void HandleOnStateChanged(SecurityState oldState, SecurityState newState)
         {
-            
+            switch(newState)
+            {
+                case SecurityState.Freezed:
+                    if (currentTarget)
+                    {
+                        var oldTarget = currentTarget;
+                        currentTarget = null;
+                        OnPlayerLost?.Invoke(oldTarget);
+                    }
+                    break;
+
+            }
         }
 
         protected virtual void OnTriggerEnter(Collider other)
         {
+            if (!SessionManager.Instance.NetworkRunner.IsSinglePlayer && !SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
+                return;
 
             if (!other.CompareTag(Tags.Player))
                 return;
 
             if (inTriggerList.Exists(p => p.gameObject == other.gameObject))
+                return;
+
+            PlayerController pc = other.GetComponent<PlayerController>();
+            if (pc.State == PlayerState.Dead)
                 return;
 
             // Add player to the check list
@@ -98,6 +139,8 @@ namespace HKR
 
         protected virtual void OnTriggerExit(Collider other)
         {
+            if (!SessionManager.Instance.NetworkRunner.IsSinglePlayer && !SessionManager.Instance.NetworkRunner.IsSharedModeMasterClient)
+                return;
 
             if (!other.CompareTag(Tags.Player))
                 return;
@@ -119,6 +162,9 @@ namespace HKR
                 case SecurityState.Searching:
                     UpdateSearchingState();
                     break;
+                case SecurityState.Freezed:
+                    UpdateFreezedState();
+                    break;
             }
         }
 
@@ -129,8 +175,11 @@ namespace HKR
             {
                 if (IsPlayerSpotted(inTriggerList[i]))
                 {
-
+                    bool hadTarget = currentTarget != null;
+                    
                     currentTarget = inTriggerList[i];
+                    if(!hadTarget)
+                        OnPlayerSpotted?.Invoke(currentTarget);
                     return true;
                 }
 
@@ -161,8 +210,10 @@ namespace HKR
                 if (currentTarget)
                 {
                     // Target is no longer in sight, we go back to the normal state
+                    PlayerController oldTarget = currentTarget;
                     currentTarget = null;
                     securityStateController.State = SecurityState.Searching;
+                    OnPlayerLost?.Invoke(oldTarget);
                 }
             }
             else
@@ -180,6 +231,11 @@ namespace HKR
                 securityStateController.State = SecurityState.Spotted;
             }
 
+        }
+
+        void UpdateFreezedState()
+        {
+            
         }
     }
 

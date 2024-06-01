@@ -31,14 +31,16 @@ namespace HKR
             Vector3 hFwd = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
             float angle = Vector3.Angle(hDir, hFwd);
             
-            if (angle < sightAngles.x)
+            if (angle < sightAngles.x || SecurityStateController.State == SecurityState.Spotted)
             {
+                
                 // Check the vertical angle
                 Vector3 vDir = Vector3.ProjectOnPlane(direction, eyes.right);
                 angle = Vector3.Angle(vDir, eyes.forward);
 
-                if (angle < sightAngles.y)
+                if (angle < sightAngles.y || SecurityStateController.State == SecurityState.Spotted)
                 {
+                    
                     // Do raycast to check if there is any obstacle between the camera and the potential target
                     RaycastHit hitInfo;
                     Ray ray = new Ray(eyes.position, direction.normalized);

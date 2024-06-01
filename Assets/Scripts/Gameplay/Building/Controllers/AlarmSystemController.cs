@@ -15,6 +15,18 @@ namespace HKR
         public static UnityAction<AlarmSystemController, AlarmSystemState, AlarmSystemState> OnStateChanged;
         public static UnityAction<AlarmSystemController> OnSpawned;
 
+        [System.Serializable]
+        private class SpottedPlayerData
+        {
+            [SerializeField]
+            public PlayerController playerController;
+            [SerializeField]
+            public int count;
+            [SerializeField]
+            public List<GameObject> takers = new List<GameObject>();
+            
+        }
+
         [UnitySerializeField]
         [Networked]
         public int FloorLevel {  get; set; }
@@ -30,6 +42,10 @@ namespace HKR
 
         DateTime alarmLastTime;
 
+        [SerializeField]
+        List<SpottedPlayerData> spottedPlayers = new List<SpottedPlayerData>();
+
+       
         private void Update()
         {
             // Single player and master client only
@@ -43,6 +59,8 @@ namespace HKR
                         SwitchAlarmOff();
                     }
                 }
+
+
             }
 
             DetectChanges();
@@ -80,8 +98,12 @@ namespace HKR
 
         void EnterNewState(AlarmSystemState oldState, AlarmSystemState newState)
         {
+
+
             OnStateChanged?.Invoke(this, oldState, newState);
         }
+
+        
 
         [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
         public void SwitchAlarmOnRpc()
@@ -93,7 +115,12 @@ namespace HKR
 
         public void SwitchAlarmOff()
         {
+            if (!HasStateAuthority)
+                return;
+            // Clear spotted list
+            spottedPlayers.Clear();
             State = AlarmSystemState.Deactivated;
+
         }
 
         public static AlarmSystemController GetAlarmSystemController(int floorLevel)
@@ -104,6 +131,76 @@ namespace HKR
         public void ResetAlarmTimer()
         {
             alarmLastTime = DateTime.Now;
+        }
+
+        public void PlayerSpotted(PlayerController playerController)
+        {
+            // Check if the player has already been added to the spotted list
+            SpottedPlayerData spd = spottedPlayers.Find(s=>s.playerController == playerController);
+            if(spd == null)
+            {
+                spd = new SpottedPlayerData() { playerController = playerController };
+                spottedPlayers.Add(spd);
+            }
+
+            spd.count++;
+        }
+
+        public void PlayerLost(PlayerController playerController)
+        {
+            SpottedPlayerData spd = spottedPlayers.Find(s => s.playerController == playerController);
+            if (spd == null)
+                return;
+            spd.count--;
+            if(spd.count <= 0)
+                spottedPlayers.Remove(spd);
+        }
+
+        public bool TryGetOrUpdateTarget(GameObject taker, out PlayerController target)
+        {
+            target = null;
+            if(spottedPlayers.Count == 0) return false; // List is empty
+
+
+            var data = spottedPlayers.Find(s=>s.takers.Contains(taker));
+            if(data != null) // You are already following a player
+            {
+                target = data.playerController;
+                return true;
+            }
+
+            // Find the closest target if any
+            // Let's try first with free targets
+            List<SpottedPlayerData> tmp = spottedPlayers.FindAll(s => s.takers.Count == 0);
+            if (tmp.Count == 0) // No free target
+                tmp = spottedPlayers;
+            float minDist = 0;
+            SpottedPlayerData spd = null;
+            foreach(SpottedPlayerData s in tmp)
+            {
+                float dist = Vector3.Distance(taker.transform.position, s.playerController.transform.position);
+                if(spd == null || dist < minDist)
+                {
+                    dist = minDist;
+                    spd = s;
+                }
+            }
+            if (spd != null)
+            {
+                spd.takers.Add(taker);
+                return true;
+            }
+
+            // No target found
+            return false;
+        }
+
+        
+        public void RemoveTaker(GameObject taker)
+        {
+            var data = spottedPlayers.Find(s => s.takers.Contains(taker));
+            if(data != null)
+                data.takers.Remove(taker);
         }
     }
 

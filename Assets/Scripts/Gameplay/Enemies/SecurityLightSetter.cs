@@ -78,6 +78,9 @@ namespace HKR
 
         void SetMaterial(SecurityState state)
         {
+            if (!lightRenderer)
+                return;
+
             switch (state)
             {
                 case SecurityState.Normal:
@@ -108,6 +111,9 @@ namespace HKR
 
         void SetLight(SecurityState state)
         {
+            if (!_light)
+                return;
+
             Color c;
             switch (state)
             {

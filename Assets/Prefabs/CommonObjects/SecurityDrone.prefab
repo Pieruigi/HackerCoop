@@ -214,10 +214,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b81651d979f5d78498c1e5b6dde6c99e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 9
+  range: 5
   securityStateController: {fileID: 3132815747060551591}
   eyes: {fileID: 7938975332859491158}
-  sightAngles: {x: 40, y: 30}
+  sightAngles: {x: 50, y: 30}
 --- !u!64 &3769669450475886317
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -430,9 +430,11 @@ GameObject:
   - component: {fileID: 90511197005465609}
   - component: {fileID: 6511008377171338292}
   - component: {fileID: 8146307021566169798}
+  - component: {fileID: 5410366102617268911}
   - component: {fileID: 4726792655253078}
   - component: {fileID: 6357765419918235096}
   - component: {fileID: 8072289490980796109}
+  - component: {fileID: 8342589047857053196}
   m_Layer: 0
   m_Name: SecurityDrone
   m_TagString: Untagged
@@ -523,6 +525,20 @@ MonoBehaviour:
   spottedStoppingDistance: 3
   searchingStoppingDistance: 1
   lookAroundTime: 1.5
+--- !u!114 &5410366102617268911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5695572166808421847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd2919ac1631eb42a89569a4628802f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spotter: {fileID: 8564362845358287960}
+  securityStateController: {fileID: 3132815747060551591}
 --- !u!114 &4726792655253078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -582,6 +598,25 @@ NavMeshAgent:
   m_BaseOffset: 2
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &8342589047857053196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5695572166808421847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &7358973123755907138
 GameObject:
   m_ObjectHideFlags: 0

@@ -182,6 +182,13 @@ namespace HKR
             
         }
 
+        public void SetDestination(Vector3 destination)
+        {
+            if (!HasStateAuthority)
+                return;
+            if(!activated) return;
+            agent.destination = destination;
+        }
        
     }
 
