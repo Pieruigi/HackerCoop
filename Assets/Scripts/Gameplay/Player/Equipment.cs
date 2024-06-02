@@ -70,12 +70,12 @@ namespace HKR
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                Equip(1, BodyPart.LeftHand);
+                Equip(2, BodyPart.LeftHand);
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha4))
             {
-                Equip(1, BodyPart.RightHand);
+                Equip(2, BodyPart.RightHand);
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha5))

@@ -606,10 +606,10 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             ChooseInfectedNodes();
 
             // Choose security camera positions
-            //ChooseSecurityCameras();
+            ChooseSecurityCameras();
 
             // Choose drones
-            //ChooseSecurityDrones();
+            ChooseSecurityDrones();
             
             // Destroyers
             ChooseDestroyers();
@@ -641,7 +641,7 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
                     tmp.Add(asset);
             }
             assets = tmp;
-#if UNITY_EDITOR
+#if _UNITY_EDITOR
             // Just add a drone to the entering level ( for testing purpose )
             List<ShapeBlock> tmpB = shapeBlocks.Where(b => b.floor.Level == 0 && b.IsEnteringBlock).ToList();
             ShapeBlock chosenBlock = tmpB[0];
