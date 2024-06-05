@@ -606,13 +606,13 @@ SessionManager.Instance.NetworkRunner.Spawn(blockPrefab, position, Quaternion.id
             ChooseInfectedNodes();
 
             // Choose security camera positions
-            ChooseSecurityCameras();
+            //ChooseSecurityCameras();
 
             // Choose drones
-            ChooseSecurityDrones();
+            //ChooseSecurityDrones();
             
             // Destroyers
-            ChooseDestroyers();
+            //ChooseDestroyers();
 
             foreach (var b in shapeBlocks)
             {

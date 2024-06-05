@@ -1,5 +1,6 @@
 using Fusion;
 using HKR;
+using HKR.Building;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections;
@@ -21,21 +22,31 @@ namespace HKR
         public UnityAction OnHackingStopped;
 
         [SerializeField]
-        float hackingRadius;
+        float hackingRange;
 
         [SerializeField]
         float connectingTime = 3;
 
+        [SerializeField]
+        float memoryBlocks = 3;
+
+        [SerializeField]
+        float hackingSpeed = 1;
+
         //[SerializeField]
         float detectingTime = 6;
+
+        float freeMemoryBlocks;
+
+        bool throughObstacles = false;
 
         [SerializeField]
         List<GameObject> apps;
 
-        [SerializeField]
-        HackingTimer hackingTimer;
+        //[SerializeField]
+        //HackingTimer hackingTimer;
 
-        
+
         InfectionNodeController currentHackingNode; // The node we are actually hacking
 
         List<InfectionNodeController> infectionNodes;
@@ -71,9 +82,16 @@ namespace HKR
             get { return appErrorCount; }
         }
 
+        // Upgrade levels
+        float[] rangeLevels = new float[] { 2, 3, 4 };
+        float[] speedLevels = new float[] { 1, 1.5f, 2f };
+        int[] memoryLevels = new int[] { 3, 4, 5 };
+
+
         private void Awake()
         {
             device = GetComponent<PlayerDevice>();
+            freeMemoryBlocks = memoryBlocks;
         }
 
 
@@ -118,7 +136,7 @@ namespace HKR
 
                     if (device.GetButton())
                     {
-                        if (!connecting)
+                        if (!connecting && !IsMemoryFull())
                         {
                             connecting = true;
                             connectionTimeElapsed = 0;
@@ -178,6 +196,11 @@ namespace HKR
 
         }
 
+        bool IsMemoryFull()
+        {
+            return freeMemoryBlocks == 0;
+        }
+
         void DeactivateAppAll()
         {
             foreach (var app in apps)
@@ -191,7 +214,7 @@ namespace HKR
             RaycastHit hitInfo;
             LayerMask mask = LayerMask.GetMask();
             mask = ~mask; // We may need to upgrade the hacking device and let it do its work through walls for example
-            if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hitInfo, hackingRadius, mask, QueryTriggerInteraction.Collide))
+            if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hitInfo, hackingRange, mask, QueryTriggerInteraction.Collide))
                 node = hitInfo.collider.GetComponentInParent<InfectionNodeController>();
                 
 
@@ -210,7 +233,7 @@ namespace HKR
             // Disable the current app
             ResetNodeAndApp();
             // Reset timer
-            hackingTimer.StopTimer();
+            //hackingTimer.StopTimer();
             // Move hand down
             handController.MoveDown();
 
@@ -230,7 +253,7 @@ namespace HKR
             // Launch the suitable app
             apps[currentHackingNode.InfectionType].SetActive(true);
             // Start timer
-            hackingTimer.StartTimer(detectingTime);
+            //hackingTimer.StartTimer(detectingTime);
 
             OnHackingStarted?.Invoke();
 
@@ -240,9 +263,15 @@ namespace HKR
 
         public void OnHackingSucceded()
         {
-            hackingTimer.StopTimer();
+            // Fill a new memoty block
+            freeMemoryBlocks--;
+            // Stop timer
+            //hackingTimer.StopTimer();
+            // Set the node free
             currentHackingNode.SetClearStateRpc();
+            // Stop hacking
             StopHacking();
+
         }
 
         public void OnHackingFailed()
@@ -292,7 +321,14 @@ namespace HKR
             OnHitFailed?.Invoke();
         }
 
-        
+        public void Init(bool throughObstacles, int rangeLevel, int speedLevel, int memoryLevel)
+        {
+            Debug.Log($"RangeLevel:{rangeLevels[rangeLevel]}");
+            this.throughObstacles = throughObstacles;
+            hackingRange = rangeLevels[rangeLevel];
+            hackingSpeed = speedLevels[speedLevel];
+            this.memoryBlocks = memoryLevels[memoryLevel];
+        }
 
     }
 

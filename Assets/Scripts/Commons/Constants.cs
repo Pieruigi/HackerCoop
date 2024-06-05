@@ -29,4 +29,14 @@ namespace HKR
         public const string InfectionNode = "InfectionNode";
     }
 
+    public class PlayerDeviceConstants
+    {
+        public const int HackingDeviceRangeLevelMax = 2;
+        public const int HackingDeviceSpeedLevelMax = 2;
+        public const int HackingDeviceMemoryLevelMax = 2;
+
+        public const int RadarDeviceRangeLevelMax = 2;
+
+    }
+
 }

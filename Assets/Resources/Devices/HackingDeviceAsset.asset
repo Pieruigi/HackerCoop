@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14355e73f5288394aadf996d43cbeeef, type: 3}
-  m_Name: CommonDrone
+  m_Script: {fileID: 11500000, guid: e1f6f583aff469143adf387660eaa20c, type: 3}
+  m_Name: HackingDeviceAsset
   m_EditorClassIdentifier: 
-  prefab: {fileID: 5695572166808421847, guid: 9fdf5a35535fe084981e4a0ccc59904b, type: 3}
-  weight: 1
+  code: 
+  prefab: {fileID: 325115705502636216, guid: 019eb4f55468afa4b9e4416d820aa008, type: 3}

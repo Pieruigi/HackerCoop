@@ -12,6 +12,9 @@ namespace HKR
         Renderer lightRenderer;
 
         [SerializeField]
+        int materialId;
+
+        [SerializeField]
         Light _light;
 
 
@@ -81,31 +84,35 @@ namespace HKR
             if (!lightRenderer)
                 return;
 
+            Material[] materials = lightRenderer.materials;
+
             switch (state)
             {
                 case SecurityState.Normal:
+
                     if (AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
-                        lightRenderer.material = alarmedMaterial;
+                        materials[materialId] = alarmedMaterial;
                     else
-                        lightRenderer.material = notAlarmedMaterial;
+                        materials[materialId] = notAlarmedMaterial;
                     break;
                 case SecurityState.Spotted:
                     if(AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
-                        lightRenderer.material = alarmedMaterial;
+                        materials[materialId] = alarmedMaterial;
                     else
-                        lightRenderer.material = spottedMaterial;
+                        materials[materialId] = spottedMaterial;
                     break;
                 case SecurityState.Searching:
                     if (AlarmSystemController.GetAlarmSystemController(controller.FloorLevel).State == AlarmSystemState.Activated)
-                        lightRenderer.material = alarmedMaterial;
+                        materials[materialId] = alarmedMaterial;
                     else
-                        lightRenderer.material = spottedMaterial;
+                        materials[materialId] = spottedMaterial;
                     break;
                 case SecurityState.Freezed:
-                    lightRenderer.material = freezedMaterial;
+                    materials[materialId] = freezedMaterial;
                     break;
             }
 
+            lightRenderer.materials = materials;
             
         }
 

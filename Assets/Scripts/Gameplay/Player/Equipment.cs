@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,8 @@ namespace HKR
         [SerializeField]
         List<PlayerDevice> devices;
 
-        [SerializeField]
-        List<bool> availables = new List<bool>(); // Each index refers to a specific device in the device list
+        //[SerializeField]
+        //List<bool> availables = new List<bool>(); // Each index refers to a specific device in the device list
 
         [SerializeField]
         GameObject rightHand, leftHand;
@@ -39,6 +40,9 @@ namespace HKR
         [Networked]
         public int RightHandIndex { get; private set; } = -1;
 
+        [SerializeField]
+        Transform deviceRoot;
+
         ChangeDetector changeDetector;
 
         HandController leftHandController;
@@ -53,6 +57,9 @@ namespace HKR
 
             leftHandController = leftHand.GetComponentInParent<HandController>();
             rightHandController = rightHand.GetComponentInParent<HandController>();
+
+            
+            
         }
 
         private void Update()
@@ -64,26 +71,38 @@ namespace HKR
                 Equip(0, BodyPart.LeftHand);
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                Equip(0, BodyPart.RightHand);
-            }
             if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                Equip(1, BodyPart.LeftHand);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 Equip(2, BodyPart.LeftHand);
             }
+            
 
             if (Input.GetKeyDown(KeyCode.Alpha4))
             {
-                Equip(2, BodyPart.RightHand);
+                Equip(0, BodyPart.RightHand);
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha5))
             {
-                Unequip(BodyPart.LeftHand);
+                Equip(1, BodyPart.RightHand);
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                Equip(2, BodyPart.RightHand);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                Unequip(BodyPart.LeftHand);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 Unequip(BodyPart.RightHand);
             }
@@ -91,10 +110,28 @@ namespace HKR
 
         private void OnEnable()
         {
-            
+            PlayerDeviceManager.Instance.OnDeviceAdded += HandleOnDeviceAdded;
+            PlayerDeviceManager.Instance.OnDeviceRemoved += HandleOnDeviceRemoved;
+            PlayerDeviceManager.Instance.InitializeDevices();
+        }
 
-            // We should check which device is available here
+        private void OnDisable()
+        {
+            PlayerDeviceManager.Instance.OnDeviceAdded -= HandleOnDeviceAdded;
+            PlayerDeviceManager.Instance.OnDeviceRemoved -= HandleOnDeviceRemoved;
+        }
 
+        private void HandleOnDeviceRemoved(PlayerDevice playerDevice)
+        {
+            devices.Remove(playerDevice);
+        }
+
+        private void HandleOnDeviceAdded(PlayerDevice playerDevice)
+        {
+            playerDevice.transform.parent = deviceRoot;
+            playerDevice.transform.localPosition = Vector3.zero;
+            playerDevice.transform.localRotation = Quaternion.identity;
+            devices.Add(playerDevice);
         }
 
         public override void Spawned()
@@ -202,8 +239,8 @@ namespace HKR
             if (!HasStateAuthority)
                 return;
 
-            if (!availables[index])
-                return;
+            //if (!availables[index])
+            //    return;
 
             if (LeftHandIndex == index || RightHandIndex == index) // You must unequip the device first, eventually
                 return;
@@ -242,10 +279,10 @@ namespace HKR
             return devices.IndexOf(device);
         }
 
-        public bool IsDeviceAvailable(int deviceIndex)
-        {
-            return availables[deviceIndex];
-        }
+        //public bool IsDeviceAvailable(int deviceIndex)
+        //{
+        //    return availables[deviceIndex];
+        //}
 
         
     }

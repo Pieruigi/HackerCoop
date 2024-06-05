@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace HKR
 {
     public class PlayerDevice : MonoBehaviour
     {
-
+        
         public bool IsLocalPlayer()
         {
             return PlayerController.Local && transform.root == PlayerController.Local.transform;

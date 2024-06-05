@@ -44,6 +44,9 @@ namespace HKR
 
         bool currentLevelOnly = true;
 
+        // Upgrade data
+        float[] rangeLevels = new float[] { 7, 9, 11 };
+
         private void Awake()
         {
             mask = LayerMask.GetMask(new string[] { Layers.RadarTarget });
@@ -151,6 +154,10 @@ namespace HKR
             OnDeactivate?.Invoke();
         }
 
+        public void Init(int rangeLevel)
+        {
+            range = rangeLevels[rangeLevel];
+        }
         
     }
 
