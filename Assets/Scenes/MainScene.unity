@@ -262,6 +262,7 @@ MonoBehaviour:
   hackingDeviceAsset: {fileID: 11400000, guid: 04d34ba5f6ff0ab41b918b638100b456, type: 2}
   radarDeviceAsset: {fileID: 11400000, guid: 1ea6f0f06ebf53846b8f69a76ab44d30, type: 2}
   flashlightAsset: {fileID: 11400000, guid: c381466fe1227d541b2fbee56a0d8ee2, type: 2}
+  empDeviceAsset: {fileID: 11400000, guid: 3ab47c2ae6640de428cdc323336cca73, type: 2}
 --- !u!4 &415973686
 Transform:
   m_ObjectHideFlags: 0

@@ -21,7 +21,14 @@ namespace HKR
 
         // Spotlight
         public bool flashlightAvailable = true;
+        public int flashlightChargeLevel = 0;
+        public float flashlightCharge = -1; // Normalized between 0 and 1; negative means no value
 
+        // Emp device
+        public bool empDeviceAvailable = true;
+        public int empDeviceRangeLevel = 0;
+        public int empDeviceDurationLevel = 0;
+        public int empDeviceChargeLeft = -1; 
 
         public void ResetHackingDevice()
         {
@@ -38,6 +45,15 @@ namespace HKR
 
         public void ResetFlashlight()
         {
+            flashlightChargeLevel = 0;
+            flashlightCharge = -1;
+        }
+
+        public void ResetEmpDevice()
+        {
+            empDeviceRangeLevel = 0;
+            empDeviceDurationLevel = 0;
+            empDeviceChargeLeft = -1;
         }
     }
 

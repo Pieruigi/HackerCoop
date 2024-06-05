@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace HKR
 {
-    public class Flashlight : MonoBehaviour
+    public class FlashlightController : MonoBehaviour
     {
         [SerializeField]
         Light _light;
@@ -13,6 +13,11 @@ namespace HKR
         PlayerDevice playerDevice;
 
         Transform defaultParent;
+        float chargeMax = 0;
+        float currentCharge = 0;
+
+        float[] chargeLevels = new float[] { 100, 150, 200 };
+        
 
         private void Awake()
         {
@@ -60,7 +65,14 @@ namespace HKR
             _light.transform.localRotation = Quaternion.identity;
         }
 
-     
+        public void Init(int chargeLevel, float normalizedCharge)
+        {
+            chargeMax = chargeLevels[chargeLevel];
+            if( chargeMax < 0 )
+                currentCharge = chargeMax;
+            else
+                currentCharge = normalizedCharge * chargeMax;
+        }
     }
 
 }

@@ -37,6 +37,10 @@ namespace HKR
 
         public const int RadarDeviceRangeLevelMax = 2;
 
+        public const int FlashlightChargeLevelMax = 2;
+        
+        public const int EmpDeviceRangeLevelMax = 2;
+        public const int EmpDeviceDurationLevelMax = 2;
     }
 
 }
