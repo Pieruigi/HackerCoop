@@ -8,7 +8,7 @@ namespace HKR
 {
     
     [System.Serializable]
-    public partial class PlayerDeviceManager : SingletonPersistent<PlayerDeviceManager>
+    public class PlayerDeviceManager : SingletonPersistent<PlayerDeviceManager>
     {
 
         public UnityAction<PlayerDevice> OnDeviceAdded;

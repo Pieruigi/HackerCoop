@@ -12,5 +12,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1f6f583aff469143adf387660eaa20c, type: 3}
   m_Name: HackingDeviceAsset
   m_EditorClassIdentifier: 
-  code: 
   prefab: {fileID: 325115705502636216, guid: 019eb4f55468afa4b9e4416d820aa008, type: 3}
+  data:
+    details:
+    - name: Range
+      levels:
+      - value: 2
+        purchaseCost: 0
+        exp: 0
+        rechargeCost: 0
+      - value: 3
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 4
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+    - name: Speed
+      levels:
+      - value: 1
+        purchaseCost: 0
+        exp: 0
+        rechargeCost: 0
+      - value: 1.5
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 2
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+    - name: Memory
+      levels:
+      - value: 3
+        purchaseCost: 0
+        exp: 0
+        rechargeCost: 0
+      - value: 4
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 5
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0

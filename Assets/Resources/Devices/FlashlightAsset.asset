@@ -13,3 +13,19 @@ MonoBehaviour:
   m_Name: FlashlightAsset
   m_EditorClassIdentifier: Assembly-CSharp:HKR.Scriptables:DeviceAsset
   prefab: {fileID: 1452650882841091866, guid: 7cc5a8bb112a3084d837b5737f517b91, type: 3}
+  data:
+    details:
+    - name: Charge
+      levels:
+      - value: 1800
+        purchaseCost: 30
+        exp: 0
+        rechargeCost: 6
+      - value: 2400
+        purchaseCost: 40
+        exp: 100
+        rechargeCost: 8
+      - value: 3000
+        purchaseCost: 50
+        exp: 200
+        rechargeCost: 10

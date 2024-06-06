@@ -38,18 +38,30 @@ namespace HKR
             if (playerDevice.GetButtonDown())
             {
                 // Light on/off
-                if(_light.enabled) 
+                if(_light.enabled)
+                {
                     _light.enabled = false;
+                }
                 else
-                    _light.enabled = true;
+                {
+                    if(currentCharge > 0) 
+                        _light.enabled = true;
+                }
+                    
             }
 
-
+            // Discharge
+            if (_light.enabled)
+            {
+                currentCharge -= Time.deltaTime;
+                if(currentCharge < 0)
+                    _light.enabled = false;
+            }
         }
 
         private void OnEnable()
         {
-            _light.enabled = false;
+            _light.enabled = true;
             _light.transform.parent = Camera.main.transform;
             _light.transform.localPosition = Vector3.zero;
             _light.transform.localRotation = Quaternion.identity;

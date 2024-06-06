@@ -13,3 +13,19 @@ MonoBehaviour:
   m_Name: RadarDeviceAsset
   m_EditorClassIdentifier: Assembly-CSharp:HKR.Scriptables:DeviceAsset
   prefab: {fileID: 8291580185361561196, guid: 88a091667e2fb764eb4316ff4b7f3e92, type: 3}
+  data:
+    details:
+    - name: Range
+      levels:
+      - value: 2
+        purchaseCost: 50
+        exp: 0
+        rechargeCost: 0
+      - value: 3
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 4
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
