@@ -28,11 +28,14 @@ namespace HKR
         [SerializeField]
         DeviceAsset empDeviceAsset;
 
+        [SerializeField]
+        DeviceAsset alarmDeviceAsset;
+
         PlayerDevice hackingDevice;
         PlayerDevice radarDevice;
         PlayerDevice flashlight;
         PlayerDevice empDevice;
-
+        PlayerDevice alarmDevice;
 
         // Start is called before the first frame update
         void Start()
@@ -64,6 +67,14 @@ namespace HKR
             return device.GetComponent<PlayerDevice>();
         }
 
+        void DestroyDevice(PlayerDevice device)
+        {
+            if (!device)
+                return;
+            Destroy(device.gameObject);
+            
+        }
+
         #endregion
 
         #region hacking device private methods
@@ -81,10 +92,10 @@ namespace HKR
         void InitHackingDevice()
         {
             bool throughObstacles = AccountManager.Instance.CloudPrefs.hackingDeviceThroughObstacles;
-            int rangeLevel = AccountManager.Instance.CloudPrefs.hackingDeviceRangeLevel;
-            int speedLevel = AccountManager.Instance.CloudPrefs.hackingDeviceSpeedLevel;
-            int memoryLevel = AccountManager.Instance.CloudPrefs.hackingDeviceMemoryLevel;
-            hackingDevice.GetComponent<HackingController>().Init(throughObstacles, rangeLevel, speedLevel, memoryLevel);
+            float range = (float)DeviceDatabase.Instance.HackingDeviceData.Details[0].Levels[AccountManager.Instance.CloudPrefs.hackingDeviceRangeLevel].Value;
+            float speed = (float)DeviceDatabase.Instance.HackingDeviceData.Details[1].Levels[AccountManager.Instance.CloudPrefs.hackingDeviceSpeedLevel].Value;
+            int memory = (int)DeviceDatabase.Instance.HackingDeviceData.Details[2].Levels[AccountManager.Instance.CloudPrefs.hackingDeviceMemoryLevel].Value;
+            hackingDevice.GetComponent<HackingController>().Init(throughObstacles, range, speed, memory);
         }
 
         void ResetHackingDevicePrefs()
@@ -108,8 +119,8 @@ namespace HKR
 
         void InitRadarDevice()
         {
-            int rangeLevel = AccountManager.Instance.CloudPrefs.radarDeviceRangeLevel;
-            radarDevice.GetComponent<RadarController>().Init(rangeLevel);
+            float range = (float)DeviceDatabase.Instance.RadarDeviceData.Details[0].Levels[AccountManager.Instance.CloudPrefs.radarDeviceRangeLevel].Value;
+            radarDevice.GetComponent<RadarDeviceController>().Init(range);
         }
 
         void ResetRadarDevicePrefs()
@@ -119,10 +130,7 @@ namespace HKR
 
         void RemoveRadarDevice()
         {
-            if (!radarDevice)
-                return;
-
-            Destroy(radarDevice.gameObject);
+            DestroyDevice(radarDevice);
             OnDeviceRemoved?.Invoke(radarDevice);
         }
         #endregion
@@ -143,17 +151,14 @@ namespace HKR
 
         void InitFlashlight()
         {
-            int chargeLevel = AccountManager.Instance.CloudPrefs.flashlightChargeLevel;
+            float chargeMax = (float)DeviceDatabase.Instance.FlashlightData.Details[0].Levels[AccountManager.Instance.CloudPrefs.flashlightChargeLevel].Value;
             float charge = AccountManager.Instance.CloudPrefs.flashlightCharge;
-            flashlight.GetComponent<FlashlightController>().Init(chargeLevel, charge);
+            flashlight.GetComponent<FlashlightController>().Init(chargeMax, charge);
         }
 
         void RemoveFlashlight()
         {
-            if (!flashlight)
-                return;
-
-            Destroy(flashlight.gameObject);
+            DestroyDevice(flashlight);
             OnDeviceRemoved?.Invoke(flashlight);
         }
 
@@ -176,24 +181,53 @@ namespace HKR
 
         void InitEmpDevice()
         {
-            int rangeLevel = AccountManager.Instance.CloudPrefs.empDeviceRangeLevel;
-            int durationLevel = AccountManager.Instance.CloudPrefs.empDeviceDurationLevel;
+            float range = (float)DeviceDatabase.Instance.EmpDeviceData.Details[0].Levels[AccountManager.Instance.CloudPrefs.empDeviceRangeLevel].Value;
+            float duration = (float)DeviceDatabase.Instance.EmpDeviceData.Details[1].Levels[AccountManager.Instance.CloudPrefs.empDeviceDurationLevel].Value;
+            int chargeMax = (int)DeviceDatabase.Instance.EmpDeviceData.Details[2].Levels[AccountManager.Instance.CloudPrefs.empDeviceChargeLevel].Value;
             int chargeLeft = AccountManager.Instance.CloudPrefs.empDeviceChargeLeft;
-            empDevice.GetComponent<EmpDeviceController>().Init(rangeLevel, durationLevel, chargeLeft);
+            empDevice.GetComponent<EmpDeviceController>().Init(chargeMax, range, duration, chargeLeft);
         }
 
         void RemoveEmpDevice()
         {
-            if (!empDevice)
-                return;
-
-            Destroy(empDevice.gameObject);
+            DestroyDevice(empDevice);
             OnDeviceRemoved?.Invoke(empDevice);
         }
 
         void ResetEmpDevicePrefs()
         {
             AccountManager.Instance.CloudPrefs.ResetEmpDevice();
+        }
+        #endregion
+
+        #region alarm device private methods
+        void AddAlarmDevice()
+        {
+            if (/*!AccountManager.Instance.CloudPrefs.radarDeviceAvailable || */alarmDevice)
+                return;
+
+            //GameObject device = GameObject.Instantiate(radarDeviceAsset.Prefab);
+            alarmDevice = CreateDevice(alarmDeviceAsset);
+            InitAlarmDevice();
+            OnDeviceAdded?.Invoke(alarmDevice);
+        }
+
+        void InitAlarmDevice()
+        {
+            float range = (float)DeviceDatabase.Instance.AlarmDeviceData.Details[0].Levels[AccountManager.Instance.CloudPrefs.alarmDeviceRangeLevel].Value;
+            float speed = (float)DeviceDatabase.Instance.AlarmDeviceData.Details[1].Levels[AccountManager.Instance.CloudPrefs.alarmDeviceSpeedLevel].Value;
+            alarmDevice.GetComponent<AlarmDeviceController>().Init(range, speed);
+        }
+
+        void ResetAlarmDevicePrefs()
+        {
+            AccountManager.Instance.CloudPrefs.ResetAlarmDevice();
+        }
+
+        void RemoveAlarmDevice()
+        {
+            DestroyDevice(alarmDevice);
+            OnDeviceRemoved?.Invoke(alarmDevice);
         }
         #endregion
 
@@ -217,6 +251,10 @@ namespace HKR
             // Emp device
             if(AccountManager.Instance.CloudPrefs.empDeviceAvailable)
                 AddEmpDevice();
+
+            // Radar device
+            if(AccountManager.Instance.CloudPrefs.alarmDeviceAvailable)
+                AddAlarmDevice();
         }
 
         /// <summary>
@@ -239,6 +277,10 @@ namespace HKR
             AccountManager.Instance.CloudPrefs.empDeviceAvailable = false;
             ResetEmpDevicePrefs();
             RemoveEmpDevice();
+            // Alarm device 
+            AccountManager.Instance.CloudPrefs.alarmDeviceAvailable = false;
+            ResetAlarmDevicePrefs();
+            RemoveAlarmDevice();
             // Store data on Steam cloud
             AccountManager.Instance.StoreCloudPrefs();
         }
@@ -248,7 +290,9 @@ namespace HKR
         public void UpgradeHackingDeviceRangeLevel(int level)
         {
             // Check level
-            if (level > PlayerDeviceConstants.HackingDeviceRangeLevelMax)
+            //if (level > PlayerDeviceConstants.HackingDeviceRangeLevels.Length - 1)
+            //    return;
+            if (level > DeviceDatabase.Instance.HackingDeviceData.Details[0].Levels.Count - 1)
                 return;
 
             // Update prefs
@@ -262,7 +306,7 @@ namespace HKR
         public void UpgradeHackingDeviceSpeedLevel(int level)
         {
             // Check level
-            if (level > PlayerDeviceConstants.HackingDeviceSpeedLevelMax)
+            if (level > DeviceDatabase.Instance.HackingDeviceData.Details[1].Levels.Count - 1)
                 return;
 
             // Update prefs
@@ -276,7 +320,7 @@ namespace HKR
         public void UpgradeHackingDeviceMemoryLevel(int level)
         {
             // Check level
-            if (level > PlayerDeviceConstants.HackingDeviceMemoryLevelMax)
+            if (level > DeviceDatabase.Instance.HackingDeviceData.Details[2].Levels.Count - 1)
                 return;
 
             // Update prefs
@@ -314,7 +358,7 @@ namespace HKR
         public void UpgradeRadarDeviceRangeLevel(int level)
         {
             // Check level
-            if (level > PlayerDeviceConstants.RadarDeviceRangeLevelMax)
+            if (level > DeviceDatabase.Instance.RadarDeviceData.Details[0].Levels.Count - 1)
                 return;
 
             // Update prefs
@@ -334,7 +378,7 @@ namespace HKR
         public void PurchaseFlashlight()
         {
             AccountManager.Instance.CloudPrefs.flashlightAvailable = true;
-            AccountManager.Instance.CloudPrefs.flashlightCharge = -1; // We just purchased the flashlight so we set the max charge
+            AccountManager.Instance.CloudPrefs.flashlightCharge = (float)DeviceDatabase.Instance.FlashlightData.Details[0].Levels[0].Value; // Just purchased
             AccountManager.Instance.StoreCloudPrefs();
             AddFlashlight();
         }
@@ -342,12 +386,12 @@ namespace HKR
         public void UpgradeFlashlightChargeLevel(int level)
         {
             // Check level
-            if (level > PlayerDeviceConstants.FlashlightChargeLevelMax)
+            if (level > DeviceDatabase.Instance.FlashlightData.Details[0].Levels.Count - 1)
                 return;
 
             // Update prefs
             AccountManager.Instance.CloudPrefs.flashlightChargeLevel = level;
-            AccountManager.Instance.CloudPrefs.flashlightCharge = -1;
+            AccountManager.Instance.CloudPrefs.flashlightCharge = (float)DeviceDatabase.Instance.FlashlightData.Details[0].Levels[level].Value;
             // Update device
             InitFlashlight();
             // Store data on Steam cloud
@@ -357,7 +401,8 @@ namespace HKR
         public void RechargeFlashlight()
         {
             // Update prefs
-            AccountManager.Instance.CloudPrefs.flashlightCharge = 1.0f;
+            int level = AccountManager.Instance.CloudPrefs.flashlightChargeLevel;
+            AccountManager.Instance.CloudPrefs.flashlightCharge = (float)DeviceDatabase.Instance.FlashlightData.Details[0].Levels[level].Value;
             // Update device
             InitFlashlight();
             // Store data on Steam cloud
@@ -379,10 +424,25 @@ namespace HKR
             AddEmpDevice();
         }
 
+        public void UpgradeEmpDeviceChargeLevel(int level)
+        {
+            // Check level
+            if (level > DeviceDatabase.Instance.EmpDeviceData.Details[2].Levels.Count - 1)
+                return;
+
+            // Update prefs
+            AccountManager.Instance.CloudPrefs.empDeviceChargeLevel = level;
+            AccountManager.Instance.CloudPrefs.empDeviceChargeLeft = (int)DeviceDatabase.Instance.EmpDeviceData.Details[2].Levels[level].Value;
+            // Update device
+            InitEmpDevice();
+            // Store data on Steam cloud
+            AccountManager.Instance.StoreCloudPrefs();
+        }
+
         public void UpgradeEmpDeviceRangeLevel(int level)
         {
             // Check level
-            if (level > PlayerDeviceConstants.EmpDeviceRangeLevelMax)
+            if (level > DeviceDatabase.Instance.EmpDeviceData.Details[0].Levels.Count - 1)
                 return;
 
             // Update prefs
@@ -396,13 +456,64 @@ namespace HKR
         public void UpgradeEmpDeviceDurationLevel(int level)
         {
             // Check level
-            if (level > PlayerDeviceConstants.EmpDeviceDurationLevelMax)
+            if (level > DeviceDatabase.Instance.EmpDeviceData.Details[1].Levels.Count - 1)
                 return;
 
             // Update prefs
             AccountManager.Instance.CloudPrefs.empDeviceDurationLevel = level;
             // Update device
             InitEmpDevice();
+            // Store data on Steam cloud
+            AccountManager.Instance.StoreCloudPrefs();
+        }
+
+        public void RechargeEmpDevice()
+        {
+            // Update prefs
+            int level = AccountManager.Instance.CloudPrefs.empDeviceChargeLevel;
+            AccountManager.Instance.CloudPrefs.empDeviceChargeLeft = (int)DeviceDatabase.Instance.EmpDeviceData.Details[2].Levels[level].Value;
+            // Update device
+            InitEmpDevice();
+            // Store data on Steam cloud
+            AccountManager.Instance.StoreCloudPrefs();
+        }
+        #endregion
+
+        #region alarm device public methods
+        /// <summary>
+        /// Called on purchase
+        /// </summary>
+        public void PurchaseAlarmDevice()
+        {
+            AccountManager.Instance.CloudPrefs.alarmDeviceAvailable = true;
+            AccountManager.Instance.StoreCloudPrefs();
+            AddAlarmDevice();
+        }
+
+        public void UpgradeAlarmDeviceRangeLevel(int level)
+        {
+            // Check level
+            if (level > DeviceDatabase.Instance.AlarmDeviceData.Details[0].Levels.Count - 1)
+                return;
+
+            // Update prefs
+            AccountManager.Instance.CloudPrefs.alarmDeviceRangeLevel = level;
+            // Update device
+            InitAlarmDevice();
+            // Store data on Steam cloud
+            AccountManager.Instance.StoreCloudPrefs();
+        }
+
+        public void UpgradeAlarmDeviceSpeedLevel(int level)
+        {
+            // Check level
+            if (level > DeviceDatabase.Instance.AlarmDeviceData.Details[1].Levels.Count - 1)
+                return;
+
+            // Update prefs
+            AccountManager.Instance.CloudPrefs.alarmDeviceSpeedLevel = level;
+            // Update device
+            InitAlarmDevice();
             // Store data on Steam cloud
             AccountManager.Instance.StoreCloudPrefs();
         }

@@ -4,15 +4,11 @@ using UnityEngine;
 
 namespace HKR
 {
-    public class EmpDeviceController : MonoBehaviour
+    public class AlarmDeviceController : MonoBehaviour
     {
-        int chargeMax = 1;
-
         float range;
+        float speed;
 
-        float duration;
-
-        int chargeLeft = 0;
 
         // Start is called before the first frame update
         void Start()
@@ -26,12 +22,10 @@ namespace HKR
 
         }
 
-        public void Init(int chargeMax, float range, float duration, int chargeLeft)
+        public void Init(float range, float speed)
         {
-            this.chargeMax = chargeMax;
             this.range = range;
-            this.duration = duration;
-            this.chargeLeft = chargeLeft;
+            this.speed = speed;
         }
     }
 

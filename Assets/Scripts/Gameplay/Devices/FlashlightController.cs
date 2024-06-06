@@ -16,9 +16,7 @@ namespace HKR
         float chargeMax = 0;
         float currentCharge = 0;
 
-        float[] chargeLevels = new float[] { 100, 150, 200 };
-        
-
+       
         private void Awake()
         {
             playerDevice = GetComponent<PlayerDevice>();
@@ -65,13 +63,10 @@ namespace HKR
             _light.transform.localRotation = Quaternion.identity;
         }
 
-        public void Init(int chargeLevel, float normalizedCharge)
+        public void Init(float chargeMax, float charge)
         {
-            chargeMax = chargeLevels[chargeLevel];
-            if( chargeMax < 0 )
-                currentCharge = chargeMax;
-            else
-                currentCharge = normalizedCharge * chargeMax;
+            this.chargeMax = chargeMax;
+            currentCharge = Mathf.Min(charge, chargeMax);
         }
     }
 

@@ -31,16 +31,28 @@ namespace HKR
 
     public class PlayerDeviceConstants
     {
-        public const int HackingDeviceRangeLevelMax = 2;
-        public const int HackingDeviceSpeedLevelMax = 2;
-        public const int HackingDeviceMemoryLevelMax = 2;
-
-        public const int RadarDeviceRangeLevelMax = 2;
-
-        public const int FlashlightChargeLevelMax = 2;
+        // Hacking device
+        //public static readonly float[] HackingDeviceRangeLevels = { 2, 3, 4 };
+        //public static readonly float[] HackingDeviceSpeedLevels = { 1, 1.5f, 2 };
+        //public static readonly int[] HackingDeviceMemoryLevels = { 3, 4, 5 };
         
-        public const int EmpDeviceRangeLevelMax = 2;
-        public const int EmpDeviceDurationLevelMax = 2;
+
+        // Radar device
+        //public static readonly float[] RadarDeviceRangeLevels = { 7, 9, 11 };
+
+        // Flashlight
+        //public static readonly int[] FlashlightChargeLevels = { 100, 150, 200 };
+
+        // Emp device
+        //public static readonly int[] EmpDeviceChargeLevels = { 1 };
+        //public static readonly float[] EmpDeviceRangeLevels = { 10, 15, 20 };
+        //public static readonly float[] EmpDeviceDurationLevels = { 10, 15, 20 };
+
+        // Alarm device
+        //public static readonly float[] AlarmDeviceRangeLevels = { 3, 4 };
+        //public static readonly float[] AlarmDeviceSpeedLevels = { 1, 1.5f, 2f };
     }
 
+
+    
 }

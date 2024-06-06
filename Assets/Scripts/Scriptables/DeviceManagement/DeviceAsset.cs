@@ -27,6 +27,9 @@ namespace HKR.Scriptables
         {
             get { return prefab; }
         }
+
+        //[SerializeField]
+        
     }
 
 }

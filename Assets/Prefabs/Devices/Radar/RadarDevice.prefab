@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 3697210247560256729}
   - component: {fileID: 7206744658641455616}
   m_Layer: 0
-  m_Name: Radar
+  m_Name: RadarDevice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

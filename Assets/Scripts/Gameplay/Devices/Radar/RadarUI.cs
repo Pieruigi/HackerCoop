@@ -11,7 +11,7 @@ namespace HKR.UI
     public class RadarUI : MonoBehaviour
     {
         [SerializeField]
-        RadarController radarController;
+        RadarDeviceController radarController;
 
         [SerializeField]
         GameObject radarCircle;

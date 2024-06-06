@@ -9,7 +9,7 @@ namespace HKR
 {
     
 
-    public class RadarController : MonoBehaviour
+    public class RadarDeviceController : MonoBehaviour
     {
         public UnityAction OnStartScanning;
         public UnityAction OnStopScanning;
@@ -43,9 +43,6 @@ namespace HKR
         List<Collider> pingList = new List<Collider>();
 
         bool currentLevelOnly = true;
-
-        // Upgrade data
-        float[] rangeLevels = new float[] { 7, 9, 11 };
 
         private void Awake()
         {
@@ -154,9 +151,9 @@ namespace HKR
             OnDeactivate?.Invoke();
         }
 
-        public void Init(int rangeLevel)
+        public void Init(float range)
         {
-            range = rangeLevels[rangeLevel];
+            this.range = range;
         }
         
     }

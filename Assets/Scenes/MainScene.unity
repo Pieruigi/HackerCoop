@@ -263,6 +263,7 @@ MonoBehaviour:
   radarDeviceAsset: {fileID: 11400000, guid: 1ea6f0f06ebf53846b8f69a76ab44d30, type: 2}
   flashlightAsset: {fileID: 11400000, guid: c381466fe1227d541b2fbee56a0d8ee2, type: 2}
   empDeviceAsset: {fileID: 11400000, guid: 3ab47c2ae6640de428cdc323336cca73, type: 2}
+  alarmDeviceAsset: {fileID: 11400000, guid: dbfbe3fda49aba743838e2f86bed201c, type: 2}
 --- !u!4 &415973686
 Transform:
   m_ObjectHideFlags: 0
@@ -1201,6 +1202,188 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1263294307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1263294309}
+  - component: {fileID: 1263294308}
+  m_Layer: 0
+  m_Name: DeviceDatabase
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1263294308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263294307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb4f6e066d2745943b8e97fca1f650a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hackingDeviceData:
+    details:
+    - name: Range
+      levels:
+      - value: 2
+        purchaseCost: 0
+        exp: 0
+        rechargeCost: 0
+      - value: 3
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 4
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+    - name: Speed
+      levels:
+      - value: 1
+        purchaseCost: 0
+        exp: 0
+        rechargeCost: 0
+      - value: 1.5
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 2
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+    - name: Memory
+      levels:
+      - value: 3
+        purchaseCost: 0
+        exp: 0
+        rechargeCost: 0
+      - value: 4
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 5
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+  radarDeviceData:
+    details:
+    - name: Range
+      levels:
+      - value: 2
+        purchaseCost: 50
+        exp: 0
+        rechargeCost: 0
+      - value: 3
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 4
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+  flashlightData:
+    details:
+    - name: Charge
+      levels:
+      - value: 3
+        purchaseCost: 30
+        exp: 0
+        rechargeCost: 6
+      - value: 4
+        purchaseCost: 40
+        exp: 100
+        rechargeCost: 8
+      - value: 5
+        purchaseCost: 50
+        exp: 200
+        rechargeCost: 10
+  empDeviceData:
+    details:
+    - name: Range
+      levels:
+      - value: 10
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 15
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+      - value: 20
+        purchaseCost: 300
+        exp: 300
+        rechargeCost: 0
+    - name: Durations
+      levels:
+      - value: 10
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 15
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+      - value: 20
+        purchaseCost: 300
+        exp: 300
+        rechargeCost: 0
+    - name: Charges
+      levels:
+      - value: 1
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 20
+  alarmDeviceData:
+    details:
+    - name: Range
+      levels:
+      - value: 3
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 4
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+    - name: Speed
+      levels:
+      - value: 1
+        purchaseCost: 100
+        exp: 100
+        rechargeCost: 0
+      - value: 1.5
+        purchaseCost: 150
+        exp: 150
+        rechargeCost: 0
+      - value: 2
+        purchaseCost: 200
+        exp: 200
+        rechargeCost: 0
+--- !u!4 &1263294309
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263294307}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1380918811
 GameObject:
   m_ObjectHideFlags: 0
@@ -1262,6 +1445,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2c663ab3f9cba47a2da6cc8ede3421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cloudPrefs:
+    hackingDeviceRangeLevel: 0
+    hackingDeviceMemoryLevel: 0
+    hackingDeviceSpeedLevel: 0
+    hackingDeviceThroughObstacles: 0
+    radarDeviceAvailable: 1
+    radarDeviceRangeLevel: 0
+    flashlightAvailable: 1
+    flashlightChargeLevel: 0
+    flashlightCharge: -1
+    empDeviceAvailable: 1
+    empDeviceRangeLevel: 0
+    empDeviceDurationLevel: 0
+    empDeviceChargeLeft: -1
+    empDeviceChargeLevel: 0
+    alarmDeviceAvailable: 1
+    alarmDeviceRangeLevel: 0
+    alarmDeviceSpeedLevel: 0
 --- !u!4 &1704331630
 Transform:
   m_ObjectHideFlags: 0
@@ -3706,3 +3907,4 @@ SceneRoots:
   - {fileID: 415973686}
   - {fileID: 1712496911}
   - {fileID: 2071146717}
+  - {fileID: 1263294309}

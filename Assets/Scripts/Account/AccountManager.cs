@@ -13,6 +13,7 @@ public class AccountManager : SingletonPersistent<AccountManager>
         get { return userName; }
     }
 
+    [SerializeField]
     SteamCloudPrefs cloudPrefs;
     public SteamCloudPrefs CloudPrefs
     {
@@ -46,7 +47,13 @@ public class AccountManager : SingletonPersistent<AccountManager>
     void LoadCloudPrefs()
     {
         // Load from Steam cloud
-        cloudPrefs = new SteamCloudPrefs();
+        bool loaded = false;
+        if(!loaded)
+        {
+            cloudPrefs = new SteamCloudPrefs();
+            cloudPrefs.ResetDefault();
+        }
+            
     }
 
     void SaveCloudPrefs()

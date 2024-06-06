@@ -82,12 +82,7 @@ namespace HKR
             get { return appErrorCount; }
         }
 
-        // Upgrade levels
-        float[] rangeLevels = new float[] { 2, 3, 4 };
-        float[] speedLevels = new float[] { 1, 1.5f, 2f };
-        int[] memoryLevels = new int[] { 3, 4, 5 };
-
-
+        
         private void Awake()
         {
             device = GetComponent<PlayerDevice>();
@@ -321,13 +316,12 @@ namespace HKR
             OnHitFailed?.Invoke();
         }
 
-        public void Init(bool throughObstacles, int rangeLevel, int speedLevel, int memoryLevel)
+        public void Init(bool throughObstacles, float range, float speed, int memoryBlocks)
         {
-            Debug.Log($"RangeLevel:{rangeLevels[rangeLevel]}");
             this.throughObstacles = throughObstacles;
-            hackingRange = rangeLevels[rangeLevel];
-            hackingSpeed = speedLevels[speedLevel];
-            this.memoryBlocks = memoryLevels[memoryLevel];
+            hackingRange = range;
+            hackingSpeed = speed;
+            this.memoryBlocks = memoryBlocks;
         }
 
     }
