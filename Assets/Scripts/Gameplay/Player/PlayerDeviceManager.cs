@@ -32,15 +32,15 @@ namespace HKR
         {
 #if UNITY_EDITOR
 
-            if(Input.GetKeyDown(KeyCode.K))
-            {
-                ResetAllToDefault();
-            }
+            //if(Input.GetKeyDown(KeyCode.K))
+            //{
+            //    ResetAllToDefault();
+            //}
 
-            if(Input.GetKeyDown(KeyCode.U))
-            {
-                UpgradeHackingDeviceRangeLevel(1);
-            }
+            //if(Input.GetKeyDown(KeyCode.U))
+            //{
+            //    UpgradeHackingDeviceRangeLevel(1);
+            //}
 #endif
         }
 

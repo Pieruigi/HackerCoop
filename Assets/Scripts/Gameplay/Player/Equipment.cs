@@ -66,6 +66,8 @@ namespace HKR
         {
             DetectChanges();
 
+
+
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 Equip(0, BodyPart.LeftHand);
