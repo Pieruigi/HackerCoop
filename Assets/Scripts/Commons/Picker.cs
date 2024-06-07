@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -13,11 +14,7 @@ namespace HKR
         [Networked]
         public NetworkBool Owned { get; set; } // Can you pick it or is owned by a player?
 
-        private async void Start()
-        {
-            //Task t = Task => { };
-            
-        }
+       
 
         private void Update()
         {
@@ -28,7 +25,7 @@ namespace HKR
                     if (HasStateAuthority)
                     {
                         
-                        PickUp();
+                        DoPickUp();
                     }
                     else
                     {
@@ -44,11 +41,13 @@ namespace HKR
         {
             base.Spawned();
 
-            //if (HasStateAuthority)
-            //    Object.ReleaseStateAuthority();
 
         }
 
+        /// <summary>
+        /// Called by the a client with no authority on the object to the client with the authority
+        /// </summary>
+        /// <param name="info"></param>
         [Rpc(sources:RpcSources.All, targets:RpcTargets.StateAuthority)]
         void PickUpRequestRpc(RpcInfo info = default)
         {
@@ -78,15 +77,42 @@ namespace HKR
                 // Await for authority
                 await Task.Run(async () => { while (!HasStateAuthority) await Task.Yield(); });
                 // Pick up
-                PickUp();
+                DoPickUp();
             }
         }
 
-       
+        [Rpc(sources:RpcSources.StateAuthority, targets:RpcTargets.All)]
+        void AddToEquipmentRpc(RpcInfo info = default)
+        {
+            // Put the object at the end of the equipment device list ( we don't need to specify an index )
+            // Get the equipment of the source player
+            Equipment equipment = FindObjectsOfType<Equipment>().First(e=>e.Object.StateAuthority == info.Source);
+            equipment.Add(GetComponent<PlayerDevice>());
 
-        void PickUp()
+
+        }
+
+        /// <summary>
+        /// Call by the player who's picking up the object
+        /// </summary>
+        void DoPickUp()
         {
             Owned = true;
+            // We send an rpc to the other players in order to setup equipment too
+            AddToEquipmentRpc();
+        }
+
+        public bool TryPickUp()
+        {
+            if(Owned)
+                return false;
+
+            if (HasStateAuthority)
+                DoPickUp();
+            else
+                PickUpRequestRpc();
+            
+            return true;
         }
     }
 

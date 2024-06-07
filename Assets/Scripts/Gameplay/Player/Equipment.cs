@@ -48,6 +48,8 @@ namespace HKR
         HandController leftHandController;
         HandController rightHandController;
 
+        float interactionRange = 1.5f;
+
         private void Awake()
         {
             //foreach (var device in devices)
@@ -66,7 +68,7 @@ namespace HKR
         {
             DetectChanges();
 
-
+            CheckFreeHandsInteraction();
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
@@ -114,7 +116,7 @@ namespace HKR
         {
             PlayerDeviceManager.Instance.OnDeviceAdded += HandleOnDeviceAdded;
             PlayerDeviceManager.Instance.OnDeviceRemoved += HandleOnDeviceRemoved;
-            PlayerDeviceManager.Instance.InitializeDevices();
+            //PlayerDeviceManager.Instance.InitializeDevices();
         }
 
         private void OnDisable()
@@ -157,6 +159,32 @@ namespace HKR
             }
 
 
+        }
+
+        private void CheckFreeHandsInteraction()
+        {
+            // If both the hands are full you can't pick up anything
+            if (!(RightHandIndex < 0 || LeftHandIndex < 0))
+                return;
+
+            Debug.Log("TEST - checking");
+            // Raycast 
+            Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            var mask = LayerMask.GetMask(Layers.Pickable);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit, interactionRange, mask))
+            {
+                Debug.Log($"TEST - raycasted:{hit.transform}");
+                Picker picker = hit.transform.GetComponentInParent<Picker>();
+                if (!picker)
+                    return;
+                if(Input.GetKeyDown(KeyCode.F))
+                {
+                    if (picker.TryPickUp())
+                        Debug.Log($"TEST - picking up {picker.transform.gameObject.name}");
+                }
+                
+            }
         }
 
         async void SetHandsRoot()
@@ -286,7 +314,39 @@ namespace HKR
         //    return availables[deviceIndex];
         //}
 
-        
+        public async void Add(PlayerDevice device)
+        {
+            devices.Add(device);
+            device.transform.parent = deviceRoot;
+            // Since the object is a child of the player we can disable the network transform
+            var nt = device.GetComponent<NetworkTransform>();
+            if(nt)
+                nt.enabled = false;
+            
+            // Reset transform
+            Debug.Log("Test - setting position");
+            device.transform.localPosition = Vector3.zero;
+            device.transform.localRotation = Quaternion.identity;
+
+            // You can not pick any object if you don't have at least one hand free
+            if (HasStateAuthority)
+            {
+                await Task.Delay(200); // Give other clients time to call this function and put the picked object in the device list
+                var hand = LeftHandIndex < 0 ? BodyPart.LeftHand : BodyPart.RightHand;
+                Equip(devices.Count - 1, hand);
+            }
+            
+        }
+
+        public void Remove(PlayerDevice device)
+        {
+            devices.Remove(device);
+            device.transform.parent = null;
+            // Enable back the network transform if any
+            var nt = device.GetComponent<NetworkTransform>();
+            if (nt)
+                nt.enabled = true;
+        }
     }
 
 }
