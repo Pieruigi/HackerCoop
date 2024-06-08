@@ -1,4 +1,5 @@
 using Fusion;
+using Fusion.Addons.Physics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -68,7 +69,9 @@ namespace HKR
         {
             DetectChanges();
 
-            CheckFreeHandsInteraction();
+            CheckPickUp();
+
+            CheckFreeHands();
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
@@ -161,8 +164,11 @@ namespace HKR
 
         }
 
-        private void CheckFreeHandsInteraction()
+        private void CheckPickUp()
         {
+            if (!HasStateAuthority)
+                return;
+
             // If both the hands are full you can't pick up anything
             if (!(RightHandIndex < 0 || LeftHandIndex < 0))
                 return;
@@ -184,6 +190,34 @@ namespace HKR
                         Debug.Log($"TEST - picking up {picker.transform.gameObject.name}");
                 }
                 
+            }
+        }
+
+        public void CheckFreeHands()
+        {
+            if (!HasStateAuthority)
+                return;
+
+            if (LeftHandIndex < 0 && RightHandIndex < 0) // You are not holding anything
+                return;
+
+            if (Input.GetKeyDown(KeyCode.Q) && LeftHandIndex >= 0)
+            {
+                // Release what you are holding with yout left hand
+                PlayerDevice device = leftHand.transform.GetChild(0).GetComponent<PlayerDevice>();
+                RemoveRpc(devices.IndexOf(device));
+                Rigidbody rb = device.GetComponent<Rigidbody>();
+                if(rb)
+                    rb.AddForce((transform.forward + Vector3.up * .5f) * 5f, ForceMode.VelocityChange);
+            }
+            if (Input.GetKeyDown(KeyCode.E) && RightHandIndex >= 0)
+            {
+                // Release what you are holding with yout left hand
+                PlayerDevice device = rightHand.transform.GetChild(0).GetComponent<PlayerDevice>();
+                RemoveRpc(devices.IndexOf(device));
+                Rigidbody rb = device.GetComponent<Rigidbody>();
+                if (rb)
+                    rb.AddForce((transform.forward + Vector3.up * .5f) * 5f, ForceMode.VelocityChange);
             }
         }
 
@@ -264,6 +298,36 @@ namespace HKR
                 
         }
 
+        void DisableNetworkSynchronization(PlayerDevice device)
+        {
+            var nt = device.GetComponent<NetworkTransform>();
+            if (nt)
+                nt.enabled = false;
+
+            Rigidbody rb = device.GetComponent<Rigidbody>();
+            if (rb)
+                rb.isKinematic = true;
+
+            NetworkRigidbody3D nrb = device.GetComponent<NetworkRigidbody3D>();
+            if(nrb)
+                nrb.enabled = false;
+        }
+
+        void EnableNetworkSynchronization(PlayerDevice device)
+        {
+            var nt = device.GetComponent<NetworkTransform>();
+            if (nt)
+                nt.enabled = true;
+
+            Rigidbody rb = device.GetComponent<Rigidbody>();
+            if (rb)
+                rb.isKinematic = false;
+
+            NetworkRigidbody3D nrb = device.GetComponent<NetworkRigidbody3D>();
+            if (nrb)
+                nrb.enabled = true;
+        }
+
         public void Equip(int index, BodyPart bodyPart)
         {
             if (!HasStateAuthority)
@@ -319,10 +383,8 @@ namespace HKR
             devices.Add(device);
             device.transform.parent = deviceRoot;
             // Since the object is a child of the player we can disable the network transform
-            var nt = device.GetComponent<NetworkTransform>();
-            if(nt)
-                nt.enabled = false;
-            
+            DisableNetworkSynchronization(device);
+           
             // Reset transform
             Debug.Log("Test - setting position");
             device.transform.localPosition = Vector3.zero;
@@ -338,14 +400,18 @@ namespace HKR
             
         }
 
-        public void Remove(PlayerDevice device)
+        [Rpc(sources:RpcSources.StateAuthority, targets:RpcTargets.All)]
+        public void RemoveRpc(int deviceIndex)
         {
+            PlayerDevice device = devices[deviceIndex];
             devices.Remove(device);
             device.transform.parent = null;
             // Enable back the network transform if any
-            var nt = device.GetComponent<NetworkTransform>();
-            if (nt)
-                nt.enabled = true;
+            EnableNetworkSynchronization(device);
+            // Enable the picker back if any
+            Picker picker = device.GetComponent<Picker>();
+            if (picker)
+                picker.Owned = false;
         }
     }
 
