@@ -173,14 +173,14 @@ namespace HKR
             if (!(RightHandIndex < 0 || LeftHandIndex < 0))
                 return;
 
-            Debug.Log("TEST - checking");
+           
             // Raycast 
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
             var mask = LayerMask.GetMask(Layers.Pickable);
             RaycastHit hit;
             if(Physics.Raycast(ray, out hit, interactionRange, mask))
             {
-                Debug.Log($"TEST - raycasted:{hit.transform}");
+           
                 Picker picker = hit.transform.GetComponentInParent<Picker>();
                 if (!picker)
                     return;

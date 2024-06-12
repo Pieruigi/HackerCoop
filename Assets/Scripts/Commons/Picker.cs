@@ -18,23 +18,23 @@ namespace HKR
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                if (!Owned)
-                {
-                    if (HasStateAuthority)
-                    {
+            //if (Input.GetKeyDown(KeyCode.I))
+            //{
+            //    if (!Owned)
+            //    {
+            //        if (HasStateAuthority)
+            //        {
                         
-                        DoPickUp();
-                    }
-                    else
-                    {
-                        //Object.RequestStateAuthority();
-                        PickUpRequestRpc();
-                    }
-                }
+            //            DoPickUp();
+            //        }
+            //        else
+            //        {
+            //            //Object.RequestStateAuthority();
+            //            PickUpRequestRpc();
+            //        }
+            //    }
                 
-            }
+            //}
         }
 
         public override void Spawned()

@@ -21,6 +21,7 @@ namespace HKR
     {
         public const string RadarTarget = "RadarTarget";
         public const string Pickable = "Pickable";
+        
     }
 
     public class Tags

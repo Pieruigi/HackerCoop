@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace HKR
 {
-    public enum PlayerState: byte { Paused, Normal, Dead }
+    public enum PlayerState: byte { Paused, Normal, Dead, External }
 
     
 
@@ -82,6 +82,18 @@ namespace HKR
         float characterDefaultHeight;
         float cameraDefaultHeight;
         float cameraCrouchHeight;
+
+        Vector3 externalDestination;
+        float externalYaw;
+        float externalPitch;
+        float externalTime;
+        float externalYawSpeed;
+        float externalPitchSpeed;
+        float externalMoveSpeed;
+        Vector3 externalMoveDirection;
+        //Vector3 externalPosition;
+        //Quaternion externalRotation;
+        //Vector3 externalLookAt;
 
         Animator animator;
         string crouchAnimParam = "Crouch";
@@ -262,6 +274,9 @@ namespace HKR
                 case PlayerState.Paused:
                     FixedUpdateNetworkPausedState();
                     break;
+                case PlayerState.External: 
+                    FixedUpdateNetworkExternalState(); 
+                    break;
 
             }
         }
@@ -274,6 +289,28 @@ namespace HKR
             Pitch();
         }
 
+        void FixedUpdateNetworkExternalState()
+        {
+            if (!HasStateAuthority) return;
+
+            if(externalTime > 0)
+            {
+                characterController.enabled = false;
+                // Position
+                transform.position += externalMoveDirection * externalMoveSpeed * Time.fixedDeltaTime;
+                // Yaw and pitch
+                yaw = Mathf.MoveTowards(yaw, externalYaw, externalYawSpeed * Time.fixedDeltaTime);
+                
+                pitch = Mathf.MoveTowards(pitch, externalPitch, externalPitchSpeed * Time.fixedDeltaTime);
+                Yaw();
+                Pitch();
+                characterController.enabled = true;
+                externalTime -= Time.fixedDeltaTime;
+            }
+            
+
+
+        }
         
         void FixedUpdateNetworkPausedState()
         {
@@ -581,6 +618,22 @@ namespace HKR
                 OnDead?.Invoke(this);
             }
 
+        }
+
+        public void SetExternalState(Vector3 destination, float yaw, float pitch, float time)
+        {
+            this.externalDestination = destination;
+            this.externalPitch = pitch;
+            this.externalYaw = yaw;
+            this.externalTime = time;
+            externalYawSpeed = Mathf.Abs(this.yaw - externalYaw) / time;
+            externalPitchSpeed = Mathf.Abs(this.pitch - externalPitch) / time;
+            
+            externalMoveDirection = destination - transform.position;
+            externalMoveDirection.y = 0;
+            externalMoveSpeed = externalMoveDirection.magnitude / time;
+            externalMoveDirection.Normalize();
+            State = PlayerState.External;
         }
     }
 
