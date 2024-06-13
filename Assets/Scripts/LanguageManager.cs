@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 namespace HKR.Localization
 {
@@ -40,7 +41,13 @@ namespace HKR.Localization
         // Update is called once per frame
         void Update()
         {
-
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[0])
+                    LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[1];
+                else
+                    LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[0];
+            }
         }
 
         public void SetLanguage(Language language)
